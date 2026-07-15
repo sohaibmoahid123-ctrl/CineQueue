@@ -10,6 +10,12 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: movies
+    description: Movie catalog operations
+  - name: genres
+    description: Genre operations
+  - name: watchlist
+    description: My List operations
 paths:
   /healthz:
     get:
@@ -24,6 +30,128 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /movies:
+    get:
+      operationId: listMovies
+      tags: [movies]
+      summary: List movies
+      description: List movies, optionally filtered by genre or search query
+      parameters:
+        - name: genre
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+  /movies/featured:
+    get:
+      operationId: listFeaturedMovies
+      tags: [movies]
+      summary: Featured movies
+      description: Curated spotlight movies for the hero carousel
+      responses:
+        "200":
+          description: Featured movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+  /movies/{id}:
+    get:
+      operationId: getMovie
+      tags: [movies]
+      summary: Get movie details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Movie details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        "404":
+          description: Not found
+  /genres:
+    get:
+      operationId: listGenres
+      tags: [genres]
+      summary: List genres with movie counts
+      responses:
+        "200":
+          description: List of genres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GenreSummary"
+  /watchlist:
+    get:
+      operationId: listWatchlist
+      tags: [watchlist]
+      summary: List movies in My List
+      responses:
+        "200":
+          description: Movies saved to My List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+  /watchlist/{movieId}:
+    post:
+      operationId: addToWatchlist
+      tags: [watchlist]
+      summary: Add a movie to My List
+      parameters:
+        - name: movieId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistEntry"
+        "404":
+          description: Movie not found
+    delete:
+      operationId: removeFromWatchlist
+      tags: [watchlist]
+      summary: Remove a movie from My List
+      parameters:
+        - name: movieId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
 components:
   schemas:
     HealthStatus:
@@ -33,4 +161,65 @@ components:
           type: string
       required:
         - status
-
+    Movie:
+      type: object
+      required:
+        - id
+        - title
+        - synopsis
+        - genre
+        - year
+        - rating
+        - durationMinutes
+        - posterUrl
+        - backdropUrl
+        - cast
+        - director
+        - isFeatured
+        - inWatchlist
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        synopsis:
+          type: string
+        genre:
+          type: string
+        year:
+          type: integer
+        rating:
+          type: number
+        durationMinutes:
+          type: integer
+        posterUrl:
+          type: string
+        backdropUrl:
+          type: string
+        cast:
+          type: array
+          items:
+            type: string
+        director:
+          type: string
+        isFeatured:
+          type: boolean
+        inWatchlist:
+          type: boolean
+    GenreSummary:
+      type: object
+      required:
+        - genre
+        - movieCount
+      properties:
+        genre:
+          type: string
+        movieCount:
+          type: integer
+    WatchlistEntry:
+      type: object
+      required:
+        - movieId
+      properties:
+        movieId:
+          type: integer

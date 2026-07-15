@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Fake Movie Stream"
+version = "1.0.0"
+id = "artifacts/movie-stream"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26002
+
+[services.development]
+run = "pnpm --filter @workspace/movie-stream run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/movie-stream", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/movie-stream/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26002"
+BASE_PATH = "/"
