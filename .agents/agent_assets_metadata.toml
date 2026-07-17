@@ -1,8 +1,0 @@
-uploads = []
-generated = []
-
-[[outputs]]
-id = "X3HwGfld2KlkyfgW9l09H"
-uri = "file://movie-stream-project.zip"
-type = "unspecified"
-title = "movie-stream-project.zip"
