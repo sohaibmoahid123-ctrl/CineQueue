@@ -1,0 +1,51 @@
+Please update ONLY the "Action" category row in our movie database JSON file. Do not change or overwrite any other genres or sections yet. Replace the current placeholder movies in the Action category with this exact list of 16 movies and their corresponding poster URLs:
+
+1. Title: Spider-Man: Brand New Day
+Poster URL: https://image.tmdb.org/t/p/w500/ldf6vSccSp0jJeeFo9mCZmZ67vI.jpg
+
+2. Title: The Odyssey
+Poster URL: https://image.tmdb.org/t/p/w500/6oommYQ7wT67sc87IYg6m6nmgfX.jpg
+
+3. Title: Motor City
+Poster URL: https://image.tmdb.org/t/p/w500/98W7wS26IYwsc87IYg6m6nmgfX.jpg
+
+4. Title: Mutiny
+Poster URL: https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+5. Title: Fast & Furious: The Furious
+Poster URL: https://image.tmdb.org/t/p/w500/fiw4WWf4fHsc87IYg6m6nmgfX.jpg
+
+6. Title: Cliffhanger
+Poster URL: https://image.tmdb.org/t/p/w500/4M4Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+7. Title: Onslaught
+Poster URL: https://image.tmdb.org/t/p/w500/2M2Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+8. Title: Kingdom: Ashin of the North
+Poster URL: https://image.tmdb.org/t/p/w500/bLbSwwf4fHswsc87IYg6m6nmgfX.jpg
+
+9. Title: Enola Holmes 3
+Poster URL: https://image.tmdb.org/t/p/w500/1M1Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+10. Title: Apex
+Poster URL: https://image.tmdb.org/t/p/w500/va6Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+11. Title: RIP
+Poster URL: https://image.tmdb.org/t/p/w500/8M8Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+12. Title: War Machine
+Poster URL: https://image.tmdb.org/t/p/w500/3M3Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+13. Title: Supergirl: Woman of Tomorrow
+Poster URL: https://image.tmdb.org/t/p/w500/5M5Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+14. Title: Young Washington
+Poster URL: https://image.tmdb.org/t/p/w500/0M0Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+15. Title: The Wrecking Crew
+Poster URL: https://image.tmdb.org/t/p/w500/6M6Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+16. Title: Street Fighter
+Poster URL: https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+After updating the Action section, please push the changes to GitHub so Vercel can deploy it. Let me know when it's done!
