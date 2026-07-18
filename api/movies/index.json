@@ -8,7 +8,10 @@
     "rating": 6.1,
     "durationMinutes": 99,
     "posterUrl": "./movies/best-man-down-poster.jpg",
-    "cast": ["Benicio Farro", "Winnie Ostrander"],
+    "cast": [
+      "Benicio Farro",
+      "Winnie Ostrander"
+    ],
     "director": "Trevor Osgood",
     "isFeatured": false,
     "inWatchlist": false,
@@ -24,7 +27,11 @@
     "rating": 7,
     "durationMinutes": 108,
     "posterUrl": "./movies/blackout-protocol-poster.jpg",
-    "cast": ["Silas Marrow", "Chidi Anand", "Lena Vasko"],
+    "cast": [
+      "Silas Marrow",
+      "Chidi Anand",
+      "Lena Vasko"
+    ],
     "director": "Ingrid Fauchelevent",
     "isFeatured": false,
     "inWatchlist": false,
@@ -40,7 +47,11 @@
     "rating": 8.3,
     "durationMinutes": 121,
     "posterUrl": "./movies/concrete-roses-poster.jpg",
-    "cast": ["Rosalind Achterman", "Elias Nkemelu", "Farrah Duquette"],
+    "cast": [
+      "Rosalind Achterman",
+      "Elias Nkemelu",
+      "Farrah Duquette"
+    ],
     "director": "Adaeze Lindstrom",
     "isFeatured": true,
     "inWatchlist": false,
@@ -56,25 +67,13 @@
     "rating": 8.1,
     "durationMinutes": 132,
     "posterUrl": "./movies/echo-nebula-poster.jpg",
-    "cast": ["Alix Moreno", "Theo Bankole", "Wren Castillo"],
+    "cast": [
+      "Alix Moreno",
+      "Theo Bankole",
+      "Wren Castillo"
+    ],
     "director": "Renata Suh",
     "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 2,
-    "title": "Last Convoy",
-    "synopsis": "A retired convoy captain is pulled back for one final run across a canyon crawling with raiders, hauling cargo she was never told the truth about.",
-    "genre": "Action",
-    "year": 2019,
-    "rating": 6.5,
-    "durationMinutes": 104,
-    "posterUrl": "./movies/last-convoy-poster.jpg",
-    "cast": ["Priya Nakamura", "Cole Farrow"],
-    "director": "Iggy Solano",
-    "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
     "downloadUrl720p": "#"
@@ -88,7 +87,10 @@
     "rating": 8,
     "durationMinutes": 95,
     "posterUrl": "./movies/marmalade-skies-poster.jpg",
-    "cast": ["Voice: Junie Alabaster", "Voice: Rowan Feng"],
+    "cast": [
+      "Voice: Junie Alabaster",
+      "Voice: Rowan Feng"
+    ],
     "director": "Pippa Rousseau",
     "isFeatured": true,
     "inWatchlist": false,
@@ -104,7 +106,10 @@
     "rating": 6.6,
     "durationMinutes": 98,
     "posterUrl": "./movies/night-orchard-poster.jpg",
-    "cast": ["Sable Winters", "Damon Achterberg"],
+    "cast": [
+      "Sable Winters",
+      "Damon Achterberg"
+    ],
     "director": "Emrys Halloran",
     "isFeatured": false,
     "inWatchlist": false,
@@ -120,7 +125,10 @@
     "rating": 7.2,
     "durationMinutes": 101,
     "posterUrl": "./movies/paper-constellations-poster.jpg",
-    "cast": ["Beatrix Lindqvist", "Marcus Ude"],
+    "cast": [
+      "Beatrix Lindqvist",
+      "Marcus Ude"
+    ],
     "director": "Julieta Marsh",
     "isFeatured": false,
     "inWatchlist": false,
@@ -136,25 +144,13 @@
     "rating": 6.4,
     "durationMinutes": 92,
     "posterUrl": "./movies/reheated-leftovers-poster.jpg",
-    "cast": ["Ollie Marchetti", "Yusra Bahar", "Kip Sorensen"],
+    "cast": [
+      "Ollie Marchetti",
+      "Yusra Bahar",
+      "Kip Sorensen"
+    ],
     "director": "Nadia Prescott",
     "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 1,
-    "title": "Steel Horizon",
-    "synopsis": "When a supply convoy becomes the last lifeline for a collapsing border city, a disgraced driver has one night to get it through a war zone that wants it burned.",
-    "genre": "Action",
-    "year": 2024,
-    "rating": 7.4,
-    "durationMinutes": 118,
-    "posterUrl": "./movies/steel-horizon-poster.jpg",
-    "cast": ["Denny Achebe", "Sana Volkov", "Tobias Reyes"],
-    "director": "Mara Voss",
-    "isFeatured": true,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
     "downloadUrl720p": "#"
@@ -168,7 +164,10 @@
     "rating": 6.8,
     "durationMinutes": 105,
     "posterUrl": "./movies/fourth-witness-poster.jpg",
-    "cast": ["Desmond Okoye", "Vivienne Aubert"],
+    "cast": [
+      "Desmond Okoye",
+      "Vivienne Aubert"
+    ],
     "director": "Marguerite Solano",
     "isFeatured": false,
     "inWatchlist": false,
@@ -184,7 +183,11 @@
     "rating": 7.8,
     "durationMinutes": 112,
     "posterUrl": "./movies/hollow-choir-poster.jpg",
-    "cast": ["Dashiell Vance", "Petra Lindholm", "Amara Solis"],
+    "cast": [
+      "Dashiell Vance",
+      "Petra Lindholm",
+      "Amara Solis"
+    ],
     "director": "Camille Osei",
     "isFeatured": true,
     "inWatchlist": false,
@@ -200,7 +203,10 @@
     "rating": 6.9,
     "durationMinutes": 109,
     "posterUrl": "./movies/silence-between-stars-poster.jpg",
-    "cast": ["Nikolai Brandt", "Ines Okafor"],
+    "cast": [
+      "Nikolai Brandt",
+      "Ines Okafor"
+    ],
     "director": "Odalys Ferrer",
     "isFeatured": false,
     "inWatchlist": false,
@@ -216,7 +222,10 @@
     "rating": 7.6,
     "durationMinutes": 88,
     "posterUrl": "./movies/tin-forest-poster.jpg",
-    "cast": ["Voice: Mireille Costa", "Voice: Otto Nakashima"],
+    "cast": [
+      "Voice: Mireille Costa",
+      "Voice: Otto Nakashima"
+    ],
     "director": "Baxter Adjei",
     "isFeatured": false,
     "inWatchlist": false,
@@ -232,7 +241,10 @@
     "rating": 7.5,
     "durationMinutes": 114,
     "posterUrl": "./movies/weight-of-water-poster.jpg",
-    "cast": ["Imelda Rourke", "Tariq Van Doren"],
+    "cast": [
+      "Imelda Rourke",
+      "Tariq Van Doren"
+    ],
     "director": "Soren Kaplan",
     "isFeatured": false,
     "inWatchlist": false,
@@ -248,8 +260,315 @@
     "rating": 6.3,
     "durationMinutes": 96,
     "posterUrl": "./movies/two-left-shoes-poster.jpg",
-    "cast": ["Odessa Kwan", "Louis Petrov"],
+    "cast": [
+      "Odessa Kwan",
+      "Louis Petrov"
+    ],
     "director": "Franco Bellamy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 17,
+    "title": "Spider-Man: Brand New Day",
+    "synopsis": "Peter Parker faces a bold new chapter as Spider-Man, swinging through a city that has forgotten who he is while a dangerous new threat reshapes New York.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 8.2,
+    "durationMinutes": 130,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/ldf6vSccSp0jJeeFo9mCZmZ67vI.jpg",
+    "cast": [
+      "Tom Holland",
+      "Zendaya"
+    ],
+    "director": "Destin Daniel Cretton",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 18,
+    "title": "The Odyssey",
+    "synopsis": "A modern retelling of Homer's epic follows a veteran soldier's harrowing journey home across a world that has changed beyond recognition.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 7.8,
+    "durationMinutes": 148,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/6oommYQ7wT67sc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Léa Seydoux",
+      "Matt Damon"
+    ],
+    "director": "Christopher Nolan",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 19,
+    "title": "Motor City",
+    "synopsis": "A street racer with a dark past goes undercover in a criminal syndicate running illegal circuits beneath the streets of Detroit.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 6.8,
+    "durationMinutes": 108,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/98W7wS26IYwsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Yahya Abdul-Mateen II",
+      "Eiza González"
+    ],
+    "director": "David Leitch",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 20,
+    "title": "Mutiny",
+    "synopsis": "When a rogue faction seizes control of a naval destroyer mid-mission, the ship's outnumbered crew must reclaim the vessel before it reaches its target.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 7.1,
+    "durationMinutes": 112,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Idris Elba",
+      "Ana de Armas"
+    ],
+    "director": "Antoine Fuqua",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 21,
+    "title": "Fast & Furious: The Furious",
+    "synopsis": "The crew faces their most dangerous mission yet — a globe-spanning race against a shadow organization that knows their every move before they make it.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 7,
+    "durationMinutes": 130,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fiw4WWf4fHsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Vin Diesel",
+      "Michelle Rodriguez"
+    ],
+    "director": "Louis Leterrier",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 22,
+    "title": "Cliffhanger",
+    "synopsis": "A mountain rescue specialist is caught in a deadly game of cat and mouse after witnessing a mid-air heist go catastrophically wrong over the Rockies.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 104,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/4M4Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Chris Hemsworth",
+      "Lupita Nyong'o"
+    ],
+    "director": "Sam Hargrave",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 23,
+    "title": "Onslaught",
+    "synopsis": "A single special-ops team is sent to hold a mountain outpost against an overwhelming enemy force while extraction remains hours away.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 6.9,
+    "durationMinutes": 99,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/2M2Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Michael B. Jordan",
+      "Jodie Turner-Smith"
+    ],
+    "director": "Chad Stahelski",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 24,
+    "title": "Kingdom: Ashin of the North",
+    "synopsis": "The untold origin story of Ashin unfolds in the frozen north, revealing the tragedy that set the entire Kingdom saga in motion.",
+    "genre": "Action",
+    "year": 2021,
+    "rating": 7.6,
+    "durationMinutes": 91,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/bLbSwwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Jun Ji-hyun",
+      "Park Byung-eun"
+    ],
+    "director": "Kim Seong-hun",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 25,
+    "title": "Enola Holmes 3",
+    "synopsis": "Enola Holmes takes on her most complex case yet, racing through the shadowy corridors of power in Victorian London to expose a conspiracy that reaches the highest offices in England.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 7.5,
+    "durationMinutes": 118,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1M1Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Millie Bobby Brown",
+      "Henry Cavill"
+    ],
+    "director": "Harry Bradbeer",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 26,
+    "title": "Apex",
+    "synopsis": "A group of elite hunters pay to stalk a single human target on a remote island — until their prey turns the game around.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 6.7,
+    "durationMinutes": 96,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/va6Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Bruce Willis",
+      "Neal McDonough"
+    ],
+    "director": "Edward Drake",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 27,
+    "title": "RIP",
+    "synopsis": "A legendary enforcer comes out of retirement after his daughter is taken by the same criminal empire he once helped build.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 7,
+    "durationMinutes": 102,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8M8Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Jason Statham",
+      "Halle Berry"
+    ],
+    "director": "Guy Ritchie",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 28,
+    "title": "War Machine",
+    "synopsis": "A four-star general arrives in Afghanistan with a plan to win the unwinnable war, armed with swagger, political ambition, and a catastrophic blind spot.",
+    "genre": "Action",
+    "year": 2017,
+    "rating": 6.5,
+    "durationMinutes": 122,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/3M3Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Brad Pitt",
+      "Anthony Michael Hall"
+    ],
+    "director": "David Michôd",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 29,
+    "title": "Supergirl: Woman of Tomorrow",
+    "synopsis": "Kara Zor-El embarks on a journey across the stars to confront a ruthless bounty hunter, redefining what it means to be a hero far from Earth's protection.",
+    "genre": "Action",
+    "year": 2026,
+    "rating": 7.9,
+    "durationMinutes": 134,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/5M5Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Milly Alcock",
+      "Eva Green"
+    ],
+    "director": "Craig Gillespie",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 30,
+    "title": "Young Washington",
+    "synopsis": "Before he was a founding father, George Washington was a brash young officer whose reckless courage nearly started a world war in the forests of colonial America.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 7.2,
+    "durationMinutes": 126,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/0M0Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Nicholas Galitzine",
+      "Joel Edgerton"
+    ],
+    "director": "Antoine Fuqua",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 31,
+    "title": "The Wrecking Crew",
+    "synopsis": "A covert demolitions unit is activated for one last mission: destroy a weapons depot buried beneath a city of a million people without anyone knowing they were ever there.",
+    "genre": "Action",
+    "year": 2024,
+    "rating": 6.9,
+    "durationMinutes": 107,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/6M6Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Dwayne Johnson",
+      "Gal Gadot"
+    ],
+    "director": "Rawson Marshall Thurber",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 32,
+    "title": "Street Fighter",
+    "synopsis": "The world's greatest fighters converge in a clandestine tournament organized by a warlord who plans to use the chaos to seize a continent.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 6.8,
+    "durationMinutes": 114,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg",
+    "cast": [
+      "Andrew Koji",
+      "Olivia Wilde"
+    ],
+    "director": "Justin Lin",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",

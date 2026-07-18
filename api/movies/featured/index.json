@@ -8,7 +8,11 @@
     "rating": 8.3,
     "durationMinutes": 121,
     "posterUrl": "./movies/concrete-roses-poster.jpg",
-    "cast": ["Rosalind Achterman", "Elias Nkemelu", "Farrah Duquette"],
+    "cast": [
+      "Rosalind Achterman",
+      "Elias Nkemelu",
+      "Farrah Duquette"
+    ],
     "director": "Adaeze Lindstrom",
     "isFeatured": true,
     "inWatchlist": false,
@@ -24,7 +28,11 @@
     "rating": 8.1,
     "durationMinutes": 132,
     "posterUrl": "./movies/echo-nebula-poster.jpg",
-    "cast": ["Alix Moreno", "Theo Bankole", "Wren Castillo"],
+    "cast": [
+      "Alix Moreno",
+      "Theo Bankole",
+      "Wren Castillo"
+    ],
     "director": "Renata Suh",
     "isFeatured": true,
     "inWatchlist": false,
@@ -40,24 +48,11 @@
     "rating": 8,
     "durationMinutes": 95,
     "posterUrl": "./movies/marmalade-skies-poster.jpg",
-    "cast": ["Voice: Junie Alabaster", "Voice: Rowan Feng"],
+    "cast": [
+      "Voice: Junie Alabaster",
+      "Voice: Rowan Feng"
+    ],
     "director": "Pippa Rousseau",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 1,
-    "title": "Steel Horizon",
-    "synopsis": "When a supply convoy becomes the last lifeline for a collapsing border city, a disgraced driver has one night to get it through a war zone that wants it burned.",
-    "genre": "Action",
-    "year": 2024,
-    "rating": 7.4,
-    "durationMinutes": 118,
-    "posterUrl": "./movies/steel-horizon-poster.jpg",
-    "cast": ["Denny Achebe", "Sana Volkov", "Tobias Reyes"],
-    "director": "Mara Voss",
     "isFeatured": true,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
@@ -72,8 +67,31 @@
     "rating": 7.8,
     "durationMinutes": 112,
     "posterUrl": "./movies/hollow-choir-poster.jpg",
-    "cast": ["Dashiell Vance", "Petra Lindholm", "Amara Solis"],
+    "cast": [
+      "Dashiell Vance",
+      "Petra Lindholm",
+      "Amara Solis"
+    ],
     "director": "Camille Osei",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 17,
+    "title": "Spider-Man: Brand New Day",
+    "synopsis": "Peter Parker faces a bold new chapter as Spider-Man, swinging through a city that has forgotten who he is while a dangerous new threat reshapes New York.",
+    "genre": "Action",
+    "year": 2025,
+    "rating": 8.2,
+    "durationMinutes": 130,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/ldf6vSccSp0jJeeFo9mCZmZ67vI.jpg",
+    "cast": [
+      "Tom Holland",
+      "Zendaya"
+    ],
+    "director": "Destin Daniel Cretton",
     "isFeatured": true,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
