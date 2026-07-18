@@ -58,24 +58,5 @@
     "inWatchlist": false,
     "downloadUrl1080p": "#",
     "downloadUrl720p": "#"
-  },
-  {
-    "id": 17,
-    "title": "Spider-Man: Brand New Day",
-    "synopsis": "Peter Parker faces a bold new chapter as Spider-Man, swinging through a city that has forgotten who he is while a dangerous new threat reshapes New York.",
-    "genre": "Action",
-    "year": 2025,
-    "rating": 8.2,
-    "durationMinutes": 130,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/yyB2VJEW3an2xCdcYCPQhn9QERR.jpg",
-    "cast": [
-      "Tom Holland",
-      "Zendaya"
-    ],
-    "director": "Destin Daniel Cretton",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
   }
 ]
