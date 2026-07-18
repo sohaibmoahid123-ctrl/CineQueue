@@ -1,0 +1,51 @@
+The action movie posters are showing broken image links on the live site. Please completely overwrite the "Action" category row in `api/movies/index.json` with this corrected list. Make sure the posterUrl strings match these exact URLs perfectly:
+
+1. Title: Spider-Man: Brand New Day
+PosterUrl: https://image.tmdb.org/t/p/w500/ldf6vSccSp0jJeeFo9mCZmZ67vI.jpg
+
+2. Title: The Odyssey
+PosterUrl: https://image.tmdb.org/t/p/w500/6oommYQ7wT67sc87IYg6m6nmgfX.jpg
+
+3. Title: Motor City
+PosterUrl: https://image.tmdb.org/t/p/w500/98W7wS26IYwsc87IYg6m6nmgfX.jpg
+
+4. Title: Mutiny
+PosterUrl: https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+5. Title: Fast & Furious: The Furious
+PosterUrl: https://image.tmdb.org/t/p/w500/fiw4WWf4fHsc87IYg6m6nmgfX.jpg
+
+6. Title: Cliffhanger
+PosterUrl: https://image.tmdb.org/t/p/w500/4M4Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+7. Title: Onslaught
+PosterUrl: https://image.tmdb.org/t/p/w500/2M2Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+8. Title: Kingdom: Ashin of the North
+PosterUrl: https://image.tmdb.org/t/p/w500/bLbSwwf4fHswsc87IYg6m6nmgfX.jpg
+
+9. Title: Enola Holmes 3
+PosterUrl: https://image.tmdb.org/t/p/w500/1M1Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+10. Title: Apex
+PosterUrl: https://image.tmdb.org/t/p/w500/va6Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+11. Title: RIP
+PosterUrl: https://image.tmdb.org/t/p/w500/8M8Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+12. Title: War Machine
+PosterUrl: https://image.tmdb.org/t/p/w500/3M3Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+13. Title: Supergirl: Woman of Tomorrow
+PosterUrl: https://image.tmdb.org/t/p/w500/5M5Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+14. Title: Young Washington
+PosterUrl: https://image.tmdb.org/t/p/w500/0M0Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+15. Title: The Wrecking Crew
+PosterUrl: https://image.tmdb.org/t/p/w500/6M6Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+16. Title: Street Fighter
+PosterUrl: https://image.tmdb.org/t/p/w500/7M7Swwf4fHswsc87IYg6m6nmgfX.jpg
+
+Please double check that the URLs in the JSON file do not contain double prefixes or malformed paths, then push the fix to GitHub!
