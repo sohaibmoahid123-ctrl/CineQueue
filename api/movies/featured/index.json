@@ -9,14 +9,12 @@
     "durationMinutes": 121,
     "posterUrl": "./movies/concrete-roses-poster.jpg",
     "backdropUrl": "./movies/concrete-roses-backdrop.jpg",
-    "cast": [
-      "Rosalind Achterman",
-      "Elias Nkemelu",
-      "Farrah Duquette"
-    ],
+    "cast": ["Rosalind Achterman", "Elias Nkemelu", "Farrah Duquette"],
     "director": "Adaeze Lindstrom",
     "isFeatured": true,
-    "inWatchlist": false
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   },
   {
     "id": 3,
@@ -28,14 +26,12 @@
     "durationMinutes": 132,
     "posterUrl": "./movies/echo-nebula-poster.jpg",
     "backdropUrl": "./movies/echo-nebula-backdrop.jpg",
-    "cast": [
-      "Alix Moreno",
-      "Theo Bankole",
-      "Wren Castillo"
-    ],
+    "cast": ["Alix Moreno", "Theo Bankole", "Wren Castillo"],
     "director": "Renata Suh",
     "isFeatured": true,
-    "inWatchlist": false
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   },
   {
     "id": 15,
@@ -47,13 +43,12 @@
     "durationMinutes": 95,
     "posterUrl": "./movies/marmalade-skies-poster.jpg",
     "backdropUrl": "./movies/marmalade-skies-backdrop.jpg",
-    "cast": [
-      "Voice: Junie Alabaster",
-      "Voice: Rowan Feng"
-    ],
+    "cast": ["Voice: Junie Alabaster", "Voice: Rowan Feng"],
     "director": "Pippa Rousseau",
     "isFeatured": true,
-    "inWatchlist": false
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   },
   {
     "id": 1,
@@ -65,14 +60,12 @@
     "durationMinutes": 118,
     "posterUrl": "./movies/steel-horizon-poster.jpg",
     "backdropUrl": "./movies/steel-horizon-backdrop.jpg",
-    "cast": [
-      "Denny Achebe",
-      "Sana Volkov",
-      "Tobias Reyes"
-    ],
+    "cast": ["Denny Achebe", "Sana Volkov", "Tobias Reyes"],
     "director": "Mara Voss",
     "isFeatured": true,
-    "inWatchlist": false
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   },
   {
     "id": 7,
@@ -84,13 +77,11 @@
     "durationMinutes": 112,
     "posterUrl": "./movies/hollow-choir-poster.jpg",
     "backdropUrl": "./movies/hollow-choir-backdrop.jpg",
-    "cast": [
-      "Dashiell Vance",
-      "Petra Lindholm",
-      "Amara Solis"
-    ],
+    "cast": ["Dashiell Vance", "Petra Lindholm", "Amara Solis"],
     "director": "Camille Osei",
     "isFeatured": true,
-    "inWatchlist": false
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   }
 ]
