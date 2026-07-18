@@ -119,7 +119,7 @@ function paintHero() {
   if (!section) return;
   const m = featuredMovies[heroIndex];
   section.innerHTML = `
-    <div class="hero-backdrop" style="background-image:url('${m.backdropUrl}')">
+    <div class="hero-backdrop" style="background-image:url('${m.posterUrl}')">
       <div class="hero-gradient"></div>
       <div class="hero-content">
         <span class="hero-genre">${m.genre}</span>
@@ -213,8 +213,9 @@ function renderMovieDetail(id) {
     ${buildHeader()}
     <main class="detail-main">
 
-      <!-- Full-width backdrop -->
-      <div class="detail-backdrop" style="background-image:url('${movie.backdropUrl}')">
+      <!-- Full-width backdrop (blurred poster) -->
+      <div class="detail-backdrop">
+        <img class="detail-backdrop-img" src="${movie.posterUrl}" alt="">
         <div class="detail-backdrop-gradient"></div>
       </div>
 
