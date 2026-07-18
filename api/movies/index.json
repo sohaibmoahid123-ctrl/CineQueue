@@ -233,314 +233,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 33,
-    "title": "Toy Story 5",
-    "posterUrl": "https://lumiere-a.akamaihd.net/v1/images/p_toystory5_payoff_poster_f0c85b8c.jpeg",
-    "synopsis": "Woody, Buzz, and the gang face an entirely new adventure when the toys discover a mysterious portal that could change their world forever.",
-    "year": 2026,
-    "rating": 8.1,
-    "durationMinutes": 100,
-    "director": "Andrew Stanton",
-    "cast": [
-      "Voice: Tom Hanks",
-      "Voice: Tim Allen"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 34,
-    "title": "Minions & Monsters",
-    "posterUrl": "https://posters.onesheet.org/posters/current/2026/minions-monsters-2026-us-theatrical.jpg",
-    "synopsis": "The Minions accidentally unleash a horde of monsters from a secret lab and must team up with their most unlikely allies to save the day.",
-    "year": 2025,
-    "rating": 7.2,
-    "durationMinutes": 92,
-    "director": "Kyle Balda",
-    "cast": [
-      "Voice: Steve Carell",
-      "Voice: Pierre Coffin"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 35,
-    "title": "The Super Mario Galaxy Movie",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/xTd74mchq96pqfdlgmKDMQx12gv.jpg",
-    "synopsis": "Mario and Luigi blast off into space to rescue Princess Peach from Bowser's galaxy-spanning fortress in this cosmic animated adventure.",
-    "year": 2026,
-    "rating": 7.8,
-    "durationMinutes": 105,
-    "director": "Aaron Horvath",
-    "cast": [
-      "Voice: Chris Pratt",
-      "Voice: Charlie Day"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 36,
-    "title": "Hoppers",
-    "posterUrl": "https://www.impawards.com/2026/posters/hoppers.jpg",
-    "synopsis": "A scrappy young rabbit discovers she can hop between parallel worlds, and sets out on an epic quest to find the one where her family is whole again.",
-    "year": 2025,
-    "rating": 7.5,
-    "durationMinutes": 96,
-    "director": "Jennifer Yuh Nelson",
-    "cast": [
-      "Voice: Quvenzhané Wallis",
-      "Voice: Awkwafina"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 37,
-    "title": "PAW Patrol: The Dino Movie",
-    "posterUrl": "https://www.impawards.com/2026/posters/paw_patrol_the_dino_movie_ver2.jpg",
-    "synopsis": "The PAW Patrol discover a hidden island where dinosaurs still roam, and must protect it from a villain determined to exploit its prehistoric secrets.",
-    "year": 2025,
-    "rating": 6.8,
-    "durationMinutes": 88,
-    "director": "Cal Brunker",
-    "cast": [
-      "Voice: Iain Armitage",
-      "Voice: Marsai Martin"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 38,
-    "title": "Moana (Live-Action)",
-    "posterUrl": "https://m.media-amazon.com/images/M/MV5BZjc1ZDgwYmQtZjljNy00NDU5LWIxNzUtMzlmNTk3Zjk1YWJhXkEyXkFqcGc@._V1_QL75_UX522_.jpg",
-    "synopsis": "The beloved story of Moana's ocean voyage to save her people comes to life in a stunning live-action retelling with all-new musical performances.",
-    "year": 2024,
-    "rating": 7.4,
-    "durationMinutes": 113,
-    "director": "Thomas Kail",
-    "cast": [
-      "Dwayne Johnson",
-      "Auliʻi Cravalho"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 39,
-    "title": "The Sheep Detectives",
-    "posterUrl": "https://www.sonypictures.com.sg/sites/singapore/files/2026-04/TSD_Keyart-1400x2100.jpeg",
-    "synopsis": "A duo of unlikely sheep detectives must crack the biggest mystery in their pastoral village before a woolly conspiracy unravels the whole community.",
-    "year": 2025,
-    "rating": 7,
-    "durationMinutes": 90,
-    "director": "Benjamin Renner",
-    "cast": [
-      "Voice: Rebel Wilson",
-      "Voice: Sam Neill"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 40,
-    "title": "Hexed",
-    "posterUrl": "https://comicbook.com/wp-content/uploads/sites/4/2026/06/Hexed-Poster.jpeg",
-    "synopsis": "A teenage witch who can't get her spells right accidentally hexes her entire school and must reverse the curse before midnight.",
-    "year": 2025,
-    "rating": 7.3,
-    "durationMinutes": 94,
-    "director": "Domee Shi",
-    "cast": [
-      "Voice: Sofia Wylie",
-      "Voice: Lana Condor"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 41,
-    "title": "Swapped",
-    "posterUrl": "https://www.impawards.com/2026/posters/swapped.jpg",
-    "synopsis": "Two feuding siblings wake up in each other's bodies and must work together across a magical landscape to find the enchantress who switched them.",
-    "year": 2024,
-    "rating": 7.1,
-    "durationMinutes": 91,
-    "director": "Vicky Jenson",
-    "cast": [
-      "Voice: Zendaya",
-      "Voice: Jacob Tremblay"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 42,
-    "title": "I Am Frankelda",
-    "posterUrl": "https://www.impawards.com/intl/mexico/2025/posters/soy_frankelda_ver5.jpg",
-    "synopsis": "A quirky young girl who collects fears discovers she has the power to enter nightmares and defeat the monsters hiding inside them.",
-    "year": 2023,
-    "rating": 7.6,
-    "durationMinutes": 85,
-    "director": "Jorge Gutiérrez",
-    "cast": [
-      "Voice: Anya Taylor-Joy",
-      "Voice: Gael García Bernal"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 43,
-    "title": "Detective Conan: Fallen Angel",
-    "posterUrl": "https://www.impawards.com/intl/japan/2026/posters/meitantei_konan_haiwei_no_datenshi.jpg",
-    "synopsis": "Conan investigates a baffling series of crimes linked to a legendary thief and a priceless artefact hidden somewhere in a European cathedral.",
-    "year": 2025,
-    "rating": 8,
-    "durationMinutes": 110,
-    "director": "Yasuichiro Yamamoto",
-    "cast": [
-      "Voice: Minami Takayama",
-      "Voice: Wakana Yamazaki"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 44,
-    "title": "Doraemon: New Nobita",
-    "posterUrl": "https://www.impawards.com/intl/japan/2025/posters/eiga_doraemon_nobita_no_esekai_monogatari.jpg",
-    "synopsis": "Doraemon pulls out a gadget that rewrites reality itself, and Nobita must undo the chaos it creates before the new world erases everything he loves.",
-    "year": 2025,
-    "rating": 7.5,
-    "durationMinutes": 98,
-    "director": "Takashi Yamazaki",
-    "cast": [
-      "Voice: Wasabi Mizuta",
-      "Voice: Megumi Ōhara"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 45,
-    "title": "Mobile Suit Gundam Hathaway",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/6gw8onh4FKsruBA7Oouv01EFxzn.jpg",
-    "synopsis": "Hathaway Noa leads a guerrilla resistance against a corrupt Federation while grappling with an impossible choice between ideals and survival.",
-    "year": 2021,
-    "rating": 8.2,
-    "durationMinutes": 95,
-    "director": "Shukou Murase",
-    "cast": [
-      "Voice: Kenshô Ono",
-      "Voice: Reina Ueda"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 46,
-    "title": "All Wishes Come True",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/2Gg8Lq8v5taBBR1JrDuhviNUjSB.jpg",
-    "synopsis": "When a wishing well grants every wish in a small town simultaneously, one girl must race to put the world back in order before chaos becomes permanent.",
-    "year": 2024,
-    "rating": 6.9,
-    "durationMinutes": 88,
-    "director": "Lin Wang",
-    "cast": [
-      "Voice: Chloe Bennett",
-      "Voice: BD Wong"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 47,
-    "title": "Three Kingdoms: The Beginning",
-    "posterUrl": "https://img2.chinadaily.com.cn/images/202607/08/6a4df59ea310986e1019293a.jpeg",
-    "synopsis": "An epic animated retelling of the legendary Three Kingdoms era, following three warlords whose rivalry reshapes ancient China.",
-    "year": 2025,
-    "rating": 7.7,
-    "durationMinutes": 115,
-    "director": "Zhao Ji",
-    "cast": [
-      "Voice: Chen Kun",
-      "Voice: Liu Ye"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 48,
-    "title": "Boonie Bears: The Hidden Protector",
-    "posterUrl": "https://www.impawards.com/intl/china/2026/posters/xiong_chu_mo_nian_nian_you_xiong.jpg",
-    "synopsis": "Briar and Bramble discover an ancient guardian spirit sleeping beneath their forest and must awaken it before loggers destroy its home forever.",
-    "year": 2025,
-    "rating": 7.3,
-    "durationMinutes": 93,
-    "director": "Leon Ding",
-    "cast": [
-      "Voice: Zhang Wei",
-      "Voice: Li Ming"
-    ],
-    "genre": "Animation",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 17,
+    "id": 101,
     "title": "The Odyssey",
-    "posterUrl": "https://mail.impawards.com/2026/posters/odyssey.jpg",
-    "synopsis": "A modern retelling of Homer's epic follows a veteran soldier's harrowing journey home across a world that has changed beyond recognition.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg",
+    "synopsis": "A modern retelling of Homer's epic follows a soldier's harrowing journey home through a fractured world that no longer recognises him.",
     "year": 2025,
     "rating": 7.8,
     "durationMinutes": 148,
@@ -557,125 +253,9 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 19,
-    "title": "Motor City",
-    "posterUrl": "https://www.impawards.com/2026/posters/motor_city.jpg",
-    "synopsis": "A street racer with a dark past goes undercover in a criminal syndicate running illegal circuits beneath the streets of Detroit.",
-    "year": 2025,
-    "rating": 6.8,
-    "durationMinutes": 108,
-    "director": "David Leitch",
-    "cast": [
-      "Yahya Abdul-Mateen II",
-      "Eiza González"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 20,
-    "title": "Mutiny",
-    "posterUrl": "https://www.impawards.com/2026/posters/mutiny.jpg",
-    "synopsis": "When a rogue faction seizes control of a naval destroyer mid-mission, the ship's outnumbered crew must reclaim the vessel before it reaches its target.",
-    "year": 2025,
-    "rating": 7.1,
-    "durationMinutes": 112,
-    "director": "Antoine Fuqua",
-    "cast": [
-      "Idris Elba",
-      "Ana de Armas"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 22,
-    "title": "Cliffhanger",
-    "posterUrl": "https://cityonfire.com/wp-content/uploads/2025/10/Cliffhanger.jpg",
-    "synopsis": "A mountain rescue specialist is caught in a deadly game of cat and mouse after witnessing a mid-air heist go catastrophically wrong over the Rockies.",
-    "year": 2025,
-    "rating": 7.3,
-    "durationMinutes": 104,
-    "director": "Sam Hargrave",
-    "cast": [
-      "Chris Hemsworth",
-      "Lupita Nyong'o"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 28,
-    "title": "War Machine",
-    "posterUrl": "https://posters.onesheet.org/posters/modern/2017/war-machine-2017-us-theatrical.jpg",
-    "synopsis": "A four-star general arrives in Afghanistan with a plan to win the unwinnable war, armed with swagger, political ambition, and a catastrophic blind spot.",
-    "year": 2017,
-    "rating": 6.5,
-    "durationMinutes": 122,
-    "director": "David Michôd",
-    "cast": [
-      "Brad Pitt",
-      "Anthony Michael Hall",
-      "Tilda Swinton"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 29,
-    "title": "Supergirl: Woman of Tomorrow",
-    "posterUrl": "https://comicbook.com/wp-content/uploads/sites/4/2025/12/Supergirl-Movie-Poster.jpg?w=819",
-    "synopsis": "Kara Zor-El embarks on a journey across the stars to confront a ruthless bounty hunter, redefining what it means to be a hero far from Earth's protection.",
-    "year": 2026,
-    "rating": 7.9,
-    "durationMinutes": 134,
-    "director": "Craig Gillespie",
-    "cast": [
-      "Milly Alcock",
-      "Eva Green"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 50,
-    "title": "Twisters",
-    "posterUrl": "https://www.impawards.com/2024/posters/twisters.jpg",
-    "synopsis": "A storm chaser returns to the Oklahoma plains to test a new tornado-intercepting technology, only to find herself in the path of the most violent storms ever recorded.",
-    "year": 2024,
-    "rating": 7.2,
-    "durationMinutes": 122,
-    "director": "Lee Isaac Chung",
-    "cast": [
-      "Daisy Edgar-Jones",
-      "Glen Powell",
-      "Anthony Ramos"
-    ],
-    "genre": "Action",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 51,
+    "id": 102,
     "title": "Deadpool & Wolverine",
-    "posterUrl": "https://www.impawards.com/2024/posters/deadpool_and_wolverine.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
     "synopsis": "The Merc with a Mouth teams up with a gruff, reluctant Wolverine on a time-bending mission that will determine the fate of their entire universe.",
     "year": 2024,
     "rating": 8,
@@ -693,10 +273,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 52,
+    "id": 103,
     "title": "Bad Boys: Ride or Die",
-    "posterUrl": "https://www.impawards.com/2024/posters/bad_boys_ride_or_die.jpg",
-    "synopsis": "Mike and Marcus are now the ones being hunted after a shocking framing forces Miami's most reckless detectives to go on the run.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/oGythE98MYleE6mZlGs5oBGkux1.jpg",
+    "synopsis": "Miami's most reckless detectives go on the run after a shocking framing puts them on the wrong side of the law.",
     "year": 2024,
     "rating": 7,
     "durationMinutes": 115,
@@ -713,10 +293,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 53,
+    "id": 104,
     "title": "Furiosa: A Mad Max Saga",
-    "posterUrl": "https://www.impawards.com/2024/posters/furiosa.jpg",
-    "synopsis": "The origin story of the warrior Furiosa, ripped from the Green Place of Many Mothers and taken across the Wasteland by a great biker horde.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/iADOJ8Zymht2JPMoy3R7xceZprc.jpg",
+    "synopsis": "The origin story of the warrior Furiosa, ripped from the Green Place and dragged across the Wasteland by a great biker horde.",
     "year": 2024,
     "rating": 7.8,
     "durationMinutes": 148,
@@ -733,10 +313,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 54,
+    "id": 105,
     "title": "Kingdom of the Planet of the Apes",
-    "posterUrl": "https://www.impawards.com/2024/posters/kingdom_of_the_planet_of_the_apes.jpg",
-    "synopsis": "Many generations after Caesar's reign, a young ape embarks on a journey that will cause him to question everything he knows about the past.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gKkl37BQuKTanygYQG1pyYgLVgf.jpg",
+    "synopsis": "Generations after Caesar, a young ape embarks on a journey that forces him to question everything he knows about ape and human alike.",
     "year": 2024,
     "rating": 7.5,
     "durationMinutes": 145,
@@ -753,10 +333,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 55,
+    "id": 106,
     "title": "Civil War",
-    "posterUrl": "https://www.impawards.com/2024/posters/civil_war_xxlg.jpg",
-    "synopsis": "A team of journalists race across a near-future America torn apart by civil war, documenting the collapse of the country they once called home.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sh7Rg8Er3tFcN9BpKIPOMvALgZd.jpg",
+    "synopsis": "A team of journalists race across a near-future fractured America, documenting a country tearing itself apart.",
     "year": 2024,
     "rating": 7.4,
     "durationMinutes": 109,
@@ -773,10 +353,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 56,
+    "id": 107,
     "title": "The Fall Guy",
-    "posterUrl": "https://www.impawards.com/2024/posters/fall_guy_xxlg.jpg",
-    "synopsis": "A battered stuntman is thrust into a real-world mystery while working on a new blockbuster — and must save the day without a single camera rolling.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/e7olqFmzcIX5c23kX4zSmLPJi8c.jpg",
+    "synopsis": "A battered stuntman is thrust into a real-world mystery on a blockbuster set and must save the day with no camera rolling.",
     "year": 2024,
     "rating": 7.3,
     "durationMinutes": 126,
@@ -793,10 +373,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 57,
+    "id": 108,
     "title": "Godzilla x Kong: The New Empire",
-    "posterUrl": "https://www.impawards.com/2024/posters/godzilla_x_kong_the_new_empire.jpg",
-    "synopsis": "Kong and Godzilla face a colossal undiscovered threat lurking within the world, forcing the two titans to unite against a common enemy.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/z1p34vh7dEOnLDmyCrlUVLuoDzd.jpg",
+    "synopsis": "Kong and Godzilla face a colossal undiscovered threat deep within the Hollow Earth, forcing the two titans to unite.",
     "year": 2024,
     "rating": 6.9,
     "durationMinutes": 115,
@@ -813,10 +393,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 58,
+    "id": 109,
     "title": "Road House",
-    "posterUrl": "https://www.impawards.com/2024/posters/road_house.jpg",
-    "synopsis": "A former UFC fighter takes a job as a bouncer at a roadhouse in the Florida Keys, only to discover that not everything is what it seems in this tropical paradise.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fDEdtS4P0gJsxHDIt8dG8TR5dx1.jpg",
+    "synopsis": "A former UFC fighter takes a job as a bouncer in the Florida Keys and discovers nothing there is what it seems.",
     "year": 2024,
     "rating": 7.1,
     "durationMinutes": 121,
@@ -833,10 +413,10 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 59,
+    "id": 110,
     "title": "The Beekeeper",
-    "posterUrl": "https://www.impawards.com/2024/posters/beekeeper.jpg",
-    "synopsis": "A beekeeper's brutal and calculated campaign of vengeance threatens to reveal his true identity as a former operative of a powerful secret organisation.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/A7EByudX0eOzlkQ2FIbogzyazm2.jpg",
+    "synopsis": "A beekeeper's brutal campaign of vengeance threatens to expose his identity as a former operative of a powerful secret organisation.",
     "year": 2024,
     "rating": 7,
     "durationMinutes": 105,
@@ -847,6 +427,445 @@
       "Josh Hutcherson"
     ],
     "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 111,
+    "title": "Extraction 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/7gKI9hpEMcZUQpNgKrkDzJpbnNS.jpg",
+    "synopsis": "Tyler Rake returns for another near-impossible mission: break a crime lord's family out of one of the world's most brutal prisons.",
+    "year": 2023,
+    "rating": 7.4,
+    "durationMinutes": 123,
+    "director": "Sam Hargrave",
+    "cast": [
+      "Chris Hemsworth",
+      "Golshifteh Farahani",
+      "Adam Bessa"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 112,
+    "title": "John Wick: Chapter 4",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",
+    "synopsis": "John Wick uncovers a path to defeating the High Table but must face a new enemy with powerful alliances across the globe.",
+    "year": 2023,
+    "rating": 7.7,
+    "durationMinutes": 169,
+    "director": "Chad Stahelski",
+    "cast": [
+      "Keanu Reeves",
+      "Donnie Yen",
+      "Bill Skarsgård"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 113,
+    "title": "Top Gun: Maverick",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg",
+    "synopsis": "After thirty years, Maverick is back pushing the envelope as a test pilot — then summoned to train a new generation for a mission that demands the ultimate sacrifice.",
+    "year": 2022,
+    "rating": 8.3,
+    "durationMinutes": 130,
+    "director": "Joseph Kosinski",
+    "cast": [
+      "Tom Cruise",
+      "Jennifer Connelly",
+      "Miles Teller"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 114,
+    "title": "Avatar: The Way of Water",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+    "synopsis": "Jake Sully and his family face an ancient threat and go to extraordinary lengths to keep each other safe on a world unlike anything they have known.",
+    "year": 2022,
+    "rating": 7.6,
+    "durationMinutes": 192,
+    "director": "James Cameron",
+    "cast": [
+      "Sam Worthington",
+      "Zoe Saldaña",
+      "Sigourney Weaver"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 115,
+    "title": "The Batman",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+    "synopsis": "In his second year as Gotham's vigilante, Batman uncovers corruption linked to a serial killer targeting the city's elite.",
+    "year": 2022,
+    "rating": 7.8,
+    "durationMinutes": 176,
+    "director": "Matt Reeves",
+    "cast": [
+      "Robert Pattinson",
+      "Zoë Kravitz",
+      "Colin Farrell"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 116,
+    "title": "Mad Max: Fury Road",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/hA2ple9q4qnwxp3hKVNhroipsir.jpg",
+    "synopsis": "Haunted by his turbulent past, Mad Max joins rebel Imperator Furiosa in a high-speed race across a post-apocalyptic desert wasteland.",
+    "year": 2015,
+    "rating": 8.1,
+    "durationMinutes": 120,
+    "director": "George Miller",
+    "cast": [
+      "Tom Hardy",
+      "Charlize Theron",
+      "Nicholas Hoult"
+    ],
+    "genre": "Action",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 201,
+    "title": "Toy Story 4",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/w9kR8qbmQ01HwnvK4alvnQ2ca0L.jpg",
+    "synopsis": "Woody, Buzz and the gang go on a road trip adventure alongside old and new friends as Woody learns what it means to be truly free.",
+    "year": 2019,
+    "rating": 7.7,
+    "durationMinutes": 100,
+    "director": "Josh Cooley",
+    "cast": [
+      "Voice: Tom Hanks",
+      "Voice: Tim Allen",
+      "Voice: Annie Potts"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 202,
+    "title": "Inside Out 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg",
+    "synopsis": "Riley enters adolescence and new Emotions — led by the anxious Anxiety — force Joy and the others to confront a complicated new world inside her head.",
+    "year": 2024,
+    "rating": 7.9,
+    "durationMinutes": 100,
+    "director": "Kelsey Mann",
+    "cast": [
+      "Voice: Amy Poehler",
+      "Voice: Maya Hawke",
+      "Voice: Kensington Tallman"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 203,
+    "title": "Despicable Me 4",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/wWba3TaojhK7NdycRhoQpsG0FaH.jpg",
+    "synopsis": "Gru faces his most formidable nemesis yet while navigating the joys and chaos of fatherhood with a brand-new family member in tow.",
+    "year": 2024,
+    "rating": 6.9,
+    "durationMinutes": 95,
+    "director": "Chris Renaud",
+    "cast": [
+      "Voice: Steve Carell",
+      "Voice: Kristen Wiig",
+      "Voice: Will Ferrell"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 204,
+    "title": "Kung Fu Panda 4",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg",
+    "synopsis": "Po must train a new Dragon Warrior while facing a shape-shifting sorceress who can take the form of any villain from his past.",
+    "year": 2024,
+    "rating": 7.1,
+    "durationMinutes": 94,
+    "director": "Mike Mitchell",
+    "cast": [
+      "Voice: Jack Black",
+      "Voice: Viola Davis",
+      "Voice: Bryan Cranston"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 205,
+    "title": "Spider-Man: Across the Spider-Verse",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+    "synopsis": "Miles Morales catapults across the Multiverse and meets a team of Spider-People who challenge his understanding of what it truly means to be a hero.",
+    "year": 2023,
+    "rating": 8.7,
+    "durationMinutes": 140,
+    "director": "Joaquim Dos Santos",
+    "cast": [
+      "Voice: Shameik Moore",
+      "Voice: Hailee Steinfeld",
+      "Voice: Oscar Isaac"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 206,
+    "title": "The Super Mario Bros. Movie",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",
+    "synopsis": "A Brooklyn plumber named Mario travels through the Mushroom Kingdom to rescue Princess Peach and save the world from Bowser.",
+    "year": 2023,
+    "rating": 7.1,
+    "durationMinutes": 92,
+    "director": "Aaron Horvath",
+    "cast": [
+      "Voice: Chris Pratt",
+      "Voice: Anya Taylor-Joy",
+      "Voice: Charlie Day"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 207,
+    "title": "Puss in Boots: The Last Wish",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/kuf6dutpsT0vSVehic3EZIqkOBt.jpg",
+    "synopsis": "Puss in Boots discovers he has used eight of his nine lives and embarks on an epic quest to find the mythical Last Wish to restore them.",
+    "year": 2022,
+    "rating": 8,
+    "durationMinutes": 102,
+    "director": "Joel Crawford",
+    "cast": [
+      "Voice: Antonio Banderas",
+      "Voice: Salma Hayek",
+      "Voice: Harvey Guillén"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 208,
+    "title": "Encanto",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/4j0PNHkMr5ax3IA8tjtxcmPU3QT.jpg",
+    "synopsis": "A Colombian girl discovers her family's magical gift may be in danger after she alone is denied a special power by their enchanted home.",
+    "year": 2021,
+    "rating": 7.4,
+    "durationMinutes": 99,
+    "director": "Byron Howard",
+    "cast": [
+      "Voice: Stephanie Beatriz",
+      "Voice: John Leguizamo",
+      "Voice: Maribel Verdú"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 209,
+    "title": "Luca",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/9x4i9uKGXt8IiiIF5Ey0DIoY738.jpg",
+    "synopsis": "A young sea monster hides his true identity to experience a summer of adventure in a beautiful coastal Italian town with his new human friend.",
+    "year": 2021,
+    "rating": 7.4,
+    "durationMinutes": 95,
+    "director": "Enrico Casarosa",
+    "cast": [
+      "Voice: Jacob Tremblay",
+      "Voice: Jack Dylan Grazer",
+      "Voice: Emma Berman"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 210,
+    "title": "Soul",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/6jmppcaubzLF8wkXM36ganVISCo.jpg",
+    "synopsis": "A musician who has lost his passion for life gets a chance to visit the cosmic realm connecting Earth to the Great Before.",
+    "year": 2020,
+    "rating": 8.1,
+    "durationMinutes": 101,
+    "director": "Pete Docter",
+    "cast": [
+      "Voice: Jamie Foxx",
+      "Voice: Tina Fey",
+      "Voice: Graham Norton"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 211,
+    "title": "Demon Slayer: Kimetsu no Yaiba - The Movie: Mugen Train",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg",
+    "synopsis": "Tanjiro and his friends join the Flame Hashira Rengoku on a dangerous mission to hunt a powerful demon aboard a demon-infested train.",
+    "year": 2020,
+    "rating": 8.3,
+    "durationMinutes": 117,
+    "director": "Haruo Sotozaki",
+    "cast": [
+      "Voice: Natsuki Hanae",
+      "Voice: Akari Kito",
+      "Voice: Hiro Shimono"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 212,
+    "title": "Spirited Away",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
+    "synopsis": "During her family's move to the suburbs, ten-year-old Chihiro strays into a spirit world where humans are turned into animals.",
+    "year": 2001,
+    "rating": 8.5,
+    "durationMinutes": 125,
+    "director": "Hayao Miyazaki",
+    "cast": [
+      "Voice: Daveigh Chase",
+      "Voice: Suzanne Pleshette"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 213,
+    "title": "How to Train Your Dragon",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/ygGmAO60t8GyqUo9xYeYxSZAR3b.jpg",
+    "synopsis": "A hapless young Viking befriends a young dragon and challenges the traditions of his tribe.",
+    "year": 2010,
+    "rating": 8.1,
+    "durationMinutes": 98,
+    "director": "Chris Sanders",
+    "cast": [
+      "Voice: Jay Baruchel",
+      "Voice: Gerard Butler",
+      "Voice: America Ferrera"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 214,
+    "title": "Moana",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/m5MDZOIFEFlxGiLuAzWzFSsWcye.jpg",
+    "synopsis": "An adventurous teenager sails out on a daring mission to save her people and discovers the one thing she has always sought — her own identity.",
+    "year": 2016,
+    "rating": 7.6,
+    "durationMinutes": 107,
+    "director": "Ron Clements",
+    "cast": [
+      "Voice: Auli'i Cravalho",
+      "Voice: Dwayne Johnson",
+      "Voice: Rachel House"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 215,
+    "title": "Frozen II",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/mINJaa34MtknCYl5AjtNJzWj8cD.jpg",
+    "synopsis": "Elsa and Anna embark on a journey beyond their kingdom to discover the origin of Elsa's magical powers and the truth about the past.",
+    "year": 2019,
+    "rating": 7,
+    "durationMinutes": 103,
+    "director": "Chris Buck",
+    "cast": [
+      "Voice: Idina Menzel",
+      "Voice: Kristen Bell",
+      "Voice: Josh Gad"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 216,
+    "title": "Zootopia",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/hlK0e0wAQ3VLuJcsfIYPvb4JVud.jpg",
+    "synopsis": "In a city of anthropomorphic animals, a rookie bunny cop and a cynical con-artist fox must work together to uncover a conspiracy.",
+    "year": 2016,
+    "rating": 8,
+    "durationMinutes": 108,
+    "director": "Byron Howard",
+    "cast": [
+      "Voice: Ginnifer Goodwin",
+      "Voice: Jason Bateman",
+      "Voice: Idris Elba"
+    ],
+    "genre": "Animation",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
