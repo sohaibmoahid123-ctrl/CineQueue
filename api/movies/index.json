@@ -79,25 +79,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 15,
-    "title": "Marmalade Skies",
-    "synopsis": "When a lonely kid befriends a cloud creature made of forgotten sunsets, they set out to return every color the sky has quietly lost.",
-    "genre": "Animation",
-    "year": 2024,
-    "rating": 8,
-    "durationMinutes": 95,
-    "posterUrl": "./movies/marmalade-skies-poster.jpg",
-    "cast": [
-      "Voice: Junie Alabaster",
-      "Voice: Rowan Feng"
-    ],
-    "director": "Pippa Rousseau",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 8,
     "title": "Night Orchard",
     "synopsis": "Every autumn the orchard's dead trees bear fruit again, and the family that owns the land has never told the town what happens to whoever eats it.",
@@ -208,25 +189,6 @@
       "Ines Okafor"
     ],
     "director": "Odalys Ferrer",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 16,
-    "title": "The Tin Forest",
-    "synopsis": "A small tin robot who tends a junkyard of forgotten machines plants one glowing seed, and grows the first forest anyone there has ever seen.",
-    "genre": "Animation",
-    "year": 2016,
-    "rating": 7.6,
-    "durationMinutes": 88,
-    "posterUrl": "./movies/tin-forest-poster.jpg",
-    "cast": [
-      "Voice: Mireille Costa",
-      "Voice: Otto Nakashima"
-    ],
-    "director": "Baxter Adjei",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
@@ -569,6 +531,310 @@
       "Olivia Wilde"
     ],
     "director": "Justin Lin",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 33,
+    "title": "Toy Story 5",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg",
+    "synopsis": "Woody, Buzz, and the gang face an entirely new adventure when the toys discover a mysterious portal that could change their world forever.",
+    "year": 2026,
+    "rating": 8.1,
+    "durationMinutes": 100,
+    "director": "Andrew Stanton",
+    "cast": [
+      "Voice: Tom Hanks",
+      "Voice: Tim Allen"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 34,
+    "title": "Minions & Monsters",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/nz7i42yhLIJ4ve9JKgM6NthoLHO.jpg",
+    "synopsis": "The Minions accidentally unleash a horde of monsters from a secret lab and must team up with their most unlikely allies to save the day.",
+    "year": 2025,
+    "rating": 7.2,
+    "durationMinutes": 92,
+    "director": "Kyle Balda",
+    "cast": [
+      "Voice: Steve Carell",
+      "Voice: Pierre Coffin"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 35,
+    "title": "The Super Mario Galaxy Movie",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/eJGWx219ZcEMVQJhAgMiqo8tYY.jpg",
+    "synopsis": "Mario and Luigi blast off into space to rescue Princess Peach from Bowser's galaxy-spanning fortress in this cosmic animated adventure.",
+    "year": 2026,
+    "rating": 7.8,
+    "durationMinutes": 105,
+    "director": "Aaron Horvath",
+    "cast": [
+      "Voice: Chris Pratt",
+      "Voice: Charlie Day"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 36,
+    "title": "Hoppers",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xjtWQ2CL1mpmMNwuU5HeS4Iuwuu.jpg",
+    "synopsis": "A scrappy young rabbit discovers she can hop between parallel worlds, and sets out on an epic quest to find the one where her family is whole again.",
+    "year": 2025,
+    "rating": 7.5,
+    "durationMinutes": 96,
+    "director": "Jennifer Yuh Nelson",
+    "cast": [
+      "Voice: Quvenzhané Wallis",
+      "Voice: Awkwafina"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 37,
+    "title": "PAW Patrol: The Dino Movie",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/mVx2O7ikolw0lQC3XEIM4C2uYwd.jpg",
+    "synopsis": "The PAW Patrol discover a hidden island where dinosaurs still roam, and must protect it from a villain determined to exploit its prehistoric secrets.",
+    "year": 2025,
+    "rating": 6.8,
+    "durationMinutes": 88,
+    "director": "Cal Brunker",
+    "cast": [
+      "Voice: Iain Armitage",
+      "Voice: Marsai Martin"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 38,
+    "title": "Moana (Live-Action)",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/zKVgiv5qHCvCLT4A2ymJi5QeXDH.jpg",
+    "synopsis": "The beloved story of Moana's ocean voyage to save her people comes to life in a stunning live-action retelling with all-new musical performances.",
+    "year": 2024,
+    "rating": 7.4,
+    "durationMinutes": 113,
+    "director": "Thomas Kail",
+    "cast": [
+      "Dwayne Johnson",
+      "Auliʻi Cravalho"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 39,
+    "title": "The Sheep Detectives",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/mGWOmj2jHFol3kOGNv1EhbSDDE1.jpg",
+    "synopsis": "A duo of unlikely sheep detectives must crack the biggest mystery in their pastoral village before a woolly conspiracy unravels the whole community.",
+    "year": 2025,
+    "rating": 7,
+    "durationMinutes": 90,
+    "director": "Benjamin Renner",
+    "cast": [
+      "Voice: Rebel Wilson",
+      "Voice: Sam Neill"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 40,
+    "title": "Hexed",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/zO1r0TvdmnUSO1aAtFaVeT5h1KW.jpg",
+    "synopsis": "A teenage witch who can't get her spells right accidentally hexes her entire school and must reverse the curse before midnight.",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 94,
+    "director": "Domee Shi",
+    "cast": [
+      "Voice: Sofia Wylie",
+      "Voice: Lana Condor"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 41,
+    "title": "Swapped",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/tHhxWxge06goXU6ZQH1hj7vK8Hd.jpg",
+    "synopsis": "Two feuding siblings wake up in each other's bodies and must work together across a magical landscape to find the enchantress who switched them.",
+    "year": 2024,
+    "rating": 7.1,
+    "durationMinutes": 91,
+    "director": "Vicky Jenson",
+    "cast": [
+      "Voice: Zendaya",
+      "Voice: Jacob Tremblay"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 42,
+    "title": "I Am Frankelda",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/hDzllxB1TQ7uUxVvjnGHirJJovt.jpg",
+    "synopsis": "A quirky young girl who collects fears discovers she has the power to enter nightmares and defeat the monsters hiding inside them.",
+    "year": 2023,
+    "rating": 7.6,
+    "durationMinutes": 85,
+    "director": "Jorge Gutiérrez",
+    "cast": [
+      "Voice: Anya Taylor-Joy",
+      "Voice: Gael García Bernal"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 43,
+    "title": "Detective Conan: Fallen Angel",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/tqlOfb1ekyVYpDumiL9MsK6uirw.jpg",
+    "synopsis": "Conan investigates a baffling series of crimes linked to a legendary thief and a priceless artefact hidden somewhere in a European cathedral.",
+    "year": 2025,
+    "rating": 8,
+    "durationMinutes": 110,
+    "director": "Yasuichiro Yamamoto",
+    "cast": [
+      "Voice: Minami Takayama",
+      "Voice: Wakana Yamazaki"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 44,
+    "title": "Doraemon: New Nobita",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/iQctZr1p1vdqZgv5iOVIgebmIFa.jpg",
+    "synopsis": "Doraemon pulls out a gadget that rewrites reality itself, and Nobita must undo the chaos it creates before the new world erases everything he loves.",
+    "year": 2025,
+    "rating": 7.5,
+    "durationMinutes": 98,
+    "director": "Takashi Yamazaki",
+    "cast": [
+      "Voice: Wasabi Mizuta",
+      "Voice: Megumi Ōhara"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 45,
+    "title": "Mobile Suit Gundam Hathaway",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/6gw8onh4FKsruBA7Oouv01EFxzn.jpg",
+    "synopsis": "Hathaway Noa leads a guerrilla resistance against a corrupt Federation while grappling with an impossible choice between ideals and survival.",
+    "year": 2021,
+    "rating": 8.2,
+    "durationMinutes": 95,
+    "director": "Shukou Murase",
+    "cast": [
+      "Voice: Kenshô Ono",
+      "Voice: Reina Ueda"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 46,
+    "title": "All Wishes Come True",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/hJfr2tjMGUVCxuzjSrdQgEywC1S.jpg",
+    "synopsis": "When a wishing well grants every wish in a small town simultaneously, one girl must race to put the world back in order before chaos becomes permanent.",
+    "year": 2024,
+    "rating": 6.9,
+    "durationMinutes": 88,
+    "director": "Lin Wang",
+    "cast": [
+      "Voice: Chloe Bennett",
+      "Voice: BD Wong"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 47,
+    "title": "Three Kingdoms: The Beginning",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gjhmjROKqAxIwAbUdxaItr3AyMf.jpg",
+    "synopsis": "An epic animated retelling of the legendary Three Kingdoms era, following three warlords whose rivalry reshapes ancient China.",
+    "year": 2025,
+    "rating": 7.7,
+    "durationMinutes": 115,
+    "director": "Zhao Ji",
+    "cast": [
+      "Voice: Chen Kun",
+      "Voice: Liu Ye"
+    ],
+    "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 48,
+    "title": "Boonie Bears: The Hidden Protector",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/4MFMZRDTWngjVCQILVkg2JaT7kL.jpg",
+    "synopsis": "Briar and Bramble discover an ancient guardian spirit sleeping beneath their forest and must awaken it before loggers destroy its home forever.",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 93,
+    "director": "Leon Ding",
+    "cast": [
+      "Voice: Zhang Wei",
+      "Voice: Li Ming"
+    ],
+    "genre": "Animation",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",

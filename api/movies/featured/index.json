@@ -40,25 +40,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 15,
-    "title": "Marmalade Skies",
-    "synopsis": "When a lonely kid befriends a cloud creature made of forgotten sunsets, they set out to return every color the sky has quietly lost.",
-    "genre": "Animation",
-    "year": 2024,
-    "rating": 8,
-    "durationMinutes": 95,
-    "posterUrl": "./movies/marmalade-skies-poster.jpg",
-    "cast": [
-      "Voice: Junie Alabaster",
-      "Voice: Rowan Feng"
-    ],
-    "director": "Pippa Rousseau",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 7,
     "title": "The Hollow Choir",
     "synopsis": "A restoration crew reopens a chapel silent for sixty years and finds its choir never actually stopped singing -- it just stopped needing an audience.",
