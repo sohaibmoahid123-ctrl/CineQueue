@@ -20,26 +20,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 3,
-    "title": "Echo Nebula",
-    "synopsis": "A deep-space signal that shouldn't exist pulls a lone salvage pilot into the heart of a dying nebula, where echoes of a lost civilization are still calling out.",
-    "genre": "Sci-Fi",
-    "year": 2023,
-    "rating": 8.1,
-    "durationMinutes": 132,
-    "posterUrl": "./movies/echo-nebula-poster.jpg",
-    "cast": [
-      "Alix Moreno",
-      "Theo Bankole",
-      "Wren Castillo"
-    ],
-    "director": "Renata Suh",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 14,
     "title": "The Fourth Witness",
     "synopsis": "Three witnesses have already recanted. The fourth is the only one telling the truth, and someone is running out of time to make sure she never testifies.",
@@ -53,25 +33,6 @@
       "Vivienne Aubert"
     ],
     "director": "Marguerite Solano",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 4,
-    "title": "The Silence Between Stars",
-    "synopsis": "The last surviving crew member of a derelict transport ship must decide whether the silence she's hearing is peace, or something patiently waiting.",
-    "genre": "Sci-Fi",
-    "year": 2021,
-    "rating": 6.9,
-    "durationMinutes": 109,
-    "posterUrl": "./movies/silence-between-stars-poster.jpg",
-    "cast": [
-      "Nikolai Brandt",
-      "Ines Okafor"
-    ],
-    "director": "Odalys Ferrer",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
