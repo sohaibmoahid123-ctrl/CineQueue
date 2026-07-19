@@ -1679,7 +1679,7 @@
   {
     "id": 619,
     "title": "Klara and the Sun",
-    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/7/77/Klara_and_the_Sun_%28film%29_poster.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/original/xqovj2p6HRsgHxN81qYAYF4StgM.jpg",
     "synopsis": "An Artificial Friend observes the human world from a shop window and forms a devoted bond with a sickly girl — willing to sacrifice everything for her survival.",
     "year": 2026,
     "rating": 7.6,
@@ -1719,7 +1719,7 @@
   {
     "id": 621,
     "title": "The Great Beyond",
-    "posterUrl": null,
+    "posterUrl": "https://a.ltrbxd.com/resized/film-poster/1/1/7/0/9/8/3/1170983-the-great-beyond-0-500-0-750-crop.jpg?v=8adcc2b1be",
     "synopsis": "A cosmologist who has spent her career mapping the edge of the observable universe receives a data burst from beyond it — sent by someone who knows her name.",
     "year": 2026,
     "rating": 0,
@@ -1790,7 +1790,7 @@
       "Ralph Fiennes",
       "Jodie Comer"
     ],
-    "genre": "Sci-Fi",
+    "genre": "Horror",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
