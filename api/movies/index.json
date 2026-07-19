@@ -1699,16 +1699,17 @@
   {
     "id": 620,
     "title": "Above the Below",
-    "posterUrl": "https://m.media-amazon.com/images/M/MV5BNzI0NmNiMDMtMDcwNy00NjBiLWEyNDMtZjdhN2Q5ZTBmOGQ0XkEyXkFqcGc@._V1_.jpg",
-    "synopsis": "Stranded beneath arctic ice after a catastrophic dive, a marine biologist discovers the cave system is not natural — and is not empty.",
+    "posterUrl": null,
+    "synopsis": "Three astronauts survive a violently destructive re-entry, only to discover their capsule is sinking into uncharted ocean depths. Completely cut off from the world, they must battle the sea and their isolation to survive.",
     "year": 2026,
     "rating": 7,
     "durationMinutes": 0,
-    "director": "J.A. Bayona",
+    "director": "Idris Elba, Martin Owen",
     "cast": [
       "Idris Elba",
-      "Naomi Scott",
-      "Rami Malek"
+      "Hero Fiennes Tiffin",
+      "Caitlin FitzGerald",
+      "Isla Jackson-Ritchie"
     ],
     "genre": "Sci-Fi",
     "isFeatured": false,
