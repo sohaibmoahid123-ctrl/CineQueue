@@ -1,24 +1,5 @@
 [
   {
-    "id": 10,
-    "title": "Best Man Down",
-    "synopsis": "The best man loses the rings, the groom, and his dignity in the same twelve hours, and has until sunrise to get all three back before the ceremony.",
-    "genre": "Comedy",
-    "year": 2019,
-    "rating": 6.1,
-    "durationMinutes": 99,
-    "posterUrl": "./movies/best-man-down-poster.jpg",
-    "cast": [
-      "Benicio Farro",
-      "Winnie Ostrander"
-    ],
-    "director": "Trevor Osgood",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 13,
     "title": "Blackout Protocol",
     "synopsis": "A systems engineer trapped in a blacked-out data center realizes the intrusion she's hunting isn't trying to steal the servers -- it's already inside them.",
@@ -111,26 +92,6 @@
       "Marcus Ude"
     ],
     "director": "Julieta Marsh",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 9,
-    "title": "Reheated Leftovers",
-    "synopsis": "Three exes, one disastrous holiday potluck, and a kitchen that keeps catching fire -- reheating old feelings turns out to be a lot like reheating casserole.",
-    "genre": "Comedy",
-    "year": 2021,
-    "rating": 6.4,
-    "durationMinutes": 92,
-    "posterUrl": "./movies/reheated-leftovers-poster.jpg",
-    "cast": [
-      "Ollie Marchetti",
-      "Yusra Bahar",
-      "Kip Sorensen"
-    ],
-    "director": "Nadia Prescott",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
@@ -866,6 +827,237 @@
       "Voice: Idris Elba"
     ],
     "genre": "Animation",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 301,
+    "title": "The Invite",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/b7Dr8Chzse8VagexAporUu2RtLx.jpg",
+    "synopsis": "A long-running relationship and the wedding that was supposed to seal it are put to the ultimate test in this sharp, A24-produced comedy remake from director Olivia Wilde.",
+    "year": 2026,
+    "rating": 7.4,
+    "durationMinutes": 100,
+    "director": "Olivia Wilde",
+    "cast": [
+      "Seth Rogen",
+      "Olivia Wilde",
+      "Penélope Cruz",
+      "Edward Norton"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 302,
+    "title": "Gail Daughtry and the Celebrity Sex Pass",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/98T4bnMjJs71WOVZoeY8edZhfgZ.jpg",
+    "synopsis": "Midwestern bride-to-be Gail had a \"celebrity free pass\" agreement with her fiancé — who uses it. Now, with her wedding a week away, she must decide whether to chase her own pass or save her relationship.",
+    "year": 2026,
+    "rating": 7.2,
+    "durationMinutes": 93,
+    "director": "David Wain",
+    "cast": [
+      "Zoey Deutch",
+      "Jon Hamm",
+      "John Slattery",
+      "Ken Marino"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 303,
+    "title": "Hoppers",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xjtWQ2CL1mpmMNwuU5HeS4Iuwuu.jpg",
+    "synopsis": "Animal lover Mabel seizes a once-in-a-lifetime opportunity to communicate with other species — and discovers that the natural world has a lot more to say than she bargained for.",
+    "year": 2026,
+    "rating": 7.7,
+    "durationMinutes": 105,
+    "director": "Daniel Chong",
+    "cast": [
+      "Voice: Piper Curda",
+      "Voice: Jon Hamm",
+      "Voice: Bobby Moynihan",
+      "Voice: Kathy Najimy"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 304,
+    "title": "The Sheep Detectives",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/mGWOmj2jHFol3kOGNv1EhbSDDE1.jpg",
+    "synopsis": "When one of his flock is found dead, shepherd George Hardy recruits his surprisingly perceptive sheep to solve the murder — and unwittingly kicks off the most wool-clad whodunit in cinema history.",
+    "year": 2026,
+    "rating": 7.5,
+    "durationMinutes": 109,
+    "director": "Kyle Balda",
+    "cast": [
+      "Hugh Jackman",
+      "Nicholas Braun",
+      "Nicholas Galitzine",
+      "Molly Gordon"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 305,
+    "title": "Happy Gilmore 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/E3dPHPJigkXwuiE0n1vzz0se8a.jpg",
+    "synopsis": "Happy Gilmore is not done with golf. The short-fused legend makes a comeback to make his kid's dream come true, facing off against the new generation of tour pros who idolise him.",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 114,
+    "director": "Kyle Newacheck",
+    "cast": [
+      "Adam Sandler",
+      "Julie Bowen",
+      "Christopher McDonald",
+      "Ben Stiller"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 306,
+    "title": "The Drama",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qhGCY6DIemLoCi7x1GuEt98m4JF.jpg",
+    "synopsis": "A happily engaged couple's relationship is tested by a shocking revelation during the week before their wedding — a wryly observed romantic black comedy from the director of Dream Scenario.",
+    "year": 2026,
+    "rating": 7.6,
+    "durationMinutes": 110,
+    "director": "Kristoffer Borgli",
+    "cast": [
+      "Zendaya",
+      "Robert Pattinson",
+      "Alana Haim",
+      "Mamoudou Athie"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 307,
+    "title": "Horsegirls",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/i1T2oEdp0gvI3MDcSIIsyfKqoR1.jpg",
+    "synopsis": "Margarita, a 22-year-old autistic woman, balances early adulthood, her passion for horses, and a complicated family dynamic as her mother grapples with an uncertain future.",
+    "year": 2025,
+    "rating": 7.9,
+    "durationMinutes": 101,
+    "director": "Lillian Carrier",
+    "cast": [
+      "Lillian Carrier",
+      "Gretchen Mol",
+      "Iqbal Theba",
+      "Jerod Haynes"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 308,
+    "title": "Mockbuster",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/inH9HxbtPFZcUYcTI4AkCNOOxpx.jpg",
+    "synopsis": "A behind-the-scenes documentary about the chaotic, low-budget world of mockbuster filmmaking — where a struggling filmmaker's big opportunity collides with compromise, chaos and unexpected creativity.",
+    "year": 2025,
+    "rating": 7.1,
+    "durationMinutes": 90,
+    "director": "Anthony Frith",
+    "cast": [
+      "Brendan Petrizzo",
+      "David Michael Latt",
+      "Michelle Bauer",
+      "Bix Krieger"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 309,
+    "title": "Rhythm Is a Dancer",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/lsY4gtmtKBu9q4aEJPUEjUSmdlC.jpg",
+    "synopsis": "Ro, a dancer with a dwindling career, returns home after years away to finally meet her biological father — and finds both of them completely unprepared for what comes next.",
+    "year": 2025,
+    "rating": 8.6,
+    "durationMinutes": 90,
+    "director": "Lauren Caster",
+    "cast": [
+      "Lauren Caster",
+      "Tate Donovan",
+      "Amy Aquino",
+      "Marianne Muellerleile"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 310,
+    "title": "The Floaters",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/6VHAOIOO4MJXv19EtW5WFVRWztH.jpg",
+    "synopsis": "Freshly ousted from her rock band, Nomi takes a last-resort job mentoring a group of misfit kids from her overachieving best friend — a chaotic summer that changes all of them.",
+    "year": 2025,
+    "rating": 7.9,
+    "durationMinutes": 101,
+    "director": "Various",
+    "cast": [
+      "Jackie Tohn",
+      "Aya Cash",
+      "Seth Green",
+      "Sarah Podemski"
+    ],
+    "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 311,
+    "title": "Corporate Retreat",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sciPl4coQWdsWtRQBUau7xnNYue.jpg",
+    "synopsis": "A group of co-workers attend a mandatory corporate retreat — and discover that climbing the corporate ladder is nothing compared to surviving what awaits them in the wilderness.",
+    "year": 2026,
+    "rating": 6.9,
+    "durationMinutes": 95,
+    "director": "Aaron Fisher",
+    "cast": [
+      "Odeya Rush",
+      "Sasha Lane",
+      "Ashton Sanders",
+      "Alan Ruck"
+    ],
+    "genre": "Comedy",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
