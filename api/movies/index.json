@@ -40,25 +40,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 8,
-    "title": "Night Orchard",
-    "synopsis": "Every autumn the orchard's dead trees bear fruit again, and the family that owns the land has never told the town what happens to whoever eats it.",
-    "genre": "Horror",
-    "year": 2020,
-    "rating": 6.6,
-    "durationMinutes": 98,
-    "posterUrl": "./movies/night-orchard-poster.jpg",
-    "cast": [
-      "Sable Winters",
-      "Damon Achterberg"
-    ],
-    "director": "Emrys Halloran",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 5,
     "title": "Paper Constellations",
     "synopsis": "Two strangers who keep folding their futures into paper stars discover the rooftop they both retreat to is the only place their timing ever lines up.",
@@ -92,26 +73,6 @@
     ],
     "director": "Marguerite Solano",
     "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 7,
-    "title": "The Hollow Choir",
-    "synopsis": "A restoration crew reopens a chapel silent for sixty years and finds its choir never actually stopped singing -- it just stopped needing an audience.",
-    "genre": "Horror",
-    "year": 2023,
-    "rating": 7.8,
-    "durationMinutes": 112,
-    "posterUrl": "./movies/hollow-choir-poster.jpg",
-    "cast": [
-      "Dashiell Vance",
-      "Petra Lindholm",
-      "Amara Solis"
-    ],
-    "director": "Camille Osei",
-    "isFeatured": true,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
     "downloadUrl720p": "#"
@@ -1229,6 +1190,195 @@
       "Leo Hanna"
     ],
     "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 501,
+    "title": "Obsession",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
+    "synopsis": "A music store employee buys a supernatural toy that grants his desperate wish — making his friend Nikki fall in love with him. But the wish comes with a terrifying price that spirals into supernatural horror.",
+    "year": 2025,
+    "rating": 7.9,
+    "durationMinutes": 108,
+    "director": "Curry Barker",
+    "cast": [
+      "Michael Johnston",
+      "Inde Navarrette",
+      "Cooper Tomlinson",
+      "Megan Lawless"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 502,
+    "title": "Evil Dead Burn",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/ztadKzIIR0ERYqpHteaPFtk7inP.jpg",
+    "synopsis": "The sixth entry in the Evil Dead universe — a sequel to Evil Dead Rise — follows a new group of survivors as the relentless Deadites unleash fresh carnage in a battle for survival against an ancient supernatural force.",
+    "year": 2026,
+    "rating": 7.5,
+    "durationMinutes": 110,
+    "director": "Sébastien Vaniček",
+    "cast": [
+      "Souheila Yacoub",
+      "Tandi Wright",
+      "Hunter Doohan",
+      "Luciane Buchanan"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 503,
+    "title": "Lockbox",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sNJ9u1uL12wOzOvvjjdXX8MqrBT.jpg",
+    "synopsis": "Seeking peace after her mother's death, Ellen retreats to a remote rural property — only to discover a mysterious lockbox that unleashes an ancient evil she is wholly unprepared to face.",
+    "year": 2026,
+    "rating": 6.2,
+    "durationMinutes": 105,
+    "director": "Daniel Stamm",
+    "cast": [
+      "Carla Gugino",
+      "Lou Taylor Pucci",
+      "Katharine Isabelle",
+      "Roman Kinsella"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 504,
+    "title": "Backrooms",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg",
+    "synopsis": "A strange doorway appears in the basement of a suburban home, pulling a group of people into an endless maze of eerie, fluorescent-lit rooms — a place with no exits, no logic, and something living in the walls.",
+    "year": 2026,
+    "rating": 7.8,
+    "durationMinutes": 110,
+    "director": "Kane Parsons",
+    "cast": [
+      "Chiwetel Ejiofor",
+      "Renate Reinsve",
+      "Mark Duplass",
+      "Finn Bennett"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 505,
+    "title": "The Bay",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xzFh9apPHlaEez7nM2EVZfISGnB.jpg",
+    "synopsis": "When their tour boat sinks inside a protected shark sanctuary, two best friends must fight through open, predator-filled waters in a desperate struggle for survival.",
+    "year": 2026,
+    "rating": 6.8,
+    "durationMinutes": 86,
+    "director": "Alexandre Aja",
+    "cast": [
+      "Francesca Eastwood",
+      "Dani Oliveros",
+      "Alexander Wraith",
+      "Ta'imua"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 506,
+    "title": "Corporate Retreat",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sciPl4coQWdsWtRQBUau7xnNYue.jpg",
+    "synopsis": "A group of co-workers attend a mandatory corporate retreat and discover that climbing the corporate ladder is nothing compared to surviving what awaits them deep in the wilderness.",
+    "year": 2026,
+    "rating": 6.9,
+    "durationMinutes": 95,
+    "director": "Aaron Fisher",
+    "cast": [
+      "Odeya Rush",
+      "Sasha Lane",
+      "Ashton Sanders",
+      "Alan Ruck"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 507,
+    "title": "Sunset Strip Killers",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1ocGuTdAg9xPT5XIZHGR8rg1KiX.jpg",
+    "synopsis": "On the neon-lit streets of the Sunset Strip, a series of brutal murders sends shockwaves through Los Angeles — and the detectives chasing the killers find themselves far closer to the horror than they ever anticipated.",
+    "year": 2026,
+    "rating": 6.5,
+    "durationMinutes": 88,
+    "director": "Susan Priver",
+    "cast": [
+      "Susan Priver",
+      "Max E. Williams",
+      "Ezra Buzzington",
+      "Brian Foyster"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 508,
+    "title": "The Mummy",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1q308iixueCU4pFtSYugNOevtNx.jpg",
+    "synopsis": "The young daughter of a journalist uncovers an ancient Egyptian demon — the Nasmaranian — that possesses victims and cannot be stopped by conventional means, in Lee Cronin's chilling reimagining of The Mummy franchise.",
+    "year": 2026,
+    "rating": 6.3,
+    "durationMinutes": 134,
+    "director": "Lee Cronin",
+    "cast": [
+      "Jack Reynor",
+      "Laia Costa",
+      "May Calamawy",
+      "Natalie Grace"
+    ],
+    "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 509,
+    "title": "Ready or Not 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/jRf89HVEtBZiSnOXXWDhZOfuTwW.jpg",
+    "synopsis": "Moments after surviving the Le Domas family's deadly game night, Grace is plunged straight into a new and even more lethal round — this time the entire family is hunting her across new terrain with no rules.",
+    "year": 2026,
+    "rating": 7.4,
+    "durationMinutes": 108,
+    "director": "Matt Bettinelli-Olpin & Tyler Gillett",
+    "cast": [
+      "Samara Weaving",
+      "Kathryn Newton",
+      "Sarah Michelle Gellar",
+      "Shawn Hatosy"
+    ],
+    "genre": "Horror",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
