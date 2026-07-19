@@ -1,0 +1,114 @@
+[
+  {
+    "title": "Project Hail Mary",
+    "year": 2026,
+    "rating": "PG-13",
+    "runtime": "2h 36m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/3/3b/Project_Hail_Mary_poster.jpg"
+  },
+  {
+    "title": "The Odyssey",
+    "year": 2026,
+    "rating": "R",
+    "runtime": "2h 52m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/9/90/The_Odyssey_%282026_film%29_poster.jpg"
+  },
+  {
+    "title": "Disclosure Day",
+    "year": 2026,
+    "rating": "PG-13",
+    "runtime": "2h 25m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/c/c3/Disclosure_Day_poster.jpg"
+  },
+  {
+    "title": "Good Luck, Have Fun, Don't Die",
+    "year": 2026,
+    "rating": "R",
+    "runtime": "2h 14m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/b/b0/Good_Luck%2C_Have_Fun%2C_Don%27t_Die_poster.jpg"
+  },
+  {
+    "title": "Mercy",
+    "year": 2026,
+    "rating": "PG-13",
+    "runtime": "1h 40m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/4/43/Mercy_2026_poster.jpeg"
+  },
+  {
+    "title": "The Mandalorian and Grogu",
+    "year": 2026,
+    "rating": "PG-13",
+    "runtime": "2h 12m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/4/4c/The_Mandalorian_and_Grogu_poster.jpg"
+  },
+  {
+    "title": "Redux Redux",
+    "year": 2026,
+    "rating": "R",
+    "runtime": "1h 49m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/3/3a/Redux_Redux_poster.jpeg"
+  },
+  {
+    "title": "LifeHack",
+    "year": 2025,
+    "rating": "R",
+    "runtime": "1h 37m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/d/d2/LifeHack_2025.jpeg"
+  },
+  {
+    "title": "War Machine",
+    "year": 2026,
+    "rating": "R",
+    "runtime": "1h 47m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/2/22/War_Machine_poster.jpeg"
+  },
+  {
+    "title": "Hope",
+    "year": 2026,
+    "rating": "NR",
+    "runtime": "2h 40m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/0/03/Hope_%282026_film%29_poster.png"
+  },
+  {
+    "title": "Klara and the Sun",
+    "year": 2026,
+    "rating": "PG-13",
+    "runtime": "1h 56m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/7/77/Klara_and_the_Sun_%28film%29_poster.jpg"
+  },
+  {
+    "title": "Above the Below",
+    "year": 2026,
+    "rating": "NR",
+    "runtime": "TBD",
+    "poster": "https://m.media-amazon.com/images/M/MV5BNzI0NmNiMDMtMDcwNy00NjBiLWEyNDMtZjdhN2Q5ZTBmOGQ0XkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    "title": "The Great Beyond",
+    "year": 2026,
+    "rating": "NR",
+    "runtime": "TBD",
+    "poster": null
+  },
+  {
+    "title": "All You Need Is Kill",
+    "year": 2025,
+    "rating": "R",
+    "runtime": "1h 22m",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/e/e7/All_you_need_is_kill_poster.webp"
+  },
+  {
+    "title": "The Outer Threat",
+    "year": 2026,
+    "rating": "NR",
+    "runtime": "1h 34m",
+    "poster": "https://m.media-amazon.com/images/M/MV5BNjBhZGE0NWUtNzkxMy00NDY1LWE2ZmEtMTNjZmY1OTc4ZjBkXkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    "title": "28 Years Later: The Bone Temple",
+    "year": 2026,
+    "rating": "R",
+    "runtime": "1h 49m",
+    "poster": "https://m.media-amazon.com/images/M/MV5BZGU2M2Y1YTItMWYxNS00NDYxLThhOTYtNjNhOWUzNjA3MTYwXkEyXkFqcGc@._V1_.jpg"
+  }
+]
