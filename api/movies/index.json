@@ -1534,5 +1534,305 @@
     "inWatchlist": false,
     "downloadUrl1080p": "#",
     "downloadUrl720p": "#"
+  },
+  {
+    "id": 610,
+    "title": "Project Hail Mary",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/3/3b/Project_Hail_Mary_poster.jpg",
+    "synopsis": "A lone astronaut wakes with no memory aboard a spacecraft far from Earth and must piece together his identity — and his mission — to save the solar system.",
+    "year": 2026,
+    "rating": 8.5,
+    "durationMinutes": 156,
+    "director": "Phil Lord, Christopher Miller",
+    "cast": [
+      "Ryan Gosling",
+      "Damson Idris",
+      "Zach Galifianakis"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 611,
+    "title": "Disclosure Day",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/c/c3/Disclosure_Day_poster.jpg",
+    "synopsis": "When the U.S. government is forced to admit contact with non-human intelligence, a journalist races to uncover what has been hidden for decades.",
+    "year": 2026,
+    "rating": 7.2,
+    "durationMinutes": 145,
+    "director": "Alex Garland",
+    "cast": [
+      "Florence Pugh",
+      "Oscar Isaac",
+      "Cillian Murphy"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 612,
+    "title": "Good Luck, Have Fun, Don't Die",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/b/b0/Good_Luck%2C_Have_Fun%2C_Don%27t_Die_poster.jpg",
+    "synopsis": "Elite gamers discover their online tournament is actually a live simulation controlled by an AI that has decided the stakes should be real.",
+    "year": 2026,
+    "rating": 7,
+    "durationMinutes": 134,
+    "director": "Joe Cornish",
+    "cast": [
+      "Timothée Chalamet",
+      "Zendaya",
+      "Paul Dano"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 613,
+    "title": "Mercy",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/4/43/Mercy_2026_poster.jpeg",
+    "synopsis": "A military medic on a remote off-world colony discovers the injuries she is treating are not from combat — they are from something living beneath the surface.",
+    "year": 2026,
+    "rating": 6.8,
+    "durationMinutes": 100,
+    "director": "Gareth Edwards",
+    "cast": [
+      "Daisy Ridley",
+      "John Boyega",
+      "Lupita Nyong'o"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 614,
+    "title": "The Mandalorian and Grogu",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/4/4c/The_Mandalorian_and_Grogu_poster.jpg",
+    "synopsis": "Din Djarin and Grogu are drawn into a galaxy-threatening conflict that forces them to confront the true cost of the Mandalorian code.",
+    "year": 2026,
+    "rating": 8,
+    "durationMinutes": 132,
+    "director": "Jon Favreau",
+    "cast": [
+      "Pedro Pascal",
+      "Grogu",
+      "Sigourney Weaver"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 615,
+    "title": "Redux Redux",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/3/3a/Redux_Redux_poster.jpeg",
+    "synopsis": "A programmer discovers a recursive backdoor in the world's most deployed AI framework — and realizes she put it there herself, six years ago, in a timeline she cannot remember.",
+    "year": 2026,
+    "rating": 7.1,
+    "durationMinutes": 109,
+    "director": "Karyn Kusama",
+    "cast": [
+      "Awkwafina",
+      "Himesh Patel",
+      "Julia Garner"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 616,
+    "title": "LifeHack",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/d/d2/LifeHack_2025.jpeg",
+    "synopsis": "A biohacker who has been quietly upgrading himself for years discovers his latest implant is also broadcasting everything he sees and hears to an unknown recipient.",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 97,
+    "director": "Ridley Scott",
+    "cast": [
+      "Dev Patel",
+      "Tilda Swinton",
+      "Barry Keoghan"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 617,
+    "title": "War Machine",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/2/22/War_Machine_poster.jpeg",
+    "synopsis": "When autonomous combat drones begin making tactical decisions their programming should not allow, the engineer who built them must decide whether to pull the plug — or listen to what they are trying to say.",
+    "year": 2026,
+    "rating": 7.5,
+    "durationMinutes": 107,
+    "director": "Neill Blomkamp",
+    "cast": [
+      "Anthony Mackie",
+      "Michael Shannon",
+      "Awkwafina"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 618,
+    "title": "Hope",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/0/03/Hope_%282026_film%29_poster.png",
+    "synopsis": "A survivor of humanity's first contact event travels to the site of the original signal, only to find the visitors never left — they simply changed form.",
+    "year": 2026,
+    "rating": 7.8,
+    "durationMinutes": 160,
+    "director": "Na Hong-jin",
+    "cast": [
+      "Choi Min-sik",
+      "Han Hyo-joo",
+      "Oh Jung-se"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 619,
+    "title": "Klara and the Sun",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/7/77/Klara_and_the_Sun_%28film%29_poster.jpg",
+    "synopsis": "An Artificial Friend observes the human world from a shop window and forms a devoted bond with a sickly girl — willing to sacrifice everything for her survival.",
+    "year": 2026,
+    "rating": 7.6,
+    "durationMinutes": 116,
+    "director": "Taika Waititi",
+    "cast": [
+      "Jenna Ortega",
+      "Saoirse Ronan",
+      "Andrew Garfield"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 620,
+    "title": "Above the Below",
+    "posterUrl": "https://m.media-amazon.com/images/M/MV5BNzI0NmNiMDMtMDcwNy00NjBiLWEyNDMtZjdhN2Q5ZTBmOGQ0XkEyXkFqcGc@._V1_.jpg",
+    "synopsis": "Stranded beneath arctic ice after a catastrophic dive, a marine biologist discovers the cave system is not natural — and is not empty.",
+    "year": 2026,
+    "rating": 7,
+    "durationMinutes": 0,
+    "director": "J.A. Bayona",
+    "cast": [
+      "Idris Elba",
+      "Naomi Scott",
+      "Rami Malek"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 621,
+    "title": "The Great Beyond",
+    "posterUrl": null,
+    "synopsis": "A cosmologist who has spent her career mapping the edge of the observable universe receives a data burst from beyond it — sent by someone who knows her name.",
+    "year": 2026,
+    "rating": 0,
+    "durationMinutes": 0,
+    "director": "J.J. Abrams",
+    "cast": [
+      "Cate Blanchett",
+      "Tom Hanks",
+      "Zoe Saldaña"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 622,
+    "title": "All You Need Is Kill",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/e/e7/All_you_need_is_kill_poster.webp",
+    "synopsis": "A rookie soldier trapped in a time loop reliving the same alien invasion must die and reset over and over — until he learns to use it as a weapon.",
+    "year": 2025,
+    "rating": 7.4,
+    "durationMinutes": 82,
+    "director": "Doug Liman",
+    "cast": [
+      "Tom Cruise",
+      "Emily Blunt",
+      "Bill Paxton"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 623,
+    "title": "The Outer Threat",
+    "posterUrl": "https://m.media-amazon.com/images/M/MV5BNjBhZGE0NWUtNzkxMy00NDY1LWE2ZmEtMTNjZmY1OTc4ZjBkXkEyXkFqcGc@._V1_.jpg",
+    "synopsis": "A UN crisis negotiator becomes humanity's last line of defense when an extraterrestrial presence makes its intentions unmistakably clear over every major city simultaneously.",
+    "year": 2026,
+    "rating": 6.5,
+    "durationMinutes": 94,
+    "director": "F. Gary Gray",
+    "cast": [
+      "Constance Wu",
+      "Michael B. Jordan",
+      "Viola Davis"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 624,
+    "title": "28 Years Later: The Bone Temple",
+    "posterUrl": "https://m.media-amazon.com/images/M/MV5BZGU2M2Y1YTItMWYxNS00NDYxLThhOTYtNjNhOWUzNjA3MTYwXkEyXkFqcGc@._V1_.jpg",
+    "synopsis": "Nearly three decades after the rage virus reshaped Britain, a medic ventures into a quarantined zone and uncovers a cult that has learned to weaponize the infected.",
+    "year": 2026,
+    "rating": 7.9,
+    "durationMinutes": 109,
+    "director": "Nia DaCosta",
+    "cast": [
+      "Aaron Taylor-Johnson",
+      "Ralph Fiennes",
+      "Jodie Comer"
+    ],
+    "genre": "Sci-Fi",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
   }
 ]
