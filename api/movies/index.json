@@ -20,26 +20,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 11,
-    "title": "Concrete Roses",
-    "synopsis": "A community garden growing in the ruins of a demolished block becomes the last thing three generations of one family can agree is worth saving.",
-    "genre": "Drama",
-    "year": 2022,
-    "rating": 8.3,
-    "durationMinutes": 121,
-    "posterUrl": "./movies/concrete-roses-poster.jpg",
-    "cast": [
-      "Rosalind Achterman",
-      "Elias Nkemelu",
-      "Farrah Duquette"
-    ],
-    "director": "Adaeze Lindstrom",
-    "isFeatured": true,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 3,
     "title": "Echo Nebula",
     "synopsis": "A deep-space signal that shouldn't exist pulls a lone salvage pilot into the heart of a dying nebula, where echoes of a lost civilization are still calling out.",
@@ -150,25 +130,6 @@
       "Ines Okafor"
     ],
     "director": "Odalys Ferrer",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 12,
-    "title": "The Weight of Water",
-    "synopsis": "A lighthouse keeper's daughter returns to the lake she nearly drowned in as a child to scatter her father's ashes, and finally learn why he never left.",
-    "genre": "Drama",
-    "year": 2017,
-    "rating": 7.5,
-    "durationMinutes": 114,
-    "posterUrl": "./movies/weight-of-water-poster.jpg",
-    "cast": [
-      "Imelda Rourke",
-      "Tariq Van Doren"
-    ],
-    "director": "Soren Kaplan",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
@@ -1058,6 +1019,216 @@
       "Alan Ruck"
     ],
     "genre": "Comedy",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 401,
+    "title": "Project Hail Mary",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/yihdXomYb5kTeSivtFndMy5iDmf.webp",
+    "synopsis": "Science teacher Ryland Grace awakens alone aboard a spaceship far from Earth with no memory of how he got there. On a desperate last-chance mission to save the sun — and humanity — he makes an extraordinary discovery that changes everything.",
+    "year": 2026,
+    "rating": 8.5,
+    "durationMinutes": 156,
+    "director": "Phil Lord & Christopher Miller",
+    "cast": [
+      "Ryan Gosling",
+      "Sandra Hüller",
+      "James Ortiz",
+      "Lionel Boyce"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 402,
+    "title": "The Drama",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qhGCY6DIemLoCi7x1GuEt98m4JF.webp",
+    "synopsis": "A happily engaged couple is put to the test when an unexpected revelation turns the week before their wedding into a darkly comic spiral of doubt, desire, and reckoning.",
+    "year": 2026,
+    "rating": 7.6,
+    "durationMinutes": 105,
+    "director": "Kristoffer Borgli",
+    "cast": [
+      "Zendaya",
+      "Robert Pattinson",
+      "Alana Haim",
+      "Mamoudou Athie"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 403,
+    "title": "Michael",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/zm0KAbOjlt9eR5y7vDiL2dEOwMl.webp",
+    "synopsis": "Spanning his childhood with the Jackson 5 in the 1960s through the Bad World Tour of the late 1980s, this biographical drama explores the extraordinary rise and complicated inner life of the King of Pop.",
+    "year": 2026,
+    "rating": 7.3,
+    "durationMinutes": 127,
+    "director": "Antoine Fuqua",
+    "cast": [
+      "Jaafar Jackson",
+      "Colman Domingo",
+      "Nia Long",
+      "Juliano Krue Valdi"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 404,
+    "title": "The Housemaid",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/cWsBscZzwu5brg9YjNkGewRUvJX.webp",
+    "synopsis": "A young woman with a dark past takes a job as a live-in housekeeper for a wealthy, seemingly perfect couple — and soon discovers that nothing about her new life, or her employers, is what it appears to be.",
+    "year": 2025,
+    "rating": 7.4,
+    "durationMinutes": 131,
+    "director": "Paul Feig",
+    "cast": [
+      "Sydney Sweeney",
+      "Amanda Seyfried",
+      "Brandon Sklenar",
+      "Michele Morrone"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 405,
+    "title": "One Battle After Another",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/lbBWwxBht4JFP5PsuJ5onpMqugW.webp",
+    "synopsis": "Washed-up revolutionary Bob exists in stoned paranoia, surviving off-grid with his spirited daughter Willa. When his ruthless nemesis resurfaces from the past, their quiet life is hurled into a chaotic, decade-spanning reckoning.",
+    "year": 2025,
+    "rating": 8.5,
+    "durationMinutes": 170,
+    "director": "Paul Thomas Anderson",
+    "cast": [
+      "Leonardo DiCaprio",
+      "Sean Penn",
+      "Chase Infiniti",
+      "Benicio del Toro"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 406,
+    "title": "Disclosure Day",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/AnJ8IQJI23hNpYXVNaythu061Ru.webp",
+    "synopsis": "A Kansas City meteorologist witnesses something impossible in the sky, setting off a chain of events that forces the world's governments to finally answer the question they have avoided for decades.",
+    "year": 2026,
+    "rating": 7.8,
+    "durationMinutes": 145,
+    "director": "Steven Spielberg",
+    "cast": [
+      "Emily Blunt",
+      "Josh O'Connor",
+      "Colin Firth",
+      "Colman Domingo"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 407,
+    "title": "The Currents",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/2FoJ5yI1sJGAiehBnIaxraWp6Gp.webp",
+    "synopsis": "At the height of her career, Argentine stylist Lina is seized by a sudden, inexplicable impulse after an awards ceremony in Switzerland — the beginning of a quietly devastating psychological unravelling.",
+    "year": 2025,
+    "rating": 7.3,
+    "durationMinutes": 104,
+    "director": "Milagros Mumenthaler",
+    "cast": [
+      "Isabel Aimé González Sola",
+      "Esteban Bigliardi",
+      "Ernestina Gatti",
+      "Sara Bessio"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 408,
+    "title": "Gangland",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/aH31UkJsXNV5ChFMg7vJMA4O5b1.webp",
+    "synopsis": "A weathered tribal cop and his green new trainee must track down a ruthless killer before time runs out — a gripping crime drama set on a Native American reservation where loyalty and justice rarely align.",
+    "year": 2025,
+    "rating": 7.8,
+    "durationMinutes": 104,
+    "director": "Various",
+    "cast": [
+      "Lou Diamond Phillips",
+      "Nick Stahl",
+      "Dana Namerode",
+      "Elisha Pratt"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 409,
+    "title": "Heartstopper Forever",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/r4lVJVO1BeBb11cBcXBdbHc9e9k.webp",
+    "synopsis": "Nick and Charlie navigate love, university and an uncertain future in this joyful, emotional feature-length finale that brings Alice Oseman's beloved Heartstopper story to its long-awaited conclusion.",
+    "year": 2026,
+    "rating": 8.1,
+    "durationMinutes": 111,
+    "director": "Wash Westmoreland",
+    "cast": [
+      "Kit Connor",
+      "Joe Locke",
+      "William Gao",
+      "Yasmin Finney"
+    ],
+    "genre": "Drama",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 410,
+    "title": "Young Washington",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/ntW9zzhDmbt3sXDyPXb7SHVuDdB.webp",
+    "synopsis": "Before he became the first president of the United States, a young George Washington forged his identity amid the chaos, ambition and bloodshed of the French and Indian War — an epic portrait of a leader in the making.",
+    "year": 2026,
+    "rating": 7.5,
+    "durationMinutes": 125,
+    "director": "Jon Erwin",
+    "cast": [
+      "William Franklyn-Miller",
+      "Ben Kingsley",
+      "Mary-Louise Parker",
+      "Leo Hanna"
+    ],
+    "genre": "Drama",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
