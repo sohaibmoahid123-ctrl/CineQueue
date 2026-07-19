@@ -40,25 +40,6 @@
     "downloadUrl720p": "#"
   },
   {
-    "id": 5,
-    "title": "Paper Constellations",
-    "synopsis": "Two strangers who keep folding their futures into paper stars discover the rooftop they both retreat to is the only place their timing ever lines up.",
-    "genre": "Romance",
-    "year": 2022,
-    "rating": 7.2,
-    "durationMinutes": 101,
-    "posterUrl": "./movies/paper-constellations-poster.jpg",
-    "cast": [
-      "Beatrix Lindqvist",
-      "Marcus Ude"
-    ],
-    "director": "Julieta Marsh",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
     "id": 14,
     "title": "The Fourth Witness",
     "synopsis": "Three witnesses have already recanted. The fourth is the only one telling the truth, and someone is running out of time to make sure she never testifies.",
@@ -91,25 +72,6 @@
       "Ines Okafor"
     ],
     "director": "Odalys Ferrer",
-    "isFeatured": false,
-    "inWatchlist": false,
-    "downloadUrl1080p": "#",
-    "downloadUrl720p": "#"
-  },
-  {
-    "id": 6,
-    "title": "Two Left Shoes",
-    "synopsis": "A hopeless dancer and the instructor who can't stand him are forced into the same competition, wrong-footed, mismatched, and somehow perfect.",
-    "genre": "Romance",
-    "year": 2018,
-    "rating": 6.3,
-    "durationMinutes": 96,
-    "posterUrl": "./movies/two-left-shoes-poster.jpg",
-    "cast": [
-      "Odessa Kwan",
-      "Louis Petrov"
-    ],
-    "director": "Franco Bellamy",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
@@ -1379,6 +1341,195 @@
       "Shawn Hatosy"
     ],
     "genre": "Horror",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 601,
+    "title": "The Drama",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qhGCY6DIemLoCi7x1GuEt98m4JF.jpg",
+    "synopsis": "A happily engaged couple is put to the test when an unexpected revelation turns the week before their wedding into a darkly comic spiral of doubt, desire, and reckoning.",
+    "year": 2026,
+    "rating": 7.6,
+    "durationMinutes": 105,
+    "director": "Kristoffer Borgli",
+    "cast": [
+      "Zendaya",
+      "Robert Pattinson",
+      "Alana Haim",
+      "Mamoudou Athie"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 602,
+    "title": "Heartstopper Forever",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/r4lVJVO1BeBb11cBcXBdbHc9e9k.jpg",
+    "synopsis": "Nick and Charlie navigate love, university and an uncertain future in this joyful, emotional feature-length finale that brings Alice Oseman's beloved Heartstopper story to its long-awaited conclusion.",
+    "year": 2026,
+    "rating": 8.1,
+    "durationMinutes": 111,
+    "director": "Wash Westmoreland",
+    "cast": [
+      "Kit Connor",
+      "Joe Locke",
+      "William Gao",
+      "Yasmin Finney"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 603,
+    "title": "The Invite",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/b7Dr8Chzse8VagexAporUu2RtLx.jpg",
+    "synopsis": "A long-running relationship and the wedding that was supposed to seal it are put to the ultimate test in this sharp, A24-produced comedy remake from director Olivia Wilde.",
+    "year": 2026,
+    "rating": 7.4,
+    "durationMinutes": 100,
+    "director": "Olivia Wilde",
+    "cast": [
+      "Seth Rogen",
+      "Olivia Wilde",
+      "Penélope Cruz",
+      "Edward Norton"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 604,
+    "title": "Obsession",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
+    "synopsis": "A music store employee buys a supernatural toy that grants his desperate wish — making his friend Nikki fall in love with him. But the wish carries a terrifying price that spirals out of control.",
+    "year": 2025,
+    "rating": 7.9,
+    "durationMinutes": 108,
+    "director": "Curry Barker",
+    "cast": [
+      "Michael Johnston",
+      "Inde Navarrette",
+      "Cooper Tomlinson",
+      "Megan Lawless"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 605,
+    "title": "Boulevard",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sQS3zYJznspQwNSCv9LMc5VHQST.jpg",
+    "synopsis": "Hasley is a young woman who falls unexpectedly in love on the streets of her city, forcing her to choose between the life she planned and the connection she never saw coming. Based on the bestselling Wattpad novel.",
+    "year": 2026,
+    "rating": 7.1,
+    "durationMinutes": 112,
+    "director": "Sonia Méndez",
+    "cast": [
+      "Eve Ryan",
+      "Mikel Niso",
+      "Esther Acebo",
+      "Luis Zahera"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 606,
+    "title": "Your Fault: London",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/nLxu237EJAisFCYKK48hN9Plobx.jpg",
+    "synopsis": "Nick and Noah face the ultimate test of their love as Noah begins a new life at Oxford University while Nick stays in London. Separated by distance and ambition, they must decide if their love is strong enough to survive.",
+    "year": 2026,
+    "rating": 7.5,
+    "durationMinutes": 105,
+    "director": "Dani Girdwood & Charlotte Fassler",
+    "cast": [
+      "Asha Banks",
+      "Matthew Broome",
+      "Louisa Binder",
+      "Joel Nankervis"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 607,
+    "title": "Voicemails for Isabelle",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/canZTWSxACSnAluir3dCtMxKpA1.jpg",
+    "synopsis": "Jill copes with her sister's death by leaving voicemails on Isabelle's old number chronicling her chaotic life. When the number is reassigned, an elusive Austin real estate agent begins receiving them — and slowly falls in love with a stranger he has never met.",
+    "year": 2026,
+    "rating": 7.8,
+    "durationMinutes": 118,
+    "director": "Leah McKendrick",
+    "cast": [
+      "Zoey Deutch",
+      "Nick Robinson",
+      "Ciara Bravo",
+      "Nick Offerman"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 608,
+    "title": "Office Romance",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1HRUTqEVDmJC4L6tp6zd85MI6uH.jpg",
+    "synopsis": "Jackie, the iron-fisted CEO of Air Cruz, enforces a strict no-fraternization policy — until a charming new company lawyer makes her question every rule she has ever made for herself and her company.",
+    "year": 2026,
+    "rating": 6.3,
+    "durationMinutes": 114,
+    "director": "Ol Parker",
+    "cast": [
+      "Jennifer Lopez",
+      "Brett Goldstein",
+      "Betty Gilpin",
+      "Edward James Olmos"
+    ],
+    "genre": "Romance",
+    "isFeatured": false,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 609,
+    "title": "The Perfect Find",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fZXturIugHYCl7T6oLeMj1AWm7p.jpg",
+    "synopsis": "A fashion editor's long-awaited career comeback hits an awkward snag when she discovers the charming young man she kissed at a party is her new coworker — and her boss's son.",
+    "year": 2023,
+    "rating": 7,
+    "durationMinutes": 99,
+    "director": "Numa Perrier",
+    "cast": [
+      "Gabrielle Union",
+      "Keith Powers",
+      "Gina Torres",
+      "Aisha Hinds"
+    ],
+    "genre": "Romance",
     "isFeatured": false,
     "inWatchlist": false,
     "downloadUrl1080p": "#",
