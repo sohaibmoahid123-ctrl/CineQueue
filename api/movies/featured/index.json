@@ -1,0 +1,62 @@
+[
+  {
+    "id": 11,
+    "title": "Concrete Roses",
+    "synopsis": "A community garden growing in the ruins of a demolished block becomes the last thing three generations of one family can agree is worth saving.",
+    "genre": "Drama",
+    "year": 2022,
+    "rating": 8.3,
+    "durationMinutes": 121,
+    "posterUrl": "./movies/concrete-roses-poster.jpg",
+    "cast": [
+      "Rosalind Achterman",
+      "Elias Nkemelu",
+      "Farrah Duquette"
+    ],
+    "director": "Adaeze Lindstrom",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 3,
+    "title": "Echo Nebula",
+    "synopsis": "A deep-space signal that shouldn't exist pulls a lone salvage pilot into the heart of a dying nebula, where echoes of a lost civilization are still calling out.",
+    "genre": "Sci-Fi",
+    "year": 2023,
+    "rating": 8.1,
+    "durationMinutes": 132,
+    "posterUrl": "./movies/echo-nebula-poster.jpg",
+    "cast": [
+      "Alix Moreno",
+      "Theo Bankole",
+      "Wren Castillo"
+    ],
+    "director": "Renata Suh",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  },
+  {
+    "id": 7,
+    "title": "The Hollow Choir",
+    "synopsis": "A restoration crew reopens a chapel silent for sixty years and finds its choir never actually stopped singing -- it just stopped needing an audience.",
+    "genre": "Horror",
+    "year": 2023,
+    "rating": 7.8,
+    "durationMinutes": 112,
+    "posterUrl": "./movies/hollow-choir-poster.jpg",
+    "cast": [
+      "Dashiell Vance",
+      "Petra Lindholm",
+      "Amara Solis"
+    ],
+    "director": "Camille Osei",
+    "isFeatured": true,
+    "inWatchlist": false,
+    "downloadUrl1080p": "#",
+    "downloadUrl720p": "#"
+  }
+]
