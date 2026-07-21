@@ -338,7 +338,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-;/* --- Overlay Video Player (Exact Backdrop Fit) --- */
+;/* --- Overlay Video Player (Fixed Height Fix) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -348,11 +348,10 @@ document.addEventListener("click", function(e) {
     if (backdrop) {
       backdrop.dataset.originalHtml = backdrop.innerHTML;
       backdrop.style.position = "relative";
-      backdrop.style.overflow = "hidden";
 
-      // پلیر ۱۰۰٪ جایگزین تصویر بلور در همان کادر مشخص می‌شود
+      // قفل کردن ارتفاع روی ۲۵۰ پیکسل تا اصلاً به پوستر نرسد
       backdrop.innerHTML = `
-        <div style="position:absolute; inset:0; width:100%; height:100%; background:#000; z-index:1;">
+        <div style="position:absolute; top:0; left:0; width:100%; height:250px; background:#000; z-index:1; border-radius:0 0 12px 12px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.7);">
           <button id="hero-close-btn" style="position:absolute; top:12px; right:12px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:34px; height:34px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
           <iframe 
             src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
@@ -383,7 +382,7 @@ const observer = new MutationObserver(() => {
       const btn = document.createElement("button");
       btn.id = "hero-play-btn";
       btn.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left:3px;"><path d="M8 5v14l11-7z"/></svg>`;
-      btn.style.cssText = "position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.9); border:none; border-radius:50%; width:70px; height:70px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow:0 6px 20px rgba(0,0,0,0.6); transition:transform 0.2s;";
+      btn.style.cssText = "position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.9); border:none; border-radius:50%; width:70px; height:70px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow:0 6px 20px rgba(0,0,0,0.6); transition:transform 0.2s;";
       
       btn.onmouseover = () => btn.style.transform = "translate(-50%,-50%) scale(1.1)";
       btn.onmouseout = () => btn.style.transform = "translate(-50%,-50%) scale(1)";
