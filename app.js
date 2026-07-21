@@ -338,7 +338,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-/* --- Overlay Video Player (Only inside Movie Details) --- */
+;/* --- Overlay Video Player --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   if (playBtn) {
@@ -358,7 +358,6 @@ document.addEventListener("click", function(e) {
 });
 
 const observer = new MutationObserver(() => {
-  // فقط اگر در صفحه جزئیات فیلم بودیم (#movie/)
   if (window.location.hash.includes("movie/")) {
     const backdrop = document.querySelector(".hero-backdrop") || document.querySelector("[style*='background-image']");
     if (backdrop && !document.getElementById("hero-play-btn") && !backdrop.querySelector("iframe")) {
