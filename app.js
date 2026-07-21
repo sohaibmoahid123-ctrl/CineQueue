@@ -338,3 +338,36 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
+;/* --- Overlay Video Player --- */
+document.addEventListener("click", function(e) {
+  const playBtn = e.target.closest("#hero-play-btn");
+  if (playBtn) {
+    const backdrop = document.querySelector(".hero-backdrop") || document.querySelector("[style*='background-image']");
+    if (backdrop) {
+      backdrop.innerHTML = `
+        <div style="position:absolute; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.8);">
+          <iframe 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+            style="width:90%; height:90%; border:none; border-radius:12px;" 
+            allow="autoplay; encrypted-media; fullscreen" 
+            allowfullscreen>
+          </iframe>
+        </div>`;
+    }
+  }
+});
+
+const observer = new MutationObserver(() => {
+  const backdrop = document.querySelector(".hero-backdrop") || document.querySelector("[style*='background-image']");
+  if (backdrop && !document.getElementById("hero-play-btn") && !backdrop.querySelector("iframe")) {
+    backdrop.style.position = "relative";
+    const btn = document.createElement("button");
+    btn.id = "hero-play-btn";
+    btn.innerHTML = `<svg width="64" height="64" viewBox="0 0 24 24" fill="#E50914" style="filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));"><path d="M8 5v14l11-7z"/></svg>`;
+    btn.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.8); border-radius:50%; width:80px; height:80px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; transition:transform 0.2s;";
+    btn.onmouseover = () => btn.style.transform = "translate(-50%,-50%) scale(1.1)";
+    btn.onmouseout = () => btn.style.transform = "translate(-50%,-50%) scale(1)";
+    backdrop.appendChild(btn);
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
