@@ -338,7 +338,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-;/* --- Overlay Video Player & Full Content Shift --- */
+;/* --- Overlay Video Player (Shifted Up) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -347,10 +347,12 @@ document.addEventListener("click", function(e) {
     const backdrop = playBtn.parentElement;
     if (backdrop) {
       backdrop.dataset.originalHtml = backdrop.innerHTML;
-      
+      backdrop.style.position = "relative";
+
+      // پلیر کاملاً بالا می‌رود و ارتفاعش تنظیم می‌شود تا روی پوستر نیفتد
       backdrop.innerHTML = `
-        <div style="position:relative; width:100%; height:100%; min-height:350px; background:#000; display:flex; align-items:center; justify-content:center; border-radius:12px; overflow:hidden;">
-          <button id="hero-close-btn" style="position:absolute; top:12px; right:12px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:18px; font-weight:bold; display:flex; align-items:center; justify-content:center;">✕</button>
+        <div style="position:absolute; top:0; left:0; width:100%; height:260px; background:#000; z-index:100; border-radius:12px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.7);">
+          <button id="hero-close-btn" style="position:absolute; top:10px; right:10px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
           <iframe 
             src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
             style="width:100%; height:100%; border:none;" 
@@ -372,15 +374,6 @@ document.addEventListener("click", function(e) {
 
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
-    // پیدا کردن کادر اصلی تمام محتوای زیر پس‌زمینه بلور
-    const mainContainer = document.querySelector(".movie-content, .details-container, main > div") || document.querySelector("main");
-    
-    if (mainContainer && !mainContainer.dataset.shifted) {
-      // ایجاد فاصله از بالا برای کل بخش‌ها (پوستر، اسم، توضیحات، دکمه دانلود)
-      mainContainer.style.paddingTop = "120px";
-      mainContainer.dataset.shifted = "true";
-    }
-
     const targetArea = document.querySelector("[class*='backdrop'], [class*='hero'], [style*='background']") || document.querySelector("main");
     if (targetArea && !document.getElementById("hero-play-btn") && !targetArea.querySelector("iframe")) {
       const currentPos = window.getComputedStyle(targetArea).position;
@@ -388,8 +381,8 @@ const observer = new MutationObserver(() => {
 
       const btn = document.createElement("button");
       btn.id = "hero-play-btn";
-      btn.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>`;
-      btn.style.cssText = "position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.9); border:none; border-radius:50%; width:75px; height:75px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow:0 8px 25px rgba(0,0,0,0.6); transition:transform 0.2s;";
+      btn.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left:3px;"><path d="M8 5v14l11-7z"/></svg>`;
+      btn.style.cssText = "position:absolute; top:28%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.9); border:none; border-radius:50%; width:70px; height:70px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow:0 6px 20px rgba(0,0,0,0.6); transition:transform 0.2s;";
       
       btn.onmouseover = () => btn.style.transform = "translate(-50%,-50%) scale(1.1)";
       btn.onmouseout = () => btn.style.transform = "translate(-50%,-50%) scale(1)";
