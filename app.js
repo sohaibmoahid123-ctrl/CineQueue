@@ -337,3 +337,4 @@ function wireCards() {
 
 // ── Start the app ─────────────────────────────────────────────
 init();
+}export{t as default};
