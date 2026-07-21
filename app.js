@@ -338,17 +338,17 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-;/* --- Overlay Video Player --- */
+;/* --- Overlay Video Player (Final Fix) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   if (playBtn) {
-    const backdrop = document.querySelector(".hero-backdrop") || document.querySelector("[style*='background-image']");
+    const backdrop = playBtn.parentElement;
     if (backdrop) {
       backdrop.innerHTML = `
-        <div style="position:absolute; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
+        <div style="position:absolute; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.9); border-radius:16px; overflow:hidden;">
           <iframe 
             src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
-            style="width:90%; height:90%; border:none; border-radius:12px;" 
+            style="width:100%; height:100%; border:none;" 
             allow="autoplay; encrypted-media; fullscreen" 
             allowfullscreen>
           </iframe>
@@ -359,16 +359,23 @@ document.addEventListener("click", function(e) {
 
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
-    const backdrop = document.querySelector(".hero-backdrop") || document.querySelector("[style*='background-image']");
-    if (backdrop && !document.getElementById("hero-play-btn") && !backdrop.querySelector("iframe")) {
-      backdrop.style.position = "relative";
+    const backBtn = document.querySelector("a[href*='#'], button, .back-btn") || document.body;
+    // پیدا کردن کادر بالای صفحه جزئیات
+    const targetArea = document.querySelector("[class*='backdrop'], [class*='hero'], [style*='background']") || document.querySelector("main") || document.body;
+    
+    if (targetArea && !document.getElementById("hero-play-btn") && !targetArea.querySelector("iframe")) {
+      const currentPos = window.getComputedStyle(targetArea).position;
+      if (currentPos === "static") targetArea.style.position = "relative";
+
       const btn = document.createElement("button");
       btn.id = "hero-play-btn";
-      btn.innerHTML = `<svg width="64" height="64" viewBox="0 0 24 24" fill="#E50914" style="filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));"><path d="M8 5v14l11-7z"/></svg>`;
-      btn.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.8); border-radius:50%; width:80px; height:80px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; transition:transform 0.2s;";
-      btn.onmouseover = () => btn.style.transform = "translate(-50%,-50%) scale(1.1)";
-      btn.onmouseout = () => btn.style.transform = "translate(-50%,-50%) scale(1)";
-      backdrop.appendChild(btn);
+      btn.innerHTML = `<svg width="50" height="50" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>`;
+      btn.style.cssText = "position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.85); border:none; border-radius:50%; width:85px; height:85px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition:transform 0.2s, background 0.2s;";
+      
+      btn.onmouseover = () => { btn.style.transform = "translate(-50%,-50%) scale(1.1)"; btn.style.background = "#e50914"; };
+      btn.onmouseout = () => { btn.style.transform = "translate(-50%,-50%) scale(1)"; btn.style.background = "rgba(229,9,20,0.85)"; };
+      
+      targetArea.appendChild(btn);
     }
   }
 });
