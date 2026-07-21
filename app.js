@@ -338,44 +338,46 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-;/* --- Overlay Video Player (Fixed Height Fix) --- */
+;/* --- Overlay Video Player (Independent Container) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
 
   if (playBtn) {
-    const backdrop = playBtn.parentElement;
-    if (backdrop) {
-      backdrop.dataset.originalHtml = backdrop.innerHTML;
-      backdrop.style.position = "relative";
+    const mainContainer = document.querySelector("main") || document.body;
+    
+    // اگر از قبل پلیر باز نبود، یکی جدید بالای تمام محتوا بزار
+    if (!document.getElementById("active-video-player")) {
+      const playerWrapper = document.createElement("div");
+      playerWrapper.id = "active-video-player";
+      playerWrapper.style.cssText = "position:relative; width:100%; height:280px; background:#000; z-index:100; border-radius:12px; margin-bottom:15px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.8);";
+      
+      playerWrapper.innerHTML = `
+        <button id="hero-close-btn" style="position:absolute; top:10px; right:10px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:34px; height:34px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
+        <iframe 
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+          style="width:100%; height:100%; border:none;" 
+          allow="autoplay; encrypted-media; fullscreen" 
+          allowfullscreen>
+        </iframe>`;
 
-      // قفل کردن ارتفاع روی ۲۵۰ پیکسل تا اصلاً به پوستر نرسد
-      backdrop.innerHTML = `
-        <div style="position:absolute; top:0; left:0; width:100%; height:250px; background:#000; z-index:1; border-radius:0 0 12px 12px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.7);">
-          <button id="hero-close-btn" style="position:absolute; top:12px; right:12px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:34px; height:34px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
-          <iframe 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
-            style="width:100%; height:100%; border:none;" 
-            allow="autoplay; encrypted-media; fullscreen" 
-            allowfullscreen>
-          </iframe>
-        </div>`;
+      mainContainer.insertBefore(playerWrapper, mainContainer.firstChild);
+      playBtn.style.display = "none";
     }
   }
 
   if (closeBtn) {
-    const backdrop = closeBtn.closest("[data-original-html]");
-    if (backdrop && backdrop.dataset.originalHtml) {
-      backdrop.innerHTML = backdrop.dataset.originalHtml;
-      delete backdrop.dataset.originalHtml;
-    }
+    const playerWrapper = document.getElementById("active-video-player");
+    const playBtn = document.getElementById("hero-play-btn");
+    if (playerWrapper) playerWrapper.remove();
+    if (playBtn) playBtn.style.display = "flex";
   }
 });
 
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
     const targetArea = document.querySelector("[class*='backdrop'], [class*='hero'], [style*='background']") || document.querySelector("main");
-    if (targetArea && !document.getElementById("hero-play-btn") && !targetArea.querySelector("iframe")) {
+    if (targetArea && !document.getElementById("hero-play-btn") && !document.getElementById("active-video-player")) {
       const currentPos = window.getComputedStyle(targetArea).position;
       if (currentPos === "static") targetArea.style.position = "relative";
 
