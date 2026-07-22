@@ -726,3 +726,42 @@ img, iframe, video {
     font-size: 1.4rem;
   }
 }
+/* ==========================================
+   اصلاح چیدمان موبایل (Responsive Fix)
+   ========================================== */
+
+/* 1. جلوگیری از بیرون زدن ویدیو و پوستر */
+iframe, video, img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* 2. تنظیمات اختصاصی برای صفحه گوشی */
+@media (max-width: 768px) {
+  
+  /* مرتب کردن پلیر در موبایل */
+  div[style*="aspect-ratio"], 
+  .player-container, 
+  iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 auto 15px auto !important;
+  }
+
+  /* زیر هم چیده شدن عناصر تا روی هم نیفتند */
+  body, main, container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 10px !important;
+  }
+
+  /* تنظیم اندازه پوستر در موبایل */
+  img {
+    width: 180px !important;
+    margin: 10px auto !important;
+  }
+}
