@@ -21,19 +21,31 @@ let heroTimer    = null;
 async function init() {
   showLoading();
   try {
-    const [moviesRes, featuredRes] = await Promise.all([
-      fetch('./api/movies/index.json'),
-      fetch('./api/movies/featured/index.json')
-    ]);
-    allMovies      = await moviesRes.json();
-    featuredMovies = await featuredRes.json();
+    const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`);
+    const data = await res.json();
+
+    allMovies = data.results.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+      synopsis: movie.overview,
+      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2024'),
+      rating: movie.vote_average,
+      downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
+      downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
+    }));
+
+    featuredMovies = allMovies.slice(0, 5);
+
   } catch (err) {
     app.innerHTML = '<div class="error"><h2>Could not load movies.</h2><p>Please refresh the page.</p></div>';
     return;
   }
+
   window.addEventListener('hashchange', route);
   route();
 }
+
 
 // ── Router ────────────────────────────────────────────────────
 function route() {
