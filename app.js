@@ -21,51 +21,79 @@ let heroTimer    = null;
 async function init() {
   showLoading();
   try {
-    // ۱. دریافت هم‌زمان لیست ژانرها و ۳ صفحه از فیلم‌های محبوب (جمعاً ۶۰ فیلم)
-    const [genresRes, p1, p2, p3] = await Promise.all([
-      fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`),
-      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`),
-      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=2`),
-      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=3`)
+    const pagesToFetch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const fetchPromises = pagesToFetch.map(page => 
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`).then(res => res.json())
+    );
+
+    const [genresRes, ...pagesData] = await Promise.all([
+      fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json()),
+      ...fetchPromises
     ]);
 
-    const genresData = await genresRes.json();
-    const data1 = await p1.json();
-    const data2 = await p2.json();
-    const data3 = await p3.json();
+    let rawMovies = [];
+    pagesData.forEach(p => {
+      if (p.results) rawMovies.push(...p.results);
+    });
+    rawMovies = rawMovies.filter(m => !m.adult);
 
-    // ترکیب ۶۰ فیلم دریافت شده از ۳ صفحه
-    const combinedResults = [...data1.results, ...data2.results, ...data3.results];
-
-    // نقشه ژانرها
     const genreMap = {};
-    if (genresData.genres) {
-      genresData.genres.forEach(g => { genreMap[g.id] = g.name; });
+    if (genresRes.genres) {
+      genresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
     }
 
-    // ۲. فرمت کردن و مشخص کردن ژانر برای تمام ۶۰ فیلم
-    allMovies = combinedResults.map(movie => {
-      const primaryGenre = (movie.genre_ids && movie.genre_ids.length > 0 && genreMap[movie.genre_ids[0]])
-        ? genreMap[movie.genre_ids[0]]
-        : 'Action';
+    const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance'];
+    
+    const genreCounts = {
+      'Popular Movies': 0,
+      'Action': 0,
+      'Animation': 0,
+      'Crime': 0,
+      'Horror': 0,
+      'Romance': 0
+    };
 
-      return {
-        id: movie.id,
-        title: movie.title,
-        posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
-        synopsis: movie.overview || 'No synopsis available.',
-        year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
-        rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
-        durationMinutes: 120,
-        genre: primaryGenre,
-        director: 'TMDB Cinema',
-        cast: ['Popular Actor'],
-        downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
-        downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
-      };
+    allMovies = [];
+
+    const buildMovieObj = (movie, assignedGenre) => ({
+      id: movie.id,
+      title: movie.title,
+      posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+      synopsis: movie.overview || 'No synopsis available.',
+      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
+      rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+      durationMinutes: 120,
+      genre: assignedGenre,
+      director: 'TMDB Cinema',
+      cast: ['Popular Actor'],
+      downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
+      downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
     });
 
-    // ۵ فیلم اول برای اسلایدر بالای صفحه
+    for (const movie of rawMovies) {
+      if (genreCounts['Popular Movies'] < 15) {
+        allMovies.push(buildMovieObj(movie, 'Popular Movies'));
+        genreCounts['Popular Movies']++;
+        continue;
+      }
+
+      if (movie.genre_ids && movie.genre_ids.includes(16)) {
+        if (genreCounts['Animation'] < 15) {
+          allMovies.push(buildMovieObj(movie, 'Animation'));
+          genreCounts['Animation']++;
+          continue;
+        }
+      }
+
+      if (movie.genre_ids) {
+        const matchedName = movie.genre_ids.map(id => genreMap[id]).find(name => allowedGenres.includes(name) && name !== 'Animation');
+        if (matchedName && genreCounts[matchedName] < 15) {
+          allMovies.push(buildMovieObj(movie, matchedName));
+          genreCounts[matchedName]++;
+        }
+      }
+    }
+
     featuredMovies = allMovies.slice(0, 5);
 
   } catch (err) {
