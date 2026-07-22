@@ -7,6 +7,9 @@
 // To edit download links, find the movie in that file and
 // change "downloadUrl1080p" and "downloadUrl720p" values.
 // ============================================================
+const API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const app = document.getElementById('app');
 let allMovies    = [];
