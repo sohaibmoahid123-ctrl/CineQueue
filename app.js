@@ -21,24 +21,30 @@ let heroTimer    = null;
 async function init() {
   showLoading();
   try {
-    // ۱. دریافت لیست رسمی ژانرها و فیلم‌های محبوب از TMDB
-    const [genresRes, popRes] = await Promise.all([
+    // ۱. دریافت هم‌زمان لیست ژانرها و ۳ صفحه از فیلم‌های محبوب (جمعاً ۶۰ فیلم)
+    const [genresRes, p1, p2, p3] = await Promise.all([
       fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`),
-      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`),
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=2`),
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=3`)
     ]);
 
     const genresData = await genresRes.json();
-    const popData = await popRes.json();
+    const data1 = await p1.json();
+    const data2 = await p2.json();
+    const data3 = await p3.json();
 
-    // ساخت یک نقشه (Map) برای تبدیل ID ژانرها به نام فارسی/انگلیسی آن‌ها
+    // ترکیب ۶۰ فیلم دریافت شده از ۳ صفحه
+    const combinedResults = [...data1.results, ...data2.results, ...data3.results];
+
+    // نقشه ژانرها
     const genreMap = {};
     if (genresData.genres) {
       genresData.genres.forEach(g => { genreMap[g.id] = g.name; });
     }
 
-    // ۲. تبدیل و فرمت فیلم‌ها همراه با تشخیص ژانر واقعی
-    allMovies = popData.results.map(movie => {
-      // تشخیص اولین ژانر فیلم
+    // ۲. فرمت کردن و مشخص کردن ژانر برای تمام ۶۰ فیلم
+    allMovies = combinedResults.map(movie => {
       const primaryGenre = (movie.genre_ids && movie.genre_ids.length > 0 && genreMap[movie.genre_ids[0]])
         ? genreMap[movie.genre_ids[0]]
         : 'Action';
@@ -51,7 +57,7 @@ async function init() {
         year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
         rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
         durationMinutes: 120,
-        genre: primaryGenre, // ژانر واقعی فیلم (Action, Comedy, Sci-Fi و...)
+        genre: primaryGenre,
         director: 'TMDB Cinema',
         cast: ['Popular Actor'],
         downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
@@ -59,7 +65,7 @@ async function init() {
       };
     });
 
-    // ۵ فیلم اول برای اسلایدر اصلی بالای صفحه
+    // ۵ فیلم اول برای اسلایدر بالای صفحه
     featuredMovies = allMovies.slice(0, 5);
 
   } catch (err) {
