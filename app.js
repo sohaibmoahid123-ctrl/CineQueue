@@ -28,9 +28,13 @@ async function init() {
       id: movie.id,
       title: movie.title,
       posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
-      synopsis: movie.overview,
-      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2024'),
-      rating: movie.vote_average,
+      synopsis: movie.overview || 'No synopsis available.',
+      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
+      rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+      durationMinutes: 120,
+      genre: 'Action',
+      director: 'TMDB Cinema',
+      cast: ['Popular Movie'],
       downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
       downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
     }));
