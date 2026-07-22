@@ -208,31 +208,65 @@ window.openMovie = function(id) {
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
+
+  let searchTimeout = null;
+
   input.addEventListener('input', function () {
-    const q = this.value.trim().toLowerCase();
+    const q = this.value.trim();
     const browse = document.getElementById('browse-section');
     if (!browse) return;
+
     if (q.length < 2) {
-      // Restore genre rows
       const genres = [...new Set(allMovies.map(m => m.genre))].sort();
       browse.innerHTML = genres.map(buildGenreRow).join('');
       wireCards();
       return;
     }
-    const results = allMovies.filter(m =>
-      m.title.toLowerCase().includes(q) ||
-      m.synopsis.toLowerCase().includes(q) ||
-      m.genre.toLowerCase().includes(q) ||
-      m.director.toLowerCase().includes(q)
-    );
-    browse.innerHTML = results.length
-      ? `<div class="genre-row">
-           <h2 class="genre-title">Results for "${this.value.trim()}" (${results.length})</h2>
-           <div class="cards-scroll">${results.map(buildCard).join('')}</div>
-         </div>`
-      : `<div class="no-results">No results for "<strong>${this.value.trim()}</strong>"</div>`;
-    wireCards();
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+
+        const searchResults = (data.results || []).map(movie => ({
+          id: movie.id,
+          title: movie.title,
+          posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+          synopsis: movie.overview || 'No synopsis available.',
+          year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
+          rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+          durationMinutes: 120,
+          genre: 'Search Result',
+          director: 'TMDB Cinema',
+          cast: ['Popular Actor'],
+          downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
+          downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
+        }));
+
+        searchResults.forEach(m => {
+          if (!allMovies.some(existing => existing.id === m.id)) {
+            allMovies.push(m);
+          }
+        });
+
+        if (searchResults.length > 0) {
+          browse.innerHTML = `
+            <div class="genre-row">
+              <h2 class="genre-title">Results for "${q}" (${searchResults.length})</h2>
+              <div class="cards-scroll">${searchResults.map(buildCard).join('')}</div>
+            </div>`;
+        } else {
+          browse.innerHTML = `<div class="no-results">No results for "<strong>${q}</strong>"</div>`;
+        }
+        wireCards();
+
+      } catch (err) {
+        console.error('Search API error:', err);
+      }
+    }, 400);
   });
+
 }
 
 // ── Movie Detail Page ─────────────────────────────────────────
