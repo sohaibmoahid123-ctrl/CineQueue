@@ -604,3 +604,125 @@ input { font: inherit; }
   .download-buttons { gap: 10px; }
   .dl-quality { font-size: 1.2rem; }
 }
+/* ==========================================
+   1. تنظیمات پایه و متغیرهای رنگی
+   ========================================== */
+:root {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --accent-color: #3b82f6;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+/* جلوگیری از بیرون زدن عکس و ویدیو */
+img, iframe, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================
+   2. چیدمان اصلی صفحه و پلیر
+   ========================================== */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* کانتینر واکنش‌گرای پلیر */
+.player-wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 25px auto;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.player-wrapper iframe,
+.player-wrapper video {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ==========================================
+   3. بخش جزئیات فیلم (پوستر و توضیحات)
+   ========================================== */
+.movie-details {
+  display: flex;
+  gap: 20px;
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  align-items: flex-start;
+}
+
+.poster-box {
+  flex-shrink: 0;
+  width: 200px;
+}
+
+.poster-box img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.info-box {
+  flex-grow: 1;
+}
+
+.info-box h1 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.info-box p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+/* ==========================================
+   4. تنظیمات اختصاصی برای گوشی موبایل
+   ========================================== */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  /* در موبایل، پوستر و متن زیر هم می‌افتند */
+  .movie-details {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .poster-box {
+    width: 160px; /* اندازه متناسب پوستر در موبایل */
+  }
+
+  .info-box h1 {
+    font-size: 1.4rem;
+  }
+}
