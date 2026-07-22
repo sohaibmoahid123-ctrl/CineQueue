@@ -21,24 +21,45 @@ let heroTimer    = null;
 async function init() {
   showLoading();
   try {
-    const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`);
-    const data = await res.json();
+    // ۱. دریافت لیست رسمی ژانرها و فیلم‌های محبوب از TMDB
+    const [genresRes, popRes] = await Promise.all([
+      fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`),
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
+    ]);
 
-    allMovies = data.results.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
-      synopsis: movie.overview || 'No synopsis available.',
-      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
-      rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
-      durationMinutes: 120,
-      genre: 'Action',
-      director: 'TMDB Cinema',
-      cast: ['Popular Movie'],
-      downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
-      downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
-    }));
+    const genresData = await genresRes.json();
+    const popData = await popRes.json();
 
+    // ساخت یک نقشه (Map) برای تبدیل ID ژانرها به نام فارسی/انگلیسی آن‌ها
+    const genreMap = {};
+    if (genresData.genres) {
+      genresData.genres.forEach(g => { genreMap[g.id] = g.name; });
+    }
+
+    // ۲. تبدیل و فرمت فیلم‌ها همراه با تشخیص ژانر واقعی
+    allMovies = popData.results.map(movie => {
+      // تشخیص اولین ژانر فیلم
+      const primaryGenre = (movie.genre_ids && movie.genre_ids.length > 0 && genreMap[movie.genre_ids[0]])
+        ? genreMap[movie.genre_ids[0]]
+        : 'Action';
+
+      return {
+        id: movie.id,
+        title: movie.title,
+        posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+        synopsis: movie.overview || 'No synopsis available.',
+        year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
+        rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+        durationMinutes: 120,
+        genre: primaryGenre, // ژانر واقعی فیلم (Action, Comedy, Sci-Fi و...)
+        director: 'TMDB Cinema',
+        cast: ['Popular Actor'],
+        downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
+        downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
+      };
+    });
+
+    // ۵ فیلم اول برای اسلایدر اصلی بالای صفحه
     featuredMovies = allMovies.slice(0, 5);
 
   } catch (err) {
