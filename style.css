@@ -604,3 +604,65 @@ input { font: inherit; }
   .download-buttons { gap: 10px; }
   .dl-quality { font-size: 1.2rem; }
 }
+/* --- Adult Content Blur & Age Warning Banner -------------------------------- */
+.movie-card.adult-content img {
+  filter: blur(12px);
+  transition: filter 0.3s ease;
+}
+
+.movie-card.adult-content:hover img,
+.movie-card.adult-unlocked img {
+  filter: blur(0) !important;
+}
+
+.adult-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(229, 9, 20, 0.85);
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.age-unlock-banner {
+  background: rgba(229, 9, 20, 0.15);
+  border: 1px solid rgba(229, 9, 20, 0.4);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  direction: ltr;
+  text-align: left;
+}
+
+.age-unlock-banner p {
+  margin: 0;
+  font-size: 13px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.btn-unlock-age {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.btn-unlock-age:hover {
+  background: #b80710;
+}
