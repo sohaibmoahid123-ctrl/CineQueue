@@ -249,12 +249,11 @@ function wireSearch() {
     if (!browse) return;
 
     if (q.length < 2) {
-    const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
-      if (a === 'Popular Movies') return -1;
-      if (b === 'Popular Movies') return 1;
-      return a.localeCompare(b);
-    });
-
+      const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
+        if (a === 'Popular Movies') return -1;
+        if (b === 'Popular Movies') return 1;
+        return a.localeCompare(b);
+      });
       browse.innerHTML = genres.map(buildGenreRow).join('');
       wireCards();
       return;
@@ -275,6 +274,7 @@ function wireSearch() {
           rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
           durationMinutes: 120,
           genre: 'Search Result',
+          isAdult: movie.adult || false,
           director: 'TMDB Cinema',
           cast: ['Popular Actor'],
           downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
@@ -288,23 +288,73 @@ function wireSearch() {
         });
 
         if (searchResults.length > 0) {
-          browse.innerHTML = `
+          const isAgeUnlocked = localStorage.getItem('ageUnlocked') === 'true';
+          
+          let html = '';
+          if (!isAgeUnlocked) {
+            html += `
+              <div class="age-unlock-banner">
+                <p>⚠️ برخی پوسترهای نتایج حاوی محتوای حساس یا بزرگسال (+۱۸) هستند.</p>
+                <button class="btn-unlock-age" onclick="unlockAdultPosters()">تایید سن (+۱۸) و نمایش پوسترها</button>
+              </div>
+            `;
+          }
+
+          html += `
             <div class="genre-row">
               <h2 class="genre-title">Results for "${q}" (${searchResults.length})</h2>
-              <div class="cards-scroll">${searchResults.map(buildCard).join('')}</div>
-            </div>`;
+              <div class="cards-scroll">
+                ${searchResults.map(m => buildSearchCard(m, isAgeUnlocked)).join('')}
+              </div>
+            </div>
+          `;
+
+          browse.innerHTML = html;
+          wireCards();
         } else {
           browse.innerHTML = `<div class="no-results">No results for "<strong>${q}</strong>"</div>`;
         }
-        wireCards();
-
       } catch (err) {
-        console.error('Search API error:', err);
+        console.error('Search error:', err);
       }
     }, 400);
   });
-
 }
+
+// تابع کمکی برای ساخت کارت‌های سرچ با افکت بلور
+function buildSearchCard(m, isAgeUnlocked) {
+  const adultClass = (m.isAdult && !isAgeUnlocked) ? 'adult-content' : '';
+  const adultBadge = m.isAdult ? `<span class="adult-badge">+18</span>` : '';
+
+  return `
+    <div class="movie-card ${adultClass}" data-id="${m.id}">
+      <div class="card-poster">
+        ${adultBadge}
+        <img src="${m.posterUrl}" alt="${m.title}" loading="lazy" />
+        <div class="card-overlay">
+          <button class="btn-play">&#9654;</button>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${m.title}</div>
+        <div class="card-meta">
+          <span class="rating">★ ${m.rating}</span>
+          <span class="year">${m.year}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// تابع باز کردن بلور پوسترها با تایید سن
+window.unlockAdultPosters = function() {
+  localStorage.setItem('ageUnlocked', 'true');
+  document.querySelectorAll('.movie-card.adult-content').forEach(card => {
+    card.classList.remove('adult-content');
+  });
+  const banner = document.querySelector('.age-unlock-banner');
+  if (banner) banner.remove();
+};
 
 // ── Movie Detail Page ─────────────────────────────────────────
 function renderMovieDetail(id) {
