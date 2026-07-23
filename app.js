@@ -294,8 +294,8 @@ function wireSearch() {
           if (!isAgeUnlocked) {
             html += `
               <div class="age-unlock-banner">
-                <p>⚠️ برخی پوسترهای نتایج حاوی محتوای حساس یا بزرگسال (+۱۸) هستند.</p>
-                <button class="btn-unlock-age" onclick="unlockAdultPosters()">تایید سن (+۱۸) و نمایش پوسترها</button>
+                <p>⚠️ Some search results may contain adult or sensitive content (+18).</p>
+                <button class="btn-unlock-age" onclick="unlockAdultPosters()">Unlock (+18) Posters</button>
               </div>
             `;
           }
