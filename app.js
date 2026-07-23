@@ -132,7 +132,11 @@ function showLoading() {
 // ── Home Page ─────────────────────────────────────────────────
 function renderHome() {
   // Collect unique genres in the order they appear
-  const genres = [...new Set(allMovies.map(m => m.genre))].sort();
+  const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
+    if (a === 'Popular Movies') return -1;
+    if (b === 'Popular Movies') return 1;
+    return a.localeCompare(b);
+  });
 
   app.innerHTML = `
     ${buildHeader()}
