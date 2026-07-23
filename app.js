@@ -321,10 +321,17 @@ function wireSearch() {
   });
 }
 
-// تابع کمکی برای ساخت کارت‌های سرچ با افکت بلور
+// تابع کمکی برای ساخت کارت‌های سرچ با افکت بلور// تابع کمکی برای ساخت کارت‌های سرچ با تشخیص هوشمند کلمات و برچسب حساس
 function buildSearchCard(m, isAgeUnlocked) {
-  const adultClass = (m.isAdult && !isAgeUnlocked) ? 'adult-content' : '';
-  const adultBadge = m.isAdult ? `<span class="adult-badge">+18</span>` : '';
+  const sensitiveKeywords = ['sex', 'nude', 'erotic', 'desire', 'passion', 'kill', 'slasher', 'blood', 'gory', 'gore', 'massacre', 'murder'];
+  
+  const titleLower = (m.title || '').toLowerCase();
+  const hasSensitiveTitle = sensitiveKeywords.some(keyword => titleLower.includes(keyword));
+
+  const isSensitive = m.isAdult || hasSensitiveTitle;
+
+  const adultClass = (isSensitive && !isAgeUnlocked) ? 'adult-content' : '';
+  const adultBadge = isSensitive ? `<span class="adult-badge">+18</span>` : '';
 
   return `
     <div class="movie-card ${adultClass}" data-id="${m.id}">
