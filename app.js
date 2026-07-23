@@ -498,14 +498,20 @@ function buildHeader() {
 // ── Wire card clicks ──────────────────────────────────────────
 function wireCards() {
   document.querySelectorAll('.movie-card').forEach(card => {
-    const id = parseInt(card.dataset.id, 10);
-    card.addEventListener('click', () => { window.location.hash = 'movie/' + id; });
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
+    card.onclick = function (e) {
+      // اگر کارت هنوز بلور و قفل است، اجازه ورود به صفحه بعد را نده
+      if (this.classList.contains('adult-content')) {
         e.preventDefault();
-        window.location.hash = 'movie/' + id;
+        e.stopPropagation();
+        alert('Please unlock (+18) posters first by confirming your age.');
+        return;
       }
-    });
+
+      const id = this.getAttribute('data-id');
+      if (id) {
+        window.openMovie(id);
+      }
+    };
   });
 }
 
