@@ -249,7 +249,12 @@ function wireSearch() {
     if (!browse) return;
 
     if (q.length < 2) {
-      const genres = [...new Set(allMovies.map(m => m.genre))].sort();
+    const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
+      if (a === 'Popular Movies') return -1;
+      if (b === 'Popular Movies') return 1;
+      return a.localeCompare(b);
+    });
+
       browse.innerHTML = genres.map(buildGenreRow).join('');
       wireCards();
       return;
