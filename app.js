@@ -462,10 +462,8 @@ function renderMovieDetail(id) {
             </p>`
           : ''}
       </div>
-{/* AFTER */}
+
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
-  <h3>Download Video</h3>
-  {/* Buttons */}
 </div>
 
         <!-- More in this genre -->
