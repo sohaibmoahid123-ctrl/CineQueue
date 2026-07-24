@@ -429,8 +429,8 @@ function renderMovieDetail(id) {
 
    </div>
    </div>
-<div class="download-section">
-
+      <!-- Download Section -->
+      <div class="download-section">
         <h3 class="download-heading">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2.5"
@@ -465,7 +465,6 @@ function renderMovieDetail(id) {
             </p>`
           : ''}
       </div>
-
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
 </div>
 
