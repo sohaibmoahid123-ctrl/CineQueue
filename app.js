@@ -442,14 +442,14 @@ const has720 = `https://dl.vidsrc.vip/movie/${movie.id}?quality=720`;
           Download Video
         </h3>
         <div class="download-buttons">
-          <a href="${movie.downloadUrl1080p}"
+          <a href="⁠${has1080}"
              class="download-btn primary-dl ${!has1080 ? 'placeholder' : ''}"
              ${has1080 ? 'download' : 'onclick="return false"'}>
             <div class="dl-quality">1080p</div>
             <div class="dl-label">Full HD</div>
             <div class="dl-size">~2.4 GB</div>
           </a>
-          <a href="${movie.downloadUrl720p}"
+          <a href="${has720}"
              class="download-btn secondary-dl ${!has720 ? 'placeholder' : ''}"
              ${has720 ? 'download' : 'onclick="return false"'}>
             <div class="dl-quality">720p</div>
