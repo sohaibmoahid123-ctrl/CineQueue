@@ -748,3 +748,17 @@ input { font: inherit; }
         grid-template-columns: 1fr;
     }
 }
+/* Temporary Fix - Override */
+.download-section {
+    max-width: 620px !important;
+    margin: 2rem auto !important;
+    padding: 1.8rem !important;
+}
+
+.download-buttons {
+    gap: 1rem !important;
+}
+
+.download-btn {
+    padding: 1.3rem 0.8rem !important;
+}
