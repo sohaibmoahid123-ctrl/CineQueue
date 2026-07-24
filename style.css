@@ -790,3 +790,27 @@ input { font: inherit; }
     font-size: 1.35rem !important;
     margin-bottom: 1.2rem !important;
 }
+/* Strong Fix - Match Supergirl Style */
+.download-section {
+    max-width: 480px !important;
+    margin: 1.8rem auto !important;
+    padding: 1.4rem 1.2rem !important;
+    background-color: #1F2937;
+    border-radius: 16px;
+    border: 1px solid #374151;
+}
+
+.download-heading {
+    font-size: 1.3rem !important;
+    margin-bottom: 1.1rem !important;
+}
+
+.download-buttons {
+    gap: 0.9rem !important;
+}
+
+.download-btn {
+    padding: 1.1rem 0.9rem !important;
+    border-radius: 12px !important;
+    min-width: 200px;
+}
