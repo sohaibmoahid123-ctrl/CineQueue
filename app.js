@@ -380,8 +380,8 @@ function renderMovieDetail(id) {
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
 
   // Check if real download links were provided
-  const has1080 = movie.downloadUrl1080p && movie.downloadUrl1080p !== '#';
-  const has720  = movie.downloadUrl720p  && movie.downloadUrl720p  !== '#';
+const has1080 = `https://dl.vidsrc.vip/movie/${movie.id}?quality=1080`;
+const has720 = `https://dl.vidsrc.vip/movie/${movie.id}?quality=720`;
 
   app.innerHTML = `
     ${buildHeader()}
