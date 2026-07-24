@@ -427,8 +427,7 @@ function renderMovieDetail(id) {
           </div>
         </div>
 
-</div>
-</div>
+
 
 <div class="download-section">
 
