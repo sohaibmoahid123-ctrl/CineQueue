@@ -463,7 +463,7 @@ function renderMovieDetail(id) {
                 : ''}
             </div>
           </div>
-        </div>
+
         <div class="server-section" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 25px;">
           <h3 style="font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
