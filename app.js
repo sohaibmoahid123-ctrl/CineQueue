@@ -573,3 +573,15 @@ const observer = new MutationObserver(() => {
   }
 });
 observer.observe(document.body, { childList: true, subtree: true });
+// تابع تعویض سرور پخش فیلم
+window.changeServer = function(serverUrl, btnElement) {
+  const player = document.getElementById('main-player');
+  if (player) {
+    player.src = serverUrl;
+  }
+  
+  document.querySelectorAll('.srv-btn').forEach(btn => btn.classList.remove('active'));
+  if (btnElement) {
+    btnElement.classList.add('active');
+  }
+};
