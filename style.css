@@ -666,3 +666,28 @@ input { font: inherit; }
 .btn-unlock-age:hover {
   background: #b80710;
 }
+/* --- Server Buttons Styling --- */
+.server-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.srv-btn {
+  background: #2a2a30;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.srv-btn.active {
+  background: #e50914;
+  border-color: #e50914;
+}
