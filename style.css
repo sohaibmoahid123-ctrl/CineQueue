@@ -691,3 +691,60 @@ input { font: inherit; }
   background: #e50914;
   border-color: #e50914;
 }
+/* ====================== DOWNLOAD SECTION FIX ====================== */
+.download-section {
+    max-width: 680px;
+    margin: 2.5rem auto !important;
+    padding: 2rem 1.5rem;
+    background-color: #1F2937;
+    border-radius: 20px;
+    border: 1px solid #374151;
+}
+
+.download-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 1.35rem;
+}
+
+.download-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.download-btn {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.primary-dl {
+    background-color: #FACC15;
+    color: #111827;
+    font-weight: 700;
+}
+
+.secondary-dl {
+    background-color: #374151;
+    color: white;
+    border: 1px solid #4B5563;
+}
+
+.download-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 25px -5px rgb(0 0 0 / 0.4);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .download-section {
+        margin: 2rem 1rem !important;
+    }
+    .download-buttons {
+        grid-template-columns: 1fr;
+    }
+}
