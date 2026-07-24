@@ -762,3 +762,31 @@ input { font: inherit; }
 .download-btn {
     padding: 1.3rem 0.8rem !important;
 }
+/* Final Fix - Make it like the first image */
+.download-section {
+    max-width: 520px !important;
+    margin: 2rem auto !important;
+    padding: 1.5rem !important;
+    background-color: #1F2937;
+    border-radius: 18px;
+    border: 1px solid #374151;
+}
+
+.download-buttons {
+    display: flex !important;
+    gap: 1rem !important;
+    flex-wrap: wrap;
+}
+
+.download-btn {
+    flex: 1;
+    min-width: 220px;
+    padding: 1.2rem 1rem !important;
+    border-radius: 14px !important;
+}
+
+/* Make sure it's not too tall */
+.download-section h3 {
+    font-size: 1.35rem !important;
+    margin-bottom: 1.2rem !important;
+}
