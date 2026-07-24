@@ -464,28 +464,6 @@ function renderMovieDetail(id) {
             </div>
           </div>
 
-        <div class="server-section" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 25px;">
-          <h3 style="font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-              <line x1="6" y1="6" x2="6.01" y2="6"></line>
-              <line x1="6" y1="18" x2="6.01" y2="18"></line>
-            </svg>
-            Select Stream Server
-          </h3>
-          <p style="font-size: 12px; color: #a0a0ab; margin-bottom: 14px; line-height: 1.5;">
-            If the video buffers or fails to play, please try switching to an alternate server.
-          </p>
-          <div style="display: flex; gap: 10px;">
-            <button class="srv-btn active" onclick="changeServer('https://vidsrc.to/embed/movie/${movie.id}', this)" style="flex: 1; padding: 10px; background: #e50914; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">
-              Server 1 (Primary)
-            </button>
-            <button class="srv-btn" onclick="changeServer('https://vidsrc.pro/embed/movie/${movie.id}', this)" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">
-              Server 2 (Backup)
-            </button>
-          </div>
-        </div>
 
         <!-- More in this genre -->
         ${related.length > 0 ? `
