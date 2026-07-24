@@ -399,70 +399,71 @@ function renderMovieDetail(id) {
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
 
         <!-- Poster + Info side by side -->
-        <div class="detail-layout">
+      <div class="detail-layout">
 
-          <div class="detail-poster-wrap">
-            <img class="detail-poster" src="${movie.posterUrl}" alt="${movie.title}">
+        <div class="detail-poster-wrap">
+          <img class="detail-poster" src="${movie.posterUrl}" alt="${movie.title}">
+        </div>
+
+        <div class="detail-info">
+          <span class="detail-genre-tag">${movie.genre}</span>
+          <h1 class="detail-title">${movie.title}</h1>
+          <div class="detail-meta">
+            <span class="rating-badge large">${movie.rating}</span>
+            <span>${movie.year}</span>
+            <span>${movie.durationMinutes} min</span>
           </div>
+          <p class="detail-synopsis">${movie.synopsis}</p>
 
-          <div class="detail-info">
-            <span class="detail-genre-tag">${movie.genre}</span>
-            <h1 class="detail-title">${movie.title}</h1>
-            <div class="detail-meta">
-              <span class="rating-badge large">${movie.rating}</span>
-              <span>${movie.year}</span>
-              <span>${movie.durationMinutes} min</span>
+          <div class="detail-credits">
+            <div class="credit-row">
+              <span class="credit-label">Director</span>
+              <span class="credit-value">${movie.director}</span>
             </div>
-            <p class="detail-synopsis">${movie.synopsis}</
-
-            <div class="detail-credits">
-              <div class="credit-row">
-                <span class="credit-label">Director</span>
-                <span class="credit-value">${movie.director}</span>
-              </div>
-              <div class="credit-row">
-                <span class="credit-label">Cast</span>
-                <span class="credit-value">${movie.cast.join(', ')}</span>
-              </div>
-            </div>
-
-            <!-- ── Download Section ── -->
-            <div class="download-section">
-              <h3 class="download-heading">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Download Video
-              </h3>
-              <div class="download-buttons">
-                <a href="${movie.downloadUrl1080p}"
-                   class="download-btn primary-dl ${!has1080 ? 'placeholder' : ''}"
-                   ${has1080 ? 'download' : 'onclick="return false"'}>
-                  <div class="dl-quality">1080p</div>
-                  <div class="dl-label">Full HD</div>
-                  <div class="dl-size">~2.4 GB</div>
-                </a>
-                <a href="${movie.downloadUrl720p}"
-                   class="download-btn secondary-dl ${!has720 ? 'placeholder' : ''}"
-                   ${has720 ? 'download' : 'onclick="return false"'}>
-                  <div class="dl-quality">720p</div>
-                  <div class="dl-label">HD Ready</div>
-                  <div class="dl-size">~1.1 GB</div>
-                </a>
-              </div>
-              ${!has1080 && !has720
-                ? `<p class="dl-note">
-                     No download links yet. Open <code>api/movies/index.json</code>,
-                     find this movie, and set <code>downloadUrl1080p</code> and
-                     <code>downloadUrl720p</code> to real video URLs.
-                   </p>`
-                : ''}
+            <div class="credit-row">
+              <span class="credit-label">Cast</span>
+              <span class="credit-value">${movie.cast.join(', ')}</span>
             </div>
           </div>
+        </div>
+
+        <div class="download-section">
+          <h3 class="download-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Video
+          </h3>
+          <div class="download-buttons">
+            <a href="${movie.downloadUrl1080p}"
+               class="download-btn primary-dl ${!has1080 ? 'placeholder' : ''}"
+               ${has1080 ? 'download' : 'onclick="return false"'}>
+              <div class="dl-quality">1080p</div>
+              <div class="dl-label">Full HD</div>
+              <div class="dl-size">~2.4 GB</div>
+            </a>
+            <a href="${movie.downloadUrl720p}"
+               class="download-btn secondary-dl ${!has720 ? 'placeholder' : ''}"
+               ${has720 ? 'download' : 'onclick="return false"'}>
+              <div class="dl-quality">720p</div>
+              <div class="dl-label">HD Ready</div>
+              <div class="dl-size">~1.1 GB</div>
+            </a>
+          </div>
+          ${!has1080 && !has720
+            ? `<p class="dl-note">
+                No download links yet. Open <code>api/movies/index.json</code>,
+                find this movie, and set <code>downloadUrl1080p</code> and
+                <code>downloadUrl720p</code> to real video URLs.
+              </p>`
+            : ''}
+        </div>
+
+      </div>
 
 
         <!-- More in this genre -->
