@@ -414,15 +414,6 @@ function renderMovieDetail(id) {
               <span>${movie.durationMinutes} min</span>
             </div>
             <p class="detail-synopsis">${movie.synopsis}</
-                      <div class="server-bar">
-            <span>سرور پخش:</span>
-            <button class="srv-btn active" onclick="changeServer('https://vidsrc.to/embed/movie/${movie.id}')">سرور اصلی</button>
-            <button class="srv-btn" onclick="changeServer('https://vidsrc.pro/embed/movie/${movie.id}')">سرور کمکی</button>
-          </div>
-
-          <div class="player-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin-top: 15px; margin-bottom: 20px;">
-            <iframe id="main-player" src="https://vidsrc.to/embed/movie/${movie.id}" style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
-          </div>
 
             <div class="detail-credits">
               <div class="credit-row">
@@ -434,6 +425,15 @@ function renderMovieDetail(id) {
                 <span class="credit-value">${movie.cast.join(', ')}</span>
               </div>
             </div>
+        <div class="server-bar" style="margin-top: 25px; display: flex; align-items: center; gap: 10px;">
+          <span>سرور پخش:</span>
+          <button class="srv-btn active" onclick="changeServer('https://vidsrc.to/embed/movie/${movie.id}')">سرور اصلی</button>
+          <button class="srv-btn" onclick="changeServer('https://vidsrc.pro/embed/movie/${movie.id}')">سرور کمکی</button>
+        </div>
+
+        <div class="player-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-top: 10px; margin-bottom: 30px;">
+          <iframe id="main-player" src="https://vidsrc.to/embed/movie/${movie.id}" style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
+        </div>
 
             <!-- ── Download Section ── -->
             <div class="download-section">
