@@ -517,7 +517,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-/* --- Overlay Video Player (کد جدید و اصلاح شده) --- */
+/* --- Overlay Video Player (English Version) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -529,7 +529,7 @@ document.addEventListener("click", function(e) {
       backdrop.style.position = "relative";
       backdrop.style.width = "100%";
 
-      // گرفتن آی‌دی فیلم از آدرس صفحه
+      // Extract Movie ID from URL hash or global variable
       let movieId = "";
       const hashParts = window.location.hash.split("/");
       if (hashParts.length > 1 && hashParts[1]) {
@@ -538,11 +538,10 @@ document.addEventListener("click", function(e) {
         movieId = window.currentMovieId;
       }
 
-      // اگر آی‌دی وجود داشت فیلم را پخش کن
       if (movieId && movieId !== "") {
         backdrop.innerHTML = `
           <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:12px; overflow:hidden;">
-            <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; color:#fff; background:rgba(0,0,0,0.8); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">✕ بستن</button>
+            <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; color:#fff; background:rgba(0,0,0,0.8); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">✕ Close</button>
             <iframe
               src="https://vidlink.pro/movie/${movieId}?primaryColor=e50914"
               style="width:100%; height:100%; border:none;"
@@ -551,7 +550,7 @@ document.addEventListener("click", function(e) {
             </iframe>
           </div>`;
       } else {
-        alert("خطا: شناسنامه (ID) این فیلم دریافت نشد.");
+        alert("Error: Movie ID not found.");
       }
     }
   }
