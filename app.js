@@ -441,20 +441,17 @@ const has720 = `https://vidlink.pro/movie/${movie.id}`;
           Download Video
         </h3>
         <div class="download-buttons">
-          <a href="⁠${has1080}"
-             class="download-btn primary-dl ${!has1080 ? 'placeholder' : ''}"
-             ${has1080 ? 'download' : 'onclick="return false"'}>
-            <div class="dl-quality">1080p</div>
-            <div class="dl-label">Full HD</div>
-            <div class="dl-size">~2.4 GB</div>
-          </a>
-          <a href="${has720}"
-             class="download-btn secondary-dl ${!has720 ? 'placeholder' : ''}"
-             ${has720 ? 'download' : 'onclick="return false"'}>
-            <div class="dl-quality">720p</div>
-            <div class="dl-label">HD Ready</div>
-            <div class="dl-size">~1.1 GB</div>
-          </a>
+<a href="${has1080}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
+  <div class="dl-quality">1080p</div>
+  <div class="dl-label">Full HD</div>
+  <div class="dl-size">~2.4 GB</div>
+</a>
+
+<a href="${has720}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
+  <div class="dl-quality">720p</div>
+  <div class="dl-label">HD Ready</div>
+  <div class="dl-size">~1.1 GB</div>
+</a>
         </div>
         ${!has1080 && !has720
           ? `<p class="dl-note">
