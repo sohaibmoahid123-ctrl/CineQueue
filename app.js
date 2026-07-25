@@ -441,13 +441,13 @@ const has720 = `https://vidlink.pro/movie/${movie.id}`;
           Download Video
         </h3>
         <div class="download-buttons">
-<a href="https://vidlink.pro/download?id=${movie.id || movieId}&type=movie" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
+<a href="https://vidsrc.vip/download/movie/${movie.id || movieId}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
   <div class="dl-quality">1080p</div>
   <div class="dl-label">Full HD</div>
   <div class="dl-size">~2.4 GB</div>
 </a>
 
-<a href="https://vidlink.pro/download?id=${movie.id || movieId}&type=movie" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
+<a href="https://vidsrc.vip/download/movie/${movie.id || movieId}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
   <div class="dl-quality">720p</div>
   <div class="dl-label">HD Ready</div>
   <div class="dl-size">~1.1 GB</div>
