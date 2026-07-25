@@ -517,7 +517,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-;/* --- Overlay Video Player (Extended Height to Back Button) --- */
+/* --- Overlay Video Player (کد جدید و اصلاح شده) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -529,10 +529,42 @@ document.addEventListener("click", function(e) {
       backdrop.style.position = "relative";
       backdrop.style.width = "100%";
 
-      // افزایش ارتفاع به ۴۶۰ پیکسل برای رسیدن به نزدیکی کلمه Back
-      backdrop.innerHTML = `
-        <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:16px; overflow:hidden; box-shadow:0 12px 35px rgba(0,0,0,0.85); border:1px solid rgba(255,255,255,0.12);">
-          <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:18px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s;">✕</button>
+      // گرفتن آی‌دی فیلم از آدرس صفحه
+      let movieId = "";
+      const hashParts = window.location.hash.split("/");
+      if (hashParts.length > 1 && hashParts[1]) {
+        movieId = hashParts[1];
+      } else if (window.currentMovieId) {
+        movieId = window.currentMovieId;
+      }
+
+      // اگر آی‌دی وجود داشت فیلم را پخش کن
+      if (movieId && movieId !== "") {
+        backdrop.innerHTML = `
+          <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:12px; overflow:hidden;">
+            <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; color:#fff; background:rgba(0,0,0,0.8); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">✕ بستن</button>
+            <iframe
+              src="https://vidlink.pro/movie/${movieId}?primaryColor=e50914"
+              style="width:100%; height:100%; border:none;"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowfullscreen>
+            </iframe>
+          </div>`;
+      } else {
+        alert("خطا: شناسنامه (ID) این فیلم دریافت نشد.");
+      }
+    }
+  }
+
+  if (closeBtn) {
+    const backdrop = closeBtn.closest("[data-original-html]");
+    if (backdrop && backdrop.dataset.originalHtml) {
+      backdrop.innerHTML = backdrop.dataset.originalHtml;
+      delete backdrop.dataset.originalHtml;
+    }
+  }
+});
+
           <iframe 
             src="https://vidlink.pro/movie/550"
             style="width:100%; height:100%; border:none;" 
