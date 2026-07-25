@@ -565,24 +565,6 @@ document.addEventListener("click", function(e) {
   }
 });
 
-          <iframe 
-            src="https://vidlink.pro/movie/550"
-            style="width:100%; height:100%; border:none;" 
-            allow="autoplay; encrypted-media; fullscreen" 
-            allowfullscreen>
-          </iframe>
-        </div>`;
-    }
-  }
-
-  if (closeBtn) {
-    const backdrop = closeBtn.closest("[data-original-html]");
-    if (backdrop && backdrop.dataset.originalHtml) {
-      backdrop.innerHTML = backdrop.dataset.originalHtml;
-      delete backdrop.dataset.originalHtml;
-    }
-  }
-});
 
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
