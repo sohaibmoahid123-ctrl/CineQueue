@@ -537,7 +537,7 @@ document.addEventListener("click", function(e) {
         <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:16px; overflow:hidden; box-shadow:0 12px 35px rgba(0,0,0,0.85); border:1px solid rgba(255,255,255,0.12);">
           <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; background:rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:18px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s;">✕</button>
           <iframe 
-            src={`https://vidlink.pro/movie/${movie.id || window.currentMovieId}`}
+            src={"https://vidlink.pro/movie/" + (window.currentMovieId || '')}
             style="width:100%; height:100%; border:none;" 
             allow="autoplay; encrypted-media; fullscreen" 
             allowfullscreen>
