@@ -5,14 +5,14 @@ const fs = require('fs');
 const TMDB_API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const JSON_FILE_PATH = './api/movies/index.json';
 
-// آدرس سایت منبع برای استخراج لینک دانلود
-const TARGET_SOURCE_URL = 'https://example-download-source.com/search?q=';
+// آدرس منبع جستجوی مستقیم فایل‌های ویدئویی mp4
+const TARGET_SOURCE_URL = 'https://auto-embed.org/api/search?q='; 
 
-async function searchForMovieLink(title, year) {
+async function searchForDirectDownloadLink(title, year) {
   try {
     const searchUrl = `${TARGET_SOURCE_URL}${encodeURIComponent(title + ' ' + year)}`;
     const response = await axios.get(searchUrl, {
-      timeout: 5000,
+      timeout: 8000,
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
     });
 
@@ -20,6 +20,7 @@ async function searchForMovieLink(title, year) {
     let link720p = '#';
     let link1080p = '#';
 
+    // استخراج و قاپ زدن فقط لینک‌های مستقیم فایل MP4/MKV
     $('a').each((i, el) => {
       const href = $(el).attr('href');
       if (href && (href.endsWith('.mp4') || href.endsWith('.mkv'))) {
@@ -35,7 +36,7 @@ async function searchForMovieLink(title, year) {
 }
 
 async function runAutoScraper() {
-  console.log('Starting scraper...');
+  console.log('Starting movie link scraper...');
 
   try {
     let localData = [];
@@ -47,14 +48,14 @@ async function runAutoScraper() {
       }
     }
 
-    // ۵ صفحه از TMDB = ۱۰۰ فیلم در هر بار اجرا
+    // دریافت ۵ صفحه از TMDB (۱۰۰ فیلم)
     for (let page = 1; page <= 5; page++) {
       console.log(`Checking TMDB Page ${page}...`);
       const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
       const movies = tmdbRes.data.results;
 
       for (let movie of movies) {
-        // ۱. اگر این فیلم قبلاً در فایل ما ثبت شده، نادیده‌اش بگیر
+        // جلوگیری از ثبت تکراری
         const existingIndex = localData.findIndex(m => m.id === movie.id);
         if (existingIndex !== -1) {
           continue; 
@@ -63,10 +64,10 @@ async function runAutoScraper() {
         const title = movie.title;
         const year = movie.release_date ? movie.release_date.split('-')[0] : '';
 
-        console.log(`Searching download links for new movie: ${title} (${year})...`);
-        const links = await searchForMovieLink(title, year);
+        console.log(`Scraping direct download links for: ${title} (${year})...`);
+        const links = await searchForDirectDownloadLink(title, year);
 
-        // ۲. اضافه کردن فیلم جدید به آرشیو
+        // فقط ذخیره ID و لینک‌های دانلود (بدون مشخصات اضافی)
         localData.push({
           id: movie.id,
           downloadUrl720p: links.link720p,
@@ -75,9 +76,9 @@ async function runAutoScraper() {
       }
     }
 
-    // ذخیره کامل آرشیو بدون پاک شدن داده‌های قبلی
+    // ذخیره در فایل index.json
     fs.writeFileSync(JSON_FILE_PATH, JSON.stringify(localData, null, 2));
-    console.log(`Done! Total movies now in index.json: ${localData.length}`);
+    console.log(`Successfully updated index.json! Total movies in archive: ${localData.length}`);
 
   } catch (error) {
     console.error('Error running scraper:', error.message);
