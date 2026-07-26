@@ -2,8 +2,8 @@ name: Auto Movie Scraper Pipeline
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *' # اجرای خودکار هر شب
+  workflow_dispatch: # فعال‌سازی دکمه اجرا دستی
 
 jobs:
   build-and-scrape:
@@ -11,24 +11,25 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-     - name: Setup Node.js
-  uses: actions/setup-node@v4
-  with:
-    node-version: '20'
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install Dependencies
-        run: npm install axios cheerio
+        run: npm install
 
       - name: Run Scraper Bot
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: node scraper.js
 
       - name: Commit & Push Changes
         run: |
-          git config --global user.name "Auto Scraper Bot"
-          git config --global user.email "bot@github.com"
-          git add api/movies/index.json
-          git commit -m "Auto-update movie download links" || exit 0
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Auto-update movie data" || exit 0
           git push
