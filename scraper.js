@@ -2,7 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE';
+const TMDB_API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const JSON_FILE_PATH = './api/movies/index.json';
 
 const BAD_KEYWORDS = ['trailer', 'teaser', 'sample', 'promo', 'behind the scenes', 'cam', 'hdcam', 'rip-sample'];
