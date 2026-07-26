@@ -3,7 +3,7 @@ name: Auto Movie Scraper Pipeline
 on:
   schedule:
     - cron: '0 0 * * *' # اجرای خودکار هر شب
-  workflow_dispatch: # فعال‌سازی دکمه اجرا دستی
+  workflow_dispatch: # امکان اجرای دستی
 
 jobs:
   build-and-scrape:
@@ -17,9 +17,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
 
       - name: Run Scraper Bot
         env:
