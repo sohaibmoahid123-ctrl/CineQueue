@@ -18,20 +18,19 @@ let heroIndex    = 0;
 let heroTimer    = null;
 
 // Automatically fetch direct download links from YTS free API
-async function getAutoDownloadLinks(imdbOrTmdbId) {
+async function getAutoDownloadLinks(movie) {
   try {
-    const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${imdbOrTmdbId}`);
+    const query = movie.imdb_id || movie.title;
+    const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${query}`);
     const data = await res.json();
     if (data.data && data.data.movies && data.data.movies.length > 0) {
       const torrents = data.data.movies[0].torrents;
-      const link1080 = torrents.find(t => t.quality === '1080p')?.url || '#';
-      const link720 = torrents.find(t => t.quality === '720p')?.url || '#';
-      return { link1080, link720 };
+      movie.download1080 = torrents.find(t => t.quality === '1080p')?.url || null;
+      movie.download720 = torrents.find(t => t.quality === '720p')?.url || null;
     }
   } catch (err) {
     console.error("Error fetching download links:", err);
   }
-  return { link1080: '#', link720: '#' };
 }
 
 // ── Boot ──────────────────────────────────────────────────────
@@ -381,7 +380,7 @@ window.unlockAdultPosters = function() {
 };
 
 // ── Movie Detail Page ─────────────────────────────────────────
-function renderMovieDetail(id) {
+async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
   if (!movie) {
     app.innerHTML = `
@@ -395,10 +394,11 @@ function renderMovieDetail(id) {
 
   // Related movies in the same genre (exclude this one)
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
+  await getAutoDownloadLinks(movie);
 
   // Check if real download links were provided
-const has1080 = `https://vidlink.pro/movie/${movie.id}`;
-const has720 = `https://vidlink.pro/movie/${movie.id}`;
+const has1080 = movie.download1080;
+const has720 = movie.download720;
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
@@ -458,13 +458,13 @@ const has720 = `https://vidlink.pro/movie/${movie.id}`;
           Download Video
         </h3>
         <div class="download-buttons">
-<a href="${movie.download1080 || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
+<a href="${movie.download1080}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
   <div class="dl-quality">1080p</div>
   <div class="dl-label">Full HD</div>
   <div class="dl-size">~2.4 GB</div>
 </a>
 
-<a href="${movie.download720 || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
+<a href="${movie.download720}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
   <div class="dl-quality">720p</div>
   <div class="dl-label">HD Ready</div>
   <div class="dl-size">~1.1 GB</div>
