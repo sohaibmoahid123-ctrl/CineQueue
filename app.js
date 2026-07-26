@@ -543,7 +543,7 @@ document.addEventListener("click", function(e) {
           <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:12px; overflow:hidden;">
             <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; color:#fff; background:rgba(0,0,0,0.8); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">✕ Close</button>
             <iframe
-              src="https://multiembed.mov/?video_id=${movieId}&tmdb=1"
+              src={`https://vidsrc.cc/v2/embed/movie/${movieId}`}
               style="width:100%; height:100%; border:none;"
               allow="autoplay; encrypted-media; fullscreen"
               allowfullscreen>
