@@ -1,0 +1,33 @@
+name: Auto Movie Scraper Pipeline
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-and-scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install axios cheerio
+
+      - name: Run Scraper Bot
+        run: node scraper.js
+
+      - name: Commit & Push Changes
+        run: |
+          git config --global user.name "Auto Scraper Bot"
+          git config --global user.email "bot@github.com"
+          git add api/movies/index.json
+          git commit -m "Auto-update movie download links" || exit 0
+          git push
