@@ -17,7 +17,7 @@ let featuredMovies = [];
 let heroIndex    = 0;
 let heroTimer    = null;
 
-// دریافت اتوماتیک لینک‌های دانلود از API رایگان YTS
+// Automatically fetch direct download links from YTS free API
 async function getAutoDownloadLinks(imdbOrTmdbId) {
   try {
     const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${imdbOrTmdbId}`);
@@ -29,7 +29,7 @@ async function getAutoDownloadLinks(imdbOrTmdbId) {
       return { link1080, link720 };
     }
   } catch (err) {
-    console.error("خطا در دریافت لینک دانلود:", err);
+    console.error("Error fetching download links:", err);
   }
   return { link1080: '#', link720: '#' };
 }
@@ -458,13 +458,13 @@ const has720 = `https://vidlink.pro/movie/${movie.id}`;
           Download Video
         </h3>
         <div class="download-buttons">
-<a href="https://dl.vidsrc.vip/movie/${movie.id || movieId}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
+<a href="${movie.download1080 || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
   <div class="dl-quality">1080p</div>
   <div class="dl-label">Full HD</div>
   <div class="dl-size">~2.4 GB</div>
 </a>
 
-<a href="https://dl.vidsrc.vip/movie/${movie.id || movieId}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
+<a href="${movie.download720 || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
   <div class="dl-quality">720p</div>
   <div class="dl-label">HD Ready</div>
   <div class="dl-size">~1.1 GB</div>
