@@ -447,7 +447,7 @@ const has720 = `https://vidlink.pro/movie/${movie.id}`;
   <div class="dl-size">~2.4 GB</div>
 </a>
 
-<a href="https://vidsrc.sbs/embed/movie/${movie.id || movieId}" download target="_blank" rel="noopener noreferrer" class="download-btn primary-dl">
+<a href="https://multiembed.mov/?video_id=${movie.id || movieId}&tmdb=1" target="_blank" rel="noopener noreferrer" class="download-btn secondary-dl">
   <div class="dl-quality">720p</div>
   <div class="dl-label">HD Ready</div>
   <div class="dl-size">~1.1 GB</div>
