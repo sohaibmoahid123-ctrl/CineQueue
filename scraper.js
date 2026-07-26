@@ -5,110 +5,82 @@ const fs = require('fs');
 const TMDB_API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const JSON_FILE_PATH = './api/movies/index.json';
 
-const BAD_KEYWORDS = ['trailer', 'teaser', 'sample', 'promo', 'behind the scenes', 'cam', 'hdcam', 'rip-sample'];
-
-function isValidMovieLink(url, linkText, movieTitle, movieYear) {
-  const lowerUrl = url.toLowerCase();
-  const lowerText = linkText.toLowerCase();
-
-  if (!lowerUrl.endsWith('.mp4') && !lowerUrl.endsWith('.mkv')) {
-    return false;
-  }
-
-  for (let badWord of BAD_KEYWORDS) {
-    if (lowerUrl.includes(badWord) || lowerText.includes(badWord)) {
-      return false;
-    }
-  }
-
-  return true;
-}
+// آدرس سایت منبع برای استخراج لینک دانلود
+const TARGET_SOURCE_URL = 'https://example-download-source.com/search?q=';
 
 async function searchForMovieLink(title, year) {
-  const targetSources = [
-    `https://example-download-source.com/search?q=${encodeURIComponent(title + ' ' + year)}`
-  ];
+  try {
+    const searchUrl = `${TARGET_SOURCE_URL}${encodeURIComponent(title + ' ' + year)}`;
+    const response = await axios.get(searchUrl, {
+      timeout: 5000,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    });
 
-  for (let sourceUrl of targetSources) {
-    try {
-      const response = await axios.get(sourceUrl, {
-        timeout: 5000,
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-      });
+    const $ = cheerio.load(response.data);
+    let link720p = '#';
+    let link1080p = '#';
 
-      const $ = cheerio.load(response.data);
-      let foundLink = null;
+    $('a').each((i, el) => {
+      const href = $(el).attr('href');
+      if (href && (href.endsWith('.mp4') || href.endsWith('.mkv'))) {
+        if (href.includes('720p') && link720p === '#') link720p = href;
+        if (href.includes('1080p') && link1080p === '#') link1080p = href;
+      }
+    });
 
-      $('a').each((i, el) => {
-        const href = $(el).attr('href');
-        const text = $(el).text();
-
-        if (href && isValidMovieLink(href, text, title, year)) {
-          foundLink = href;
-          return false;
-        }
-      });
-
-      if (foundLink) return foundLink;
-
-    } catch (err) {
-      console.log(`Source error: ${sourceUrl}`);
-    }
+    return { link720p, link1080p };
+  } catch (err) {
+    return { link720p: '#', link1080p: '#' };
   }
-
-  return null;
 }
 
 async function runAutoScraper() {
   console.log('Starting scraper...');
 
   try {
-    const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
-    const movies = tmdbRes.data.results.slice(0, 10);
-
     let localData = [];
     if (fs.existsSync(JSON_FILE_PATH)) {
-      localData = JSON.parse(fs.readFileSync(JSON_FILE_PATH, 'utf8'));
+      try {
+        localData = JSON.parse(fs.readFileSync(JSON_FILE_PATH, 'utf8'));
+      } catch (e) {
+        localData = [];
+      }
     }
 
-    for (let movie of movies) {
-      const title = movie.title;
-      const year = movie.release_date ? movie.release_date.split('-')[0] : '';
+    // ۵ صفحه از TMDB = ۱۰۰ فیلم در هر بار اجرا
+    for (let page = 1; page <= 5; page++) {
+      console.log(`Checking TMDB Page ${page}...`);
+      const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
+      const movies = tmdbRes.data.results;
 
-      const exists = localData.some(m => m.id === movie.id && m.downloadLink);
-      if (exists) {
-        console.log(`Skipping: ${title}`);
-        continue;
-      }
-
-      console.log(`Searching: ${title} (${year})...`);
-      const downloadUrl = await searchForMovieLink(title, year);
-
-      if (downloadUrl) {
-        const movieIndex = localData.findIndex(m => m.id === movie.id);
-        const movieObject = {
-          id: movie.id,
-          title: movie.title,
-          poster_path: movie.poster_path,
-          release_date: movie.release_date,
-          downloadLink: downloadUrl
-        };
-
-        if (movieIndex !== -1) {
-          localData[movieIndex] = movieObject;
-        } else {
-          localData.push(movieObject);
+      for (let movie of movies) {
+        // ۱. اگر این فیلم قبلاً در فایل ما ثبت شده، نادیده‌اش بگیر
+        const existingIndex = localData.findIndex(m => m.id === movie.id);
+        if (existingIndex !== -1) {
+          continue; 
         }
 
-        console.log(`Saved link: ${title}`);
+        const title = movie.title;
+        const year = movie.release_date ? movie.release_date.split('-')[0] : '';
+
+        console.log(`Searching download links for new movie: ${title} (${year})...`);
+        const links = await searchForMovieLink(title, year);
+
+        // ۲. اضافه کردن فیلم جدید به آرشیو
+        localData.push({
+          id: movie.id,
+          downloadUrl720p: links.link720p,
+          downloadUrl1080p: links.link1080p
+        });
       }
     }
 
+    // ذخیره کامل آرشیو بدون پاک شدن داده‌های قبلی
     fs.writeFileSync(JSON_FILE_PATH, JSON.stringify(localData, null, 2));
-    console.log('Update finished!');
+    console.log(`Done! Total movies now in index.json: ${localData.length}`);
 
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error running scraper:', error.message);
   }
 }
 
