@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Required Packages
+        run: npm install axios cheerio
+
       - name: Run Scraper Bot
         env:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
