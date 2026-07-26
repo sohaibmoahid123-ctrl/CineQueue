@@ -17,6 +17,23 @@ let featuredMovies = [];
 let heroIndex    = 0;
 let heroTimer    = null;
 
+// دریافت اتوماتیک لینک‌های دانلود از API رایگان YTS
+async function getAutoDownloadLinks(imdbOrTmdbId) {
+  try {
+    const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${imdbOrTmdbId}`);
+    const data = await res.json();
+    if (data.data && data.data.movies && data.data.movies.length > 0) {
+      const torrents = data.data.movies[0].torrents;
+      const link1080 = torrents.find(t => t.quality === '1080p')?.url || '#';
+      const link720 = torrents.find(t => t.quality === '720p')?.url || '#';
+      return { link1080, link720 };
+    }
+  } catch (err) {
+    console.error("خطا در دریافت لینک دانلود:", err);
+  }
+  return { link1080: '#', link720: '#' };
+}
+
 // ── Boot ──────────────────────────────────────────────────────
 async function init() {
   showLoading();
