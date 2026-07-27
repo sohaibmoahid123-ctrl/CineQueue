@@ -17,28 +17,29 @@ let featuredMovies = [];
 let heroIndex    = 0;
 let heroTimer    = null;
 
-// Automatically fetch direct download links from YTS free API
+// دریافت خودکار لینک‌های دانلود واقعی از YTS
 async function getAutoDownloadLinks(movie) {
   try {
-    // جستجو بر اساس عنوان انگلیسی فیلم
     const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(movie.title)}`);
     const data = await res.json();
-    
+
     if (data.data && data.data.movies && data.data.movies.length > 0) {
       const torrents = data.data.movies[0].torrents;
       
-      // گرفتن اولین لینک موجود اگر کیفیت خاص پیدا نشد
-      movie.download1080 = torrents.find(t => t.quality === '1080p')?.url || torrents[0]?.url;
-      movie.download720 = torrents.find(t => t.quality === '720p')?.url || torrents[0]?.url;
+      const t1080 = torrents.find(t => t.quality === '1080p');
+      const t720 = torrents.find(t => t.quality === '720p');
+
+      movie.downloadUrl1080p = t1080 ? t1080.url : torrents[0].url;
+      movie.downloadUrl720p = t720 ? t720.url : torrents[0].url;
     } else {
-      // لینک رزرو مستقیم اگر فیلم در آرشیو YTS نبود (برای جلوگیری از رفتن به صفحه اول)
-      movie.download1080 = `https://vidsrc.vip/download/movie/${movie.id}`;
-      movie.download720 = `https://vidsrc.vip/download/movie/${movie.id}`;
+      // لینک رزرو در صورت عدم وجود در YTS
+      movie.downloadUrl1080p = `https://vidsrc.vip/download/movie/${movie.id}`;
+      movie.downloadUrl720p = `https://vidsrc.vip/download/movie/${movie.id}`;
     }
   } catch (err) {
-    console.error("Error:", err);
-    movie.download1080 = `https://vidsrc.vip/download/movie/${movie.id}`;
-    movie.download720 = `https://vidsrc.vip/download/movie/${movie.id}`;
+    console.error("Error fetching download links:", err);
+    movie.downloadUrl1080p = `https://vidsrc.vip/download/movie/${movie.id}`;
+    movie.downloadUrl720p = `https://vidsrc.vip/download/movie/${movie.id}`;
   }
 }
 
