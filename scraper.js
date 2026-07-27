@@ -5,38 +5,67 @@ const fs = require('fs');
 const TMDB_API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const JSON_FILE_PATH = './api/movies/index.json';
 
-// آدرس منبع جستجوی مستقیم فایل‌های ویدئویی mp4
-const TARGET_SOURCE_URL = 'https://auto-embed.org/api/search?q='; 
+// آدرس بخش جستجوی اختصاصی PSA
+const TARGET_SOURCE_URL = 'https://psa.wf/?s='; 
 
-async function searchForDirectDownloadLink(title, year) {
+async function searchPSA(title, year) {
   try {
+    // سرچ اسم فیلم در PSA
     const searchUrl = `${TARGET_SOURCE_URL}${encodeURIComponent(title + ' ' + year)}`;
     const response = await axios.get(searchUrl, {
-      timeout: 8000,
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-    });
-
-    const $ = cheerio.load(response.data);
-    let link720p = '#';
-    let link1080p = '#';
-
-    // استخراج و قاپ زدن فقط لینک‌های مستقیم فایل MP4/MKV
-    $('a').each((i, el) => {
-      const href = $(el).attr('href');
-      if (href && (href.endsWith('.mp4') || href.endsWith('.mkv'))) {
-        if (href.includes('720p') && link720p === '#') link720p = href;
-        if (href.includes('1080p') && link1080p === '#') link1080p = href;
+      timeout: 10000,
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' 
       }
     });
 
-    return { link720p, link1080p };
+    const $ = cheerio.load(response.data);
+    let moviePageUrl = '#';
+
+    // پیدا کردن اولین پست مربوط به فیلم
+    $('article h2.post-title a, article h1.post-title a').each((i, el) => {
+      const href = $(el).attr('href');
+      if (href && moviePageUrl === '#') {
+        moviePageUrl = href;
+      }
+    });
+
+    // اگر پستی پیدا شد، وارد صفحه پست می‌شویم تا لینک‌ها را بخوانیم
+    if (moviePageUrl !== '#') {
+      const pageRes = await axios.get(moviePageUrl, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+      });
+      const $page = cheerio.load(pageRes.data);
+      
+      let link720p = '#';
+      let link1080p = '#';
+
+      // استخراج لینک‌های دانلود بر اساس کیفیت از داخل پست
+      $page('a').each((i, el) => {
+        const text = $page(el).text().toLowerCase();
+        const href = $page(el).attr('href');
+
+        if (href && href.startsWith('http')) {
+          if ((text.includes('720p') || href.includes('720p')) && link720p === '#') {
+            link720p = href;
+          }
+          if ((text.includes('1080p') || href.includes('1080p')) && link1080p === '#') {
+            link1080p = href;
+          }
+        }
+      });
+
+      return { link720p, link1080p };
+    }
+
+    return { link720p: '#', link1080p: '#' };
   } catch (err) {
     return { link720p: '#', link1080p: '#' };
   }
 }
 
 async function runAutoScraper() {
-  console.log('Starting movie link scraper...');
+  console.log('Starting PSA Scraper...');
 
   try {
     let localData = [];
@@ -48,14 +77,13 @@ async function runAutoScraper() {
       }
     }
 
-    // دریافت ۵ صفحه از TMDB (۱۰۰ فیلم)
+    // گرفتن ۵ صفحه اول محبوب‌ترین‌های TMDB
     for (let page = 1; page <= 5; page++) {
       console.log(`Checking TMDB Page ${page}...`);
       const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
       const movies = tmdbRes.data.results;
 
       for (let movie of movies) {
-        // جلوگیری از ثبت تکراری
         const existingIndex = localData.findIndex(m => m.id === movie.id);
         if (existingIndex !== -1) {
           continue; 
@@ -64,10 +92,9 @@ async function runAutoScraper() {
         const title = movie.title;
         const year = movie.release_date ? movie.release_date.split('-')[0] : '';
 
-        console.log(`Scraping direct download links for: ${title} (${year})...`);
-        const links = await searchForDirectDownloadLink(title, year);
+        console.log(`Searching PSA for: ${title} (${year})...`);
+        const links = await searchPSA(title, year);
 
-        // فقط ذخیره ID و لینک‌های دانلود (بدون مشخصات اضافی)
         localData.push({
           id: movie.id,
           downloadUrl720p: links.link720p,
@@ -76,9 +103,8 @@ async function runAutoScraper() {
       }
     }
 
-    // ذخیره در فایل index.json
     fs.writeFileSync(JSON_FILE_PATH, JSON.stringify(localData, null, 2));
-    console.log(`Successfully updated index.json! Total movies in archive: ${localData.length}`);
+    console.log(`Done! Total movies updated in index.json: ${localData.length}`);
 
   } catch (error) {
     console.error('Error running scraper:', error.message);
