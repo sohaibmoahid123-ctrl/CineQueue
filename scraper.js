@@ -6,7 +6,7 @@ const TMDB_API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const JSON_FILE_PATH = './api/movies/index.json';
 
 // آدرس بخش جستجوی اختصاصی PSA
-const TARGET_SOURCE_URL = 'https://psa.wf/?s='; 
+const TARGET_SOURCE_URL = 'https://kargadanmovie.com/?s='; 
 
 async function searchPSA(title, year) {
   try {
