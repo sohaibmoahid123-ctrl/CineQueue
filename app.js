@@ -468,13 +468,13 @@ const has720 = movie.download720;
           Download Video
         </h3>
         <div class="download-buttons">
-<a href="${movie.downloadUrl1080p || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn primary">
+<a href="https://video.moviepire.co/movie/${movie.id}" target="_blank" rel="noopener noreferrer" class="download-btn">
   <div class="dl-quality">1080p</div>
   <div class="dl-label">Full HD</div>
   <div class="dl-size">~2.4 GB</div>
 </a>
 
-<a href="${movie.downloadUrl720p || '#'}" target="_blank" rel="noopener noreferrer" class="download-btn secondary">
+<a href="https://video.moviepire.co/movie/${movie.id}" target="_blank" rel="noopener noreferrer" class="download-btn">
   <div class="dl-quality">720p</div>
   <div class="dl-label">HD Ready</div>
   <div class="dl-size">~1.1 GB</div>
