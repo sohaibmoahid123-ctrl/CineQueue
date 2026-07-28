@@ -480,13 +480,7 @@ const has720 = movie.download720;
   <div class="dl-size">~1.1 GB</div>
 </a>
         </div>
-        ${!has1080 && !has720
-          ? `<p class="dl-note">
-              No download links yet. Open <code>api/movies/index.json</code>,
-              find this movie, and set <code>downloadUrl1080p</code> and
-              <code>downloadUrl720p</code> to real video URLs.
-             </p>`
-          : ''}
+
       </div>
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
 </div>
