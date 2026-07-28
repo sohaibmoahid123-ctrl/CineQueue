@@ -469,7 +469,7 @@ const has720 = movie.download720;
         </h3>
         <div class="download-buttons">
 <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" rel="noopener noreferrer" class="download-btn" style="background: #f59e0b; color: #000; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-radius: 12px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);">
-  <div class="dl-quality" style="font-size: 1.25rem; color: #000; font-weight: 800;">Download & Stream</div>
+  <div class="dl-quality" style="font-size: 1.25rem; color: #000; font-weight: 800;">DOWNLOAD...</div>
   <div class="dl-label" style="font-size: 0.875rem; color: #1c1917; margin-top: 4px; opacity: 0.9;">1080p, 720p & Dubbed Options</div>
 </a>
 
