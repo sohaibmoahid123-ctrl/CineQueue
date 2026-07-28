@@ -469,8 +469,8 @@ const has720 = movie.download720;
         </h3>
         <div class="download-buttons">
 <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" rel="noopener noreferrer" class="download-btn full-width">
-  <div class="dl-quality">دانلود و پخش آنلاین</div>
-  <div class="dl-label">کیفیت‌های ۱۰۸۰p، ۷۲۰p + دوبله و زیرنویس</div>
+  <div class="dl-quality">Download & Stream</div>
+  <div class="dl-label">Multiple Qualities (1080p, 720p) & Dubbed</div>
 </a>
 
         </div>
