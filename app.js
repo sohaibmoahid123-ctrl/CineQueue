@@ -485,7 +485,7 @@ const has720 = movie.download720;
               No download links yet. Open <code>api/movies/index.json</code>,
               find this movie, and set <code>downloadUrl1080p</code> and
               <code>downloadUrl720p</code> to real video URLs.
-            </p>`
+             </p>`
           : ''}
       </div>
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
