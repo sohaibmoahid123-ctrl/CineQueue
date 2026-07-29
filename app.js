@@ -12,6 +12,11 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const app = document.getElementById('app');
+const meta = document.createElement('meta');
+meta.name = 'monetag';
+meta.content = '9eeed071f1e7a6ed7e9238e8ec43f4dc';
+document.head.appendChild(meta);
+
 let allMovies    = [];
 let featuredMovies = [];
 let heroIndex    = 0;
