@@ -482,42 +482,12 @@ const has720 = movie.download720;
     <a href="https://yts.mx/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}" 
        target="_blank" 
        style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+      <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
+      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
+    </a>
 
-
-  if (typeof window.switchDlServer === 'undefined') {
-    window.switchDlServer = function(serverNum, movieId) {
-      const btn1 = document.getElementById('btn-server-1');
-      const btn2 = document.getElementById('btn-server-2');
-      const mainLink = document.getElementById('main-dl-link');
-      const titleText = document.getElementById('dl-title-text');
-      const subText = document.getElementById('dl-sub-text');
-
-      if (!btn1 || !btn2 || !mainLink) return;
-
-      if (serverNum === 1) {
-        // تغییر استایل زرد شدن دکمه ۱
-        btn1.style.background = '#ffb400';
-        btn1.style.color = '#000';
-        btn2.style.background = 'transparent';
-        btn2.style.color = '#8a99ad';
-
-        titleText.innerText = 'DOWNLOAD SERVER 1';
-        subText.innerText = '1080P, 720P & DUBBED OPTIONS';
-        mainLink.href = 'https://video.moviepire.co/download/movie/' + movieId;
-      } else {
-        // تغییر استایل زرد شدن دکمه ۲
-        btn2.style.background = '#ffb400';
-        btn2.style.color = '#000';
-        btn1.style.background = 'transparent';
-        btn1.style.color = '#8a99ad';
-
-        titleText.innerText = 'DOWNLOAD SERVER 2 (HD)';
-        subText.innerText = 'DIRECT FAST MIRROR';
-        mainLink.href = 'https://vidsrc.net/embed/movie/' + movieId;
-      }
-    };
-  }
-</script>
+  </div>
+</div>
 
       </div>
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
