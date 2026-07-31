@@ -470,25 +470,25 @@ const has720 = movie.download720;
     Download Video
   </h3>
 
-  <div style="display: flex; gap: 8px; background: #0b0f17; padding: 6px; border-radius: 12px; margin-bottom: 12px;">
+  <div style="display: flex; gap: 12px; width: 100%;">
     
-    <button type="button" id="btn-server-1" onclick="switchDlServer(1, '${movie.tmdb_id || movie.id}')" style="flex: 1; border: none; padding: 10px 4px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; background: #ffb400; color: #000;">
-      SERVER 1 (MP4)
-    </button>
+    <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" 
+       target="_blank" 
+       style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+      <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
+      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
+    </a>
 
-    <button type="button" id="btn-server-2" onclick="switchDlServer(2, '${movie.imdb_id || movie.tmdb_id || movie.id}')" style="flex: 1; border: none; padding: 10px 4px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #8a99ad;">
-      SERVER 2 (HD)
-    </button>
+    <a href="https://yts.mx/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}" 
+       target="_blank" 
+       style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+      <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
+      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
+    </a>
 
   </div>
-
-  <a id="main-dl-link" href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 12px; text-decoration: none; color: #000; transition: transform 0.1s ease;">
-    <div id="dl-title-text" style="font-size: 1.1rem; font-weight: 800;">DOWNLOAD SERVER 1</div>
-    <div id="dl-sub-text" style="font-size: 0.8rem; opacity: 0.85; margin-top: 2px;">1080P, 720P & DUBBED OPTIONS</div>
-  </a>
 </div>
 
-<script>
   if (typeof window.switchDlServer === 'undefined') {
     window.switchDlServer = function(serverNum, movieId) {
       const btn1 = document.getElementById('btn-server-1');
