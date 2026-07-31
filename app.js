@@ -479,26 +479,8 @@ const has720 = movie.download720;
       <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
     </a>
 
-    <a href="#"
-       onClick={async (e) => {
-         e.preventDefault();
-         const id = movie.imdb_id || movie.tmdb_id || movie.id;
-         if (!id) return alert("Movie ID not found!");
-         try {
-           const res = await fetch(`https://movies-api.accel.li/api/v2/list_movies.json?query_term=${id}`);
-           const data = await res.json();
-           const torrent = data?.data?.movies?.[0]?.torrents?.[0];
-           if (torrent) {
-             const title = encodeURIComponent(data.data.movies[0].title);
-             window.location.href = `magnet:?xt=urn:btih:${torrent.hash}&dn=${title}`;
-           } else {
-             alert("No download links found for this movie.");
-           }
-         } catch (err) {
-           alert("Error connecting to download server!");
-         }
-       }}
-       target="_blank"
+    <a href={`https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}`} 
+       target="_blank" 
        style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
       <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
       <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
