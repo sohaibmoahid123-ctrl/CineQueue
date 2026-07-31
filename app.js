@@ -479,12 +479,13 @@ const has720 = movie.download720;
       <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
     </a>
 
-    <a href="https://yts.mx/browse-movies/${movie.title || movie.imdb_id}/all/all/0/latest/0/all" 
+    <a href="https://www.seedr.cc/zip/${movie.imdb_id || movie.tmdb_id || movie.id}" 
        target="_blank" 
        style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
-      <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT HD)</div>
-      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">SEARCH & DOWNLOAD</div>
+      <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (DIRECT DL)</div>
+      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">TORRENT TO MP4 CONVERTER</div>
     </a>
+
 
   </div>
 </div>
