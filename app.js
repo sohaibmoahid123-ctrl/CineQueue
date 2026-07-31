@@ -460,25 +460,69 @@ const has720 = movie.download720;
 
    </div>
    </div>
-      <!-- Download Section -->
-      <div class="download-section">
-        <h3 class="download-heading">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download Video
-        </h3>
-        <div class="download-buttons">
-<a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" rel="noopener noreferrer" class="download-btn" style="background: #f59e0b; color: #000; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-radius: 12px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);">
-  <div class="dl-quality" style="font-size: 1.25rem; color: #000; font-weight: 800;">DOWNLOAD...</div>
-  <div class="dl-label" style="font-size: 0.875rem; color: #1c1917; margin-top: 4px; opacity: 0.9;">1080p, 720p & Dubbed Options</div>
-</a>
+<div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 16px; padding: 20px; box-sizing: border-box;">
+  <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; color: #fff; font-size: 1.1rem; font-weight: bold;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Download Video
+  </h3>
 
-        </div>
+  <div style="display: flex; gap: 8px; background: #0b0f17; padding: 6px; border-radius: 12px; margin-bottom: 12px;">
+    
+    <button type="button" id="btn-server-1" onclick="switchDlServer(1, '${movie.tmdb_id || movie.id}')" style="flex: 1; border: none; padding: 10px 4px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; background: #ffb400; color: #000;">
+      SERVER 1 (MP4)
+    </button>
+
+    <button type="button" id="btn-server-2" onclick="switchDlServer(2, '${movie.imdb_id || movie.tmdb_id || movie.id}')" style="flex: 1; border: none; padding: 10px 4px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #8a99ad;">
+      SERVER 2 (HD)
+    </button>
+
+  </div>
+
+  <a id="main-dl-link" href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 12px; text-decoration: none; color: #000; transition: transform 0.1s ease;">
+    <div id="dl-title-text" style="font-size: 1.1rem; font-weight: 800;">DOWNLOAD SERVER 1</div>
+    <div id="dl-sub-text" style="font-size: 0.8rem; opacity: 0.85; margin-top: 2px;">1080P, 720P & DUBBED OPTIONS</div>
+  </a>
+</div>
+
+<script>
+  if (typeof window.switchDlServer === 'undefined') {
+    window.switchDlServer = function(serverNum, movieId) {
+      const btn1 = document.getElementById('btn-server-1');
+      const btn2 = document.getElementById('btn-server-2');
+      const mainLink = document.getElementById('main-dl-link');
+      const titleText = document.getElementById('dl-title-text');
+      const subText = document.getElementById('dl-sub-text');
+
+      if (!btn1 || !btn2 || !mainLink) return;
+
+      if (serverNum === 1) {
+        // تغییر استایل زرد شدن دکمه ۱
+        btn1.style.background = '#ffb400';
+        btn1.style.color = '#000';
+        btn2.style.background = 'transparent';
+        btn2.style.color = '#8a99ad';
+
+        titleText.innerText = 'DOWNLOAD SERVER 1';
+        subText.innerText = '1080P, 720P & DUBBED OPTIONS';
+        mainLink.href = 'https://video.moviepire.co/download/movie/' + movieId;
+      } else {
+        // تغییر استایل زرد شدن دکمه ۲
+        btn2.style.background = '#ffb400';
+        btn2.style.color = '#000';
+        btn1.style.background = 'transparent';
+        btn1.style.color = '#8a99ad';
+
+        titleText.innerText = 'DOWNLOAD SERVER 2 (HD)';
+        subText.innerText = 'DIRECT FAST MIRROR';
+        mainLink.href = 'https://vidsrc.net/embed/movie/' + movieId;
+      }
+    };
+  }
+</script>
 
       </div>
 <div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
