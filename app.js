@@ -628,8 +628,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-/* --- Overlay Video Player (اصلاح‌شده بدون رفرش شدن) --- */
-/* --- Overlay Video Player (کد جدید با قابلیت پخش سرورهای چندگانه) --- */
+/* Overlay Video Player */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -643,10 +642,9 @@ document.addEventListener("click", function(e) {
       movieId = window.currentMovieId;
     }
 
-    if (movieId && movieId !== "") {
+    if (movieId) {
       const box = document.getElementById("backdrop-player-box");
       if (box) {
-        // لینک جدید سرور چندگانه (مستقیماً با TMDB/IMDb ID)
         const playerSrc = `https://vidsrc.me/embed/movie?imdb=${movieId}`;
 
         box.innerHTML = `
