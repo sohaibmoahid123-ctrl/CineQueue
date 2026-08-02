@@ -255,52 +255,58 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search (اتصال دقیق کادر کشویی به صفحه فیلم) ───────────────────
+// ── Search (مستقل و کاملاً جدا از لایه‌های صفحه) ───────────────────
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
 
-  if (input.parentElement) {
-    input.parentElement.style.position = 'relative';
-  }
-
+  // ساخت منوی کشویی مستقیماً در root اصلی صفحه (body)
   let searchDropdown = document.getElementById('search-dropdown');
   if (!searchDropdown) {
     searchDropdown = document.createElement('div');
     searchDropdown.id = 'search-dropdown';
     searchDropdown.style.cssText = `
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      width: 100%;
+      position: fixed;
       background: #111625;
       border: 1px solid #232d45;
       border-radius: 12px;
       max-height: 350px;
       overflow-y: auto;
-      z-index: 9999;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      z-index: 999999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
       display: none;
-      margin-top: 6px;
       padding: 8px;
       box-sizing: border-box;
     `;
-    if (input.parentElement) {
-      input.parentElement.appendChild(searchDropdown);
-    }
+    document.body.appendChild(searchDropdown);
   }
 
-  // بستن دروپ‌داون با کلیک بیرون
+  // تابع تنظیم موقعیت دقیق زیر کادر سرچ
+  function updateDropdownPosition() {
+    const rect = input.getBoundingClientRect();
+    searchDropdown.style.top = (rect.bottom + 6) + 'px';
+    searchDropdown.style.left = rect.left + 'px';
+    searchDropdown.style.width = rect.width + 'px';
+  }
+
+  // بستن منو با کلیک خارج از کادر
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.style.display = 'none';
     }
   });
 
-  // کلید Enter برای جستجوی کامل
+  // به‌روزرسانی موقعیت موقع اسکرول یا تغییر سایز
+  window.addEventListener('scroll', () => {
+    if (searchDropdown.style.display === 'block') updateDropdownPosition();
+  });
+  window.addEventListener('resize', () => {
+    if (searchDropdown.style.display === 'block') updateDropdownPosition();
+  });
+
+  // دکمه Enter برای سرچ کامل
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       const q = this.value.trim();
@@ -313,6 +319,7 @@ function wireSearch() {
     }
   });
 
+  // تایپ کردن و دریافت نتایج
   input.addEventListener('input', function () {
     const q = this.value.trim();
 
@@ -341,7 +348,6 @@ function wireSearch() {
           cast: ['Popular Actor']
         }));
 
-        // اضافه کردن مستقیم به آرایه کل فیلم‌ها تا صفحه Detail ارور ۴۰۴ ندهد
         searchResults.forEach(m => {
           if (!allMovies.some(existing => existing.id === m.id)) {
             allMovies.push(m);
@@ -350,9 +356,9 @@ function wireSearch() {
 
         if (searchResults.length > 0) {
           searchDropdown.innerHTML = searchResults.map(buildSearchDropdownItem).join('');
+          updateDropdownPosition();
           searchDropdown.style.display = 'block';
 
-          // اتصال مستقیم کلیک به openMovie برای باز کردن صفحه دانلود و جزئیات
           searchDropdown.querySelectorAll('.search-item').forEach(item => {
             item.addEventListener('click', function (e) {
               e.preventDefault();
@@ -361,12 +367,13 @@ function wireSearch() {
               if (id) {
                 searchDropdown.style.display = 'none';
                 input.value = '';
-                window.openMovie(id); // باز کردن صفحه دوم (جزئیات، دانلود و پلیر)
+                window.openMovie(id);
               }
             });
           });
         } else {
           searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results</div>`;
+          updateDropdownPosition();
           searchDropdown.style.display = 'block';
         }
       } catch (err) {
