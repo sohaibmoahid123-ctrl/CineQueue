@@ -255,14 +255,13 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search (اصلاح عرض و موقعیت دقیق) ───────────────────
+// ── Search (اتصال دقیق کادر کشویی به صفحه فیلم) ───────────────────
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
 
-  // تنظیم والدین کادر سرچ برای جلوگیری از بیرون زدگی
   if (input.parentElement) {
     input.parentElement.style.position = 'relative';
   }
@@ -294,13 +293,14 @@ function wireSearch() {
     }
   }
 
+  // بستن دروپ‌داون با کلیک بیرون
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.style.display = 'none';
     }
   });
 
-  // کلید Enter برای رفتن به صفحه سرچ
+  // کلید Enter برای جستجوی کامل
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       const q = this.value.trim();
@@ -332,10 +332,16 @@ function wireSearch() {
           id: movie.id,
           title: movie.title,
           posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+          synopsis: movie.overview || 'No synopsis available.',
           year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
-          rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0
+          rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+          durationMinutes: 120,
+          genre: 'Search Result',
+          director: 'TMDB Cinema',
+          cast: ['Popular Actor']
         }));
 
+        // اضافه کردن مستقیم به آرایه کل فیلم‌ها تا صفحه Detail ارور ۴۰۴ ندهد
         searchResults.forEach(m => {
           if (!allMovies.some(existing => existing.id === m.id)) {
             allMovies.push(m);
@@ -346,17 +352,18 @@ function wireSearch() {
           searchDropdown.innerHTML = searchResults.map(buildSearchDropdownItem).join('');
           searchDropdown.style.display = 'block';
 
-          // کلیک روی آیتم و رفتن به صفحه فیلم
+          // اتصال مستقیم کلیک به openMovie برای باز کردن صفحه دانلود و جزئیات
           searchDropdown.querySelectorAll('.search-item').forEach(item => {
-            item.onclick = function (e) {
+            item.addEventListener('click', function (e) {
+              e.preventDefault();
               e.stopPropagation();
-              const id = this.getAttribute('data-id');
+              const id = parseInt(this.getAttribute('data-id'), 10);
               if (id) {
                 searchDropdown.style.display = 'none';
                 input.value = '';
-                window.location.hash = 'movie/' + id;
+                window.openMovie(id); // باز کردن صفحه دوم (جزئیات، دانلود و پلیر)
               }
-            };
+            });
           });
         } else {
           searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results</div>`;
