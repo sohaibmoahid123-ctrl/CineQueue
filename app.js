@@ -619,42 +619,46 @@ function wireCards() {
 init();
 
 // ── Overlay Video Player Listener ──────────────────────────────
-document.addEventListener("click", function(e) {
+document.addEventListener("click", function (e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
 
-  if (playBtn) {
-    let movieId = "";
+  // Helper function to resolve the current movie ID
+  const getMovieId = () => {
     const hashParts = window.location.hash.split("/");
-    if (hashParts.length > 1 && hashParts[1]) {
-      movieId = hashParts[1];
-    } else if (window.currentMovieId) {
-      movieId = window.currentMovieId;
+    return (hashParts.length > 1 && hashParts[1]) ? hashParts[1] : (window.currentMovieId || "");
+  };
+
+  // --- PLAY BUTTON CLICK ---
+  if (playBtn) {
+    const movieId = getMovieId();
+
+    if (!movieId) {
+      alert("Error: Movie ID not found.");
+      return;
     }
 
-    if (movieId && movieId !== "") {
-      const box = document.getElementById("backdrop-player-box");
-      if (box) {
-        const playerSrc = `https://streamingnow.mov/embed/movie/${movieId}`;
+    const box = document.getElementById("backdrop-player-box");
+    if (box) {
+      const playerSrc = `https://streamingnow.mov/embed/movie/${movieId}`;
 
-        box.innerHTML = `
-          <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
-          <iframe
-            src="${playerSrc}"
-            style="width: 100%; height: 100%; border: none;"
-            allow="autoplay; encrypted-media; fullscreen"
-            allowfullscreen>
-          </iframe>
-        `;
-      }
-    } else {
-      alert("Error: Movie ID not found.");
+      box.innerHTML = `
+        <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
+        <iframe
+          src="${playerSrc}"
+          style="width: 100%; height: 100%; border: none;"
+          allow="autoplay; encrypted-media; fullscreen"
+          allowfullscreen>
+        </iframe>
+      `;
     }
   }
 
+  // --- CLOSE BUTTON CLICK ---
   if (closeBtn) {
-    let movieId = window.location.hash.split("/")[1] || "";
-    const movie = allMovies.find(m => m.id == movieId);
+    const movieId = getMovieId();
+    const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
+    const movie = moviesList.find(m => m.id == movieId);
     const box = document.getElementById("backdrop-player-box");
 
     if (box && movie) {
