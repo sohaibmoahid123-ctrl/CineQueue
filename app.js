@@ -623,24 +623,41 @@ document.addEventListener("click", function (e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
 
-  // Helper function to resolve the current movie ID
   const getMovieId = () => {
     const hashParts = window.location.hash.split("/");
     return (hashParts.length > 1 && hashParts[1]) ? hashParts[1] : (window.currentMovieId || "");
   };
 
-  // --- PLAY BUTTON CLICK ---
   if (playBtn) {
-    const movieId = getMovieId();
+    const rawId = getMovieId();
+    const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
+    
+    // Find the movie object to check its available IDs
+    const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
 
-    if (!movieId) {
+    if (!rawId && !movie) {
       alert("Error: Movie ID not found.");
       return;
     }
 
     const box = document.getElementById("backdrop-player-box");
     if (box) {
-      const playerSrc = `https://streamingnow.mov/embed/movie/${movieId}`;
+      let playerSrc = "";
+
+      // Check if we have an explicit IMDb ID or TMDB ID
+      if (movie && movie.imdbId) {
+        // Option A: Using IMDb ID (e.g., tt8385148)
+        playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
+      } else if (movie && movie.tmdbId) {
+        // Option B: Using TMDB ID (requires &tmdb=1)
+        playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
+      } else {
+        // Fallback assuming the raw ID is an IMDb ID or numeric TMDB ID
+        const isImdb = String(rawId).startsWith("tt");
+        playerSrc = isImdb 
+          ? `https://multiembed.mov/?video_id=${rawId}` 
+          : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
+      }
 
       box.innerHTML = `
         <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
@@ -654,11 +671,10 @@ document.addEventListener("click", function (e) {
     }
   }
 
-  // --- CLOSE BUTTON CLICK ---
   if (closeBtn) {
-    const movieId = getMovieId();
+    const rawId = getMovieId();
     const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
-    const movie = moviesList.find(m => m.id == movieId);
+    const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
     const box = document.getElementById("backdrop-player-box");
 
     if (box && movie) {
