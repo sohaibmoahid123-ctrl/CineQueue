@@ -511,22 +511,18 @@ async function renderMovieDetail(id) {
   }
 
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
-  
-  // لینک‌ها در پس‌زمینه دریافت می‌شوند تا صفحه آنی باز شود
+
   getAutoDownloadLinks(movie);
 
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
-      <div class="player-outer-wrapper" style="width: 100%; max-width: 900px; margin: 0 auto 25px auto; padding: 0 10px; box-sizing: border-box;">
+      <div class="player-outer-wrapper" style="width: 100%; max-width: 900px; margin: 0 auto 20px auto; padding: 0 10px; box-sizing: border-box;">
         <div id="backdrop-player-box" style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #232d45;">
-          
           <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
-          
           <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(229, 9, 20, 0.95); border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 8px 25px rgba(0,0,0,0.7);">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
           </button>
-          
         </div>
       </div>
 
@@ -555,33 +551,23 @@ async function renderMovieDetail(id) {
               </div>
               <div class="credit-row">
                 <span class="credit-label">Cast</span>
-                <span class="credit-value">${movie.cast.join(', ')}</span>
+                <span class="credit-value">${movie.cast ? movie.cast.join(', ') : ''}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 16px; padding: 20px; box-sizing: border-box; margin-top: 20px;">
-          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; color: #fff; font-size: 1.1rem; font-weight: bold;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
+        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
+          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download Video
           </h3>
-
           <div style="display: flex; gap: 12px; width: 100%;">
-            <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" 
-               target="_blank" 
-               style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+            <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
             </a>
-
-            <a href="https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}" 
-               target="_blank" 
-               style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+            <a href="https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
             </a>
@@ -597,10 +583,11 @@ async function renderMovieDetail(id) {
         </div>` : ''}
 
       </div>
-    </main>`;
+    </main>
+  `;
 
   wireCards();
-  wireSearch(); // فعال‌سازی کادر سرچ در این صفحه
+  wireSearch();
 }
 
 // ── Header ────────────────────────────────────────────────────
