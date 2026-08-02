@@ -16,11 +16,11 @@ let featuredMovies = [];
 let heroIndex      = 0;
 let heroTimer      = null;
 
-// دریافت لینک دانلود بدون معطل کردن لود صفحه
+// Download link fetcher without blocking page render
 async function getAutoDownloadLinks(movie) {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // تایم‌اوت ۳ ثانیه‌ای جهت جلوگیری از قفل شدن
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
     const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(movie.title)}`, { signal: controller.signal });
     clearTimeout(timeoutId);
@@ -35,7 +35,7 @@ async function getAutoDownloadLinks(movie) {
       movie.downloadUrl720p  = t720 ? t720.url : torrents[0].url;
     }
   } catch (err) {
-    // در صورت خطا یا تایم‌اوت، سایت بدون لودینگ می‌ماند
+    // Ignore timeout errors silently
   }
 }
 
@@ -255,14 +255,13 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search (مستقل و کاملاً جدا از لایه‌های صفحه) ───────────────────
+// ── Search Wiring ──────────────────────────────────────────────
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
 
-  // ساخت منوی کشویی مستقیماً در root اصلی صفحه (body)
   let searchDropdown = document.getElementById('search-dropdown');
   if (!searchDropdown) {
     searchDropdown = document.createElement('div');
@@ -283,7 +282,6 @@ function wireSearch() {
     document.body.appendChild(searchDropdown);
   }
 
-  // تابع تنظیم موقعیت دقیق زیر کادر سرچ
   function updateDropdownPosition() {
     const rect = input.getBoundingClientRect();
     searchDropdown.style.top = (rect.bottom + 6) + 'px';
@@ -291,14 +289,12 @@ function wireSearch() {
     searchDropdown.style.width = rect.width + 'px';
   }
 
-  // بستن منو با کلیک خارج از کادر
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.style.display = 'none';
     }
   });
 
-  // به‌روزرسانی موقعیت موقع اسکرول یا تغییر سایز
   window.addEventListener('scroll', () => {
     if (searchDropdown.style.display === 'block') updateDropdownPosition();
   });
@@ -306,7 +302,6 @@ function wireSearch() {
     if (searchDropdown.style.display === 'block') updateDropdownPosition();
   });
 
-  // دکمه Enter برای سرچ کامل
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       const q = this.value.trim();
@@ -319,7 +314,6 @@ function wireSearch() {
     }
   });
 
-  // تایپ کردن و دریافت نتایج
   input.addEventListener('input', function () {
     const q = this.value.trim();
 
@@ -383,7 +377,6 @@ function wireSearch() {
   });
 }
 
-// ساخت آیتم‌های شناور با ظاهری مرتب
 function buildSearchDropdownItem(m) {
   return `
     <div class="search-item" data-id="${m.id}" style="display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid #1a233a; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#1c263e'" onmouseout="this.style.background='transparent'">
@@ -396,7 +389,6 @@ function buildSearchDropdownItem(m) {
   `;
 }
 
-// اجرای جستجوی کامل در صفحه (هنگام Enter)
 async function executeFullSearch(q) {
   const browse = document.getElementById('browse-section');
   if (!browse) return;
@@ -496,8 +488,7 @@ window.unlockAdultPosters = function() {
   if (banner) banner.remove();
 };
 
-// ── Movie Detail Page (اصلاح بدون معطلی) ───────────────────────
-// ── Movie Detail Page ──
+// ── Movie Detail Page ──────────────────────────────────────────
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
   if (!movie) {
@@ -600,8 +591,7 @@ function buildHeader() {
         <a href="#">Browse</a>
       </nav>
       <div class="search-wrap">
-        <input type="search" id="search-input"
-               class="search-input" placeholder="Search movies..." />
+        <input type="search" id="search-input" class="search-input" placeholder="Search movies..." />
       </div>
     </header>`;
 }
@@ -628,7 +618,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-/* Overlay Video Player */
+// ── Overlay Video Player Listener ──────────────────────────────
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -678,16 +668,7 @@ document.addEventListener("click", function(e) {
   }
 });
 
-  if (closeBtn) {
-    const backdrop = closeBtn.closest("[data-original-html]");
-    if (backdrop && backdrop.dataset.originalHtml) {
-      backdrop.innerHTML = backdrop.dataset.originalHtml;
-      delete backdrop.dataset.originalHtml;
-    }
-  }
-});
-
-// این بخش کنترل می‌شود تا دکمه پخش اضافه برای پلیر فعال مزاحمت ایجاد نکند
+// ── Player Mutation Observer ──────────────────────────────────
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
     const targetArea = document.querySelector("[class*='backdrop'], [class*='hero'], [style*='background']") || document.querySelector("main");
