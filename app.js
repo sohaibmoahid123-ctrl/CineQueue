@@ -255,14 +255,18 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search (ترکیبی: منوی شناور با تایپ + صفحه کامل با Enter) ───
+// ── Search (اصلاح عرض و موقعیت دقیق) ───────────────────
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
 
-  // ساخت منوی شناور اسکرولی زیر کادر سرچ
+  // تنظیم والدین کادر سرچ برای جلوگیری از بیرون زدگی
+  if (input.parentElement) {
+    input.parentElement.style.position = 'relative';
+  }
+
   let searchDropdown = document.getElementById('search-dropdown');
   if (!searchDropdown) {
     searchDropdown = document.createElement('div');
@@ -270,51 +274,45 @@ function wireSearch() {
     searchDropdown.style.cssText = `
       position: absolute;
       top: 100%;
-      right: 0;
       left: 0;
+      right: 0;
+      width: 100%;
       background: #111625;
       border: 1px solid #232d45;
       border-radius: 12px;
-      max-height: 380px;
+      max-height: 350px;
       overflow-y: auto;
-      z-index: 1000;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      z-index: 9999;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
       display: none;
-      margin-top: 8px;
-      padding: 10px;
+      margin-top: 6px;
+      padding: 8px;
+      box-sizing: border-box;
     `;
     if (input.parentElement) {
-      input.parentElement.style.position = 'relative';
       input.parentElement.appendChild(searchDropdown);
     }
   }
 
-  // بستن منو با کلیک بیرون از کادر
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.style.display = 'none';
     }
   });
 
-  // مدیریت فشار دادن دکمه Enter برای رفتن به صفحه کامل
+  // کلید Enter برای رفتن به صفحه سرچ
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       const q = this.value.trim();
       if (q.length >= 2) {
-        searchDropdown.style.display = 'none'; // بستن منوی شناور
-        
-        // اگر در صفحه جزئیات بودیم، ابتدا به صفحه اصلی می‌رویم
-        if (!document.getElementById('browse-section')) {
-          window.location.hash = '';
-          setTimeout(() => executeFullSearch(q), 100);
-        } else {
+        searchDropdown.style.display = 'none';
+        if (typeof executeFullSearch === 'function') {
           executeFullSearch(q);
         }
       }
     }
   });
 
-  // مدیریت تایپ کردن (نمایش منوی شناور)
   input.addEventListener('input', function () {
     const q = this.value.trim();
 
@@ -348,19 +346,20 @@ function wireSearch() {
           searchDropdown.innerHTML = searchResults.map(buildSearchDropdownItem).join('');
           searchDropdown.style.display = 'block';
 
-          // انتخاب فیلم از لیست شناور
+          // کلیک روی آیتم و رفتن به صفحه فیلم
           searchDropdown.querySelectorAll('.search-item').forEach(item => {
-            item.onclick = function () {
+            item.onclick = function (e) {
+              e.stopPropagation();
               const id = this.getAttribute('data-id');
               if (id) {
                 searchDropdown.style.display = 'none';
                 input.value = '';
-                window.openMovie(id);
+                window.location.hash = 'movie/' + id;
               }
             };
           });
         } else {
-          searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results for "<strong>${q}</strong>"</div>`;
+          searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results</div>`;
           searchDropdown.style.display = 'block';
         }
       } catch (err) {
