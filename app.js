@@ -1,11 +1,5 @@
 // ============================================================
 // CineQueue — app.js
-//
-// To edit movie titles, descriptions, images:
-//   Open  api/movies/index.json
-//
-// To edit download links, find the movie in that file and
-// change "downloadUrl1080p" and "downloadUrl720p" values.
 // ============================================================
 const API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -17,34 +11,31 @@ meta.name = 'monetag';
 meta.content = '9eeed071f1e7a6ed7e9238e8ec43f4dc';
 document.head.appendChild(meta);
 
-let allMovies    = [];
+let allMovies      = [];
 let featuredMovies = [];
-let heroIndex    = 0;
-let heroTimer    = null;
+let heroIndex      = 0;
+let heroTimer      = null;
 
-// دریافت لینک دانلود فقط و فقط از API سالم YTS
+// دریافت لینک دانلود بدون معطل کردن لود صفحه
 async function getAutoDownloadLinks(movie) {
   try {
-    const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(movie.title)}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // تایم‌اوت ۳ ثانیه‌ای جهت جلوگیری از قفل شدن
+
+    const res = await fetch(`https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(movie.title)}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
 
     if (data.data && data.data.movies && data.data.movies.length > 0) {
       const torrents = data.data.movies[0].torrents;
-
       const t1080 = torrents.find(t => t.quality === '1080p');
-      const t720 = torrents.find(t => t.quality === '720p');
+      const t720  = torrents.find(t => t.quality === '720p');
 
       movie.downloadUrl1080p = t1080 ? t1080.url : torrents[0].url;
-      movie.downloadUrl720p = t720 ? t720.url : torrents[0].url;
-    } else {
-      // اگر فیلم پیدا نشد لینک را خالی بگذار تا صفحه خراب باز نشود
-      movie.downloadUrl1080p = null;
-      movie.downloadUrl720p = null;
+      movie.downloadUrl720p  = t720 ? t720.url : torrents[0].url;
     }
   } catch (err) {
-    console.error("Error fetching links:", err);
-    movie.downloadUrl1080p = null;
-    movie.downloadUrl720p = null;
+    // در صورت خطا یا تایم‌اوت، سایت بدون لودینگ می‌ماند
   }
 }
 
@@ -136,10 +127,9 @@ async function init() {
   route();
 }
 
-
 // ── Router ────────────────────────────────────────────────────
 function route() {
-  const hash = window.location.hash.slice(1); // strip the #
+  const hash = window.location.hash.slice(1);
   stopHeroTimer();
   window.scrollTo({ top: 0, behavior: 'instant' });
 
@@ -162,7 +152,6 @@ function showLoading() {
 
 // ── Home Page ─────────────────────────────────────────────────
 function renderHome() {
-  // Collect unique genres in the order they appear
   const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
     if (a === 'Popular Movies') return -1;
     if (b === 'Popular Movies') return 1;
@@ -252,7 +241,6 @@ function paintHero() {
     </div>`;
 }
 
-// Global so onclick= attributes can reach it
 window.jumpHero = function(i) {
   stopHeroTimer();
   heroIndex = i;
@@ -267,7 +255,7 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search ────────────────────────────────────────────────────
+// ── Search (اصلاح‌شده برای تمام صفحات) ─────────────────────────
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
@@ -276,6 +264,21 @@ function wireSearch() {
 
   input.addEventListener('input', function () {
     const q = this.value.trim();
+
+    // اگر در صفحه جزئیات بودیم و سرچ انجام شد، به صفحه اصلی هدایت شو
+    if (!document.getElementById('browse-section')) {
+      window.location.hash = '';
+      setTimeout(() => {
+        const newInput = document.getElementById('search-input');
+        if (newInput) {
+          newInput.value = q;
+          newInput.dispatchEvent(new Event('input'));
+          newInput.focus();
+        }
+      }, 50);
+      return;
+    }
+
     const browse = document.getElementById('browse-section');
     if (!browse) return;
 
@@ -352,13 +355,10 @@ function wireSearch() {
   });
 }
 
-// تابع کمکی برای ساخت کارت‌های سرچ با افکت بلور// تابع کمکی برای ساخت کارت‌های سرچ با تشخیص هوشمند کلمات و برچسب حساس
 function buildSearchCard(m, isAgeUnlocked) {
   const sensitiveKeywords = ['sex', 'nude', 'erotic', 'desire', 'passion', 'kill', 'slasher', 'blood', 'gory', 'gore', 'massacre', 'murder'];
-  
   const titleLower = (m.title || '').toLowerCase();
   const hasSensitiveTitle = sensitiveKeywords.some(keyword => titleLower.includes(keyword));
-
   const isSensitive = m.isAdult || hasSensitiveTitle;
 
   const adultClass = (isSensitive && !isAgeUnlocked) ? 'adult-content' : '';
@@ -384,7 +384,6 @@ function buildSearchCard(m, isAgeUnlocked) {
   `;
 }
 
-// تابع باز کردن بلور پوسترها با تایید سن
 window.unlockAdultPosters = function() {
   localStorage.setItem('ageUnlocked', 'true');
   document.querySelectorAll('.movie-card.adult-content').forEach(card => {
@@ -394,7 +393,7 @@ window.unlockAdultPosters = function() {
   if (banner) banner.remove();
 };
 
-// ── Movie Detail Page ─────────────────────────────────────────
+// ── Movie Detail Page (اصلاح بدون معطلی) ───────────────────────
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
   if (!movie) {
@@ -404,98 +403,83 @@ async function renderMovieDetail(id) {
         <h2>Movie not found</h2>
         <button class="btn-primary" onclick="history.back()">&#8592; Go Back</button>
       </div>`;
+    wireSearch();
     return;
   }
 
-  // Related movies in the same genre (exclude this one)
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
-  await getAutoDownloadLinks(movie);
+  
+  // لینک‌ها در پس‌زمینه دریافت می‌شوند تا صفحه آنی باز شود
+  getAutoDownloadLinks(movie);
 
-  // Check if real download links were provided
-const has1080 = movie.download1080;
-const has720 = movie.download720;
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
-
-      <!-- Full-width backdrop (blurred poster) -->
       <div class="detail-backdrop">
         <img class="detail-backdrop-img" src="${movie.posterUrl}" alt="">
         <div class="detail-backdrop-gradient"></div>
       </div>
 
       <div class="detail-content">
-
-        <!-- Back -->
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
 
-        <!-- Poster + Info side by side -->
-      <div class="detail-layout">
+        <div class="detail-layout">
+          <div class="detail-poster-wrap">
+            <img class="detail-poster" src="${movie.posterUrl}" alt="${movie.title}">
+          </div>
 
-        <div class="detail-poster-wrap">
-          <img class="detail-poster" src="${movie.posterUrl}" alt="${movie.title}">
+          <div class="detail-info">
+            <span class="detail-genre-tag">${movie.genre}</span>
+            <h1 class="detail-title">${movie.title}</h1>
+            <div class="detail-meta">
+              <span class="rating-badge large">${movie.rating}</span>
+              <span>${movie.year}</span>
+              <span>${movie.durationMinutes} min</span>
+            </div>
+            <p class="detail-synopsis">${movie.synopsis}</p>
+
+            <div class="detail-credits">
+              <div class="credit-row">
+                <span class="credit-label">Director</span>
+                <span class="credit-value">${movie.director}</span>
+              </div>
+              <div class="credit-row">
+                <span class="credit-label">Cast</span>
+                <span class="credit-value">${movie.cast.join(', ')}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="detail-info">
-          <span class="detail-genre-tag">${movie.genre}</span>
-          <h1 class="detail-title">${movie.title}</h1>
-          <div class="detail-meta">
-            <span class="rating-badge large">${movie.rating}</span>
-            <span>${movie.year}</span>
-            <span>${movie.durationMinutes} min</span>
-          </div>
-          <p class="detail-synopsis">${movie.synopsis}</p>
+        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 16px; padding: 20px; box-sizing: border-box; margin-top: 20px;">
+          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; color: #fff; font-size: 1.1rem; font-weight: bold;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Video
+          </h3>
 
-          <div class="detail-credits">
-            <div class="credit-row">
-              <span class="credit-label">Director</span>
-              <span class="credit-value">${movie.director}</span>
-            </div>
-            <div class="credit-row">
-              <span class="credit-label">Cast</span>
-              <span class="credit-value">${movie.cast.join(', ')}</span>
-            </div>
+          <div style="display: flex; gap: 12px; width: 100%;">
+            <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" 
+               target="_blank" 
+               style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+              <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
+              <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
+            </a>
+
+            <a href="https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}" 
+               target="_blank" 
+               style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
+              <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
+              <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
+            </a>
           </div>
         </div>
 
-   </div>
-   </div>
-<div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 16px; padding: 20px; box-sizing: border-box;">
-  <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; color: #fff; font-size: 1.1rem; font-weight: bold;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-    Download Video
-  </h3>
-
-  <div style="display: flex; gap: 12px; width: 100%;">
-    
-    <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" 
-       target="_blank" 
-       style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
-      <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
-      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
-    </a>
-
-    <a href="https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.tmdb_id || movie.id}" 
-       target="_blank" 
-       style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffb400; border-radius: 12px; padding: 14px 8px; text-decoration: none; color: #000; text-align: center;">
-      <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
-      <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
-    </a>
-
-  </div>
-</div>
-
-      </div>
-<div className="mt-auto bg-[#...] p-6 rounded-2xl ...">
-</div>
-
-        <!-- More in this genre -->
         ${related.length > 0 ? `
-        <div class="more-section">
+        <div class="more-section" style="margin-top: 30px;">
           <h2 class="genre-title">More ${movie.genre}</h2>
           <div class="cards-scroll">
             ${related.map(buildCard).join('')}
@@ -506,6 +490,7 @@ const has720 = movie.download720;
     </main>`;
 
   wireCards();
+  wireSearch(); // فعال‌سازی کادر سرچ در این صفحه
 }
 
 // ── Header ────────────────────────────────────────────────────
@@ -527,7 +512,6 @@ function buildHeader() {
 function wireCards() {
   document.querySelectorAll('.movie-card').forEach(card => {
     card.onclick = function (e) {
-      // اگر کارت هنوز بلور و قفل است، اجازه ورود به صفحه بعد را نده
       if (this.classList.contains('adult-content')) {
         e.preventDefault();
         e.stopPropagation();
@@ -546,7 +530,7 @@ function wireCards() {
 // ── Start the app ─────────────────────────────────────────────
 init();
 
-/* --- Overlay Video Player (English Version) --- */
+/* --- Overlay Video Player (اصلاح‌شده بدون رفرش شدن) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
@@ -558,7 +542,6 @@ document.addEventListener("click", function(e) {
       backdrop.style.position = "relative";
       backdrop.style.width = "100%";
 
-      // Extract Movie ID from URL hash or global variable
       let movieId = "";
       const hashParts = window.location.hash.split("/");
       if (hashParts.length > 1 && hashParts[1]) {
@@ -593,7 +576,7 @@ document.addEventListener("click", function(e) {
   }
 });
 
-
+// این بخش کنترل می‌شود تا دکمه پخش اضافه برای پلیر فعال مزاحمت ایجاد نکند
 const observer = new MutationObserver(() => {
   if (window.location.hash.includes("movie/")) {
     const targetArea = document.querySelector("[class*='backdrop'], [class*='hero'], [style*='background']") || document.querySelector("main");
@@ -614,7 +597,7 @@ const observer = new MutationObserver(() => {
   }
 });
 observer.observe(document.body, { childList: true, subtree: true });
-// تابع تعویض سرور پخش فیلم
+
 window.changeServer = function(serverUrl, btnElement) {
   const player = document.getElementById('main-player');
   if (player) {
