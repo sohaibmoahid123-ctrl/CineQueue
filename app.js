@@ -497,6 +497,7 @@ window.unlockAdultPosters = function() {
 };
 
 // ── Movie Detail Page (اصلاح بدون معطلی) ───────────────────────
+// ── Movie Detail Page ──
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
   if (!movie) {
