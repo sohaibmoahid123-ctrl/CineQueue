@@ -255,41 +255,72 @@ window.openMovie = function(id) {
   window.location.hash = 'movie/' + id;
 };
 
-// ── Search (اصلاح‌شده برای تمام صفحات) ─────────────────────────
+// ── Search (ترکیبی: منوی شناور با تایپ + صفحه کامل با Enter) ───
 function wireSearch() {
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
 
+  // ساخت منوی شناور اسکرولی زیر کادر سرچ
+  let searchDropdown = document.getElementById('search-dropdown');
+  if (!searchDropdown) {
+    searchDropdown = document.createElement('div');
+    searchDropdown.id = 'search-dropdown';
+    searchDropdown.style.cssText = `
+      position: absolute;
+      top: 100%;
+      right: 0;
+      left: 0;
+      background: #111625;
+      border: 1px solid #232d45;
+      border-radius: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      display: none;
+      margin-top: 8px;
+      padding: 10px;
+    `;
+    if (input.parentElement) {
+      input.parentElement.style.position = 'relative';
+      input.parentElement.appendChild(searchDropdown);
+    }
+  }
+
+  // بستن منو با کلیک بیرون از کادر
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
+      searchDropdown.style.display = 'none';
+    }
+  });
+
+  // مدیریت فشار دادن دکمه Enter برای رفتن به صفحه کامل
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const q = this.value.trim();
+      if (q.length >= 2) {
+        searchDropdown.style.display = 'none'; // بستن منوی شناور
+        
+        // اگر در صفحه جزئیات بودیم، ابتدا به صفحه اصلی می‌رویم
+        if (!document.getElementById('browse-section')) {
+          window.location.hash = '';
+          setTimeout(() => executeFullSearch(q), 100);
+        } else {
+          executeFullSearch(q);
+        }
+      }
+    }
+  });
+
+  // مدیریت تایپ کردن (نمایش منوی شناور)
   input.addEventListener('input', function () {
     const q = this.value.trim();
 
-    // اگر در صفحه جزئیات بودیم و سرچ انجام شد، به صفحه اصلی هدایت شو
-    if (!document.getElementById('browse-section')) {
-      window.location.hash = '';
-      setTimeout(() => {
-        const newInput = document.getElementById('search-input');
-        if (newInput) {
-          newInput.value = q;
-          newInput.dispatchEvent(new Event('input'));
-          newInput.focus();
-        }
-      }, 50);
-      return;
-    }
-
-    const browse = document.getElementById('browse-section');
-    if (!browse) return;
-
     if (q.length < 2) {
-      const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
-        if (a === 'Popular Movies') return -1;
-        if (b === 'Popular Movies') return 1;
-        return a.localeCompare(b);
-      });
-      browse.innerHTML = genres.map(buildGenreRow).join('');
-      wireCards();
+      searchDropdown.style.display = 'none';
+      searchDropdown.innerHTML = '';
       return;
     }
 
@@ -299,20 +330,12 @@ function wireSearch() {
         const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
         const data = await res.json();
 
-        const searchResults = (data.results || []).map(movie => ({
+        const searchResults = (data.results || []).slice(0, 10).map(movie => ({
           id: movie.id,
           title: movie.title,
           posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
-          synopsis: movie.overview || 'No synopsis available.',
           year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
-          rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
-          durationMinutes: 120,
-          genre: 'Search Result',
-          isAdult: movie.adult || false,
-          director: 'TMDB Cinema',
-          cast: ['Popular Actor'],
-          downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
-          downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
+          rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0
         }));
 
         searchResults.forEach(m => {
@@ -322,37 +345,104 @@ function wireSearch() {
         });
 
         if (searchResults.length > 0) {
-          const isAgeUnlocked = localStorage.getItem('ageUnlocked') === 'true';
-          
-          let html = '';
-          if (!isAgeUnlocked) {
-            html += `
-              <div class="age-unlock-banner">
-                <p>⚠️ Some search results may contain adult or sensitive content (+18).</p>
-                <button class="btn-unlock-age" onclick="unlockAdultPosters()">Unlock (+18) Posters</button>
-              </div>
-            `;
-          }
+          searchDropdown.innerHTML = searchResults.map(buildSearchDropdownItem).join('');
+          searchDropdown.style.display = 'block';
 
-          html += `
-            <div class="genre-row">
-              <h2 class="genre-title">Results for "${q}" (${searchResults.length})</h2>
-              <div class="cards-scroll">
-                ${searchResults.map(m => buildSearchCard(m, isAgeUnlocked)).join('')}
-              </div>
-            </div>
-          `;
-
-          browse.innerHTML = html;
-          wireCards();
+          // انتخاب فیلم از لیست شناور
+          searchDropdown.querySelectorAll('.search-item').forEach(item => {
+            item.onclick = function () {
+              const id = this.getAttribute('data-id');
+              if (id) {
+                searchDropdown.style.display = 'none';
+                input.value = '';
+                window.openMovie(id);
+              }
+            };
+          });
         } else {
-          browse.innerHTML = `<div class="no-results">No results for "<strong>${q}</strong>"</div>`;
+          searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results for "<strong>${q}</strong>"</div>`;
+          searchDropdown.style.display = 'block';
         }
       } catch (err) {
-        console.error('Search error:', err);
+        console.error('Dropdown search error:', err);
       }
-    }, 400);
+    }, 300);
   });
+}
+
+// ساخت آیتم‌های شناور با ظاهری مرتب
+function buildSearchDropdownItem(m) {
+  return `
+    <div class="search-item" data-id="${m.id}" style="display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid #1a233a; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#1c263e'" onmouseout="this.style.background='transparent'">
+      <img src="${m.posterUrl}" alt="${m.title}" style="width:40px; height:56px; object-fit:cover; border-radius:6px;" />
+      <div style="flex:1;">
+        <div style="color:#fff; font-weight:bold; font-size:0.95rem;">${m.title}</div>
+        <div style="color:#888; font-size:0.8rem; margin-top:3px;">★ ${m.rating} | ${m.year}</div>
+      </div>
+    </div>
+  `;
+}
+
+// اجرای جستجوی کامل در صفحه (هنگام Enter)
+async function executeFullSearch(q) {
+  const browse = document.getElementById('browse-section');
+  if (!browse) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
+    const data = await res.json();
+
+    const searchResults = (data.results || []).map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
+      synopsis: movie.overview || 'No synopsis available.',
+      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
+      rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
+      durationMinutes: 120,
+      genre: 'Search Result',
+      isAdult: movie.adult || false,
+      director: 'TMDB Cinema',
+      cast: ['Popular Actor'],
+      downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
+      downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
+    }));
+
+    searchResults.forEach(m => {
+      if (!allMovies.some(existing => existing.id === m.id)) {
+        allMovies.push(m);
+      }
+    });
+
+    if (searchResults.length > 0) {
+      const isAgeUnlocked = localStorage.getItem('ageUnlocked') === 'true';
+      let html = '';
+      if (!isAgeUnlocked) {
+        html += `
+          <div class="age-unlock-banner">
+            <p>⚠️ Some search results may contain adult or sensitive content (+18).</p>
+            <button class="btn-unlock-age" onclick="unlockAdultPosters()">Unlock (+18) Posters</button>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="genre-row">
+          <h2 class="genre-title">Results for "${q}" (${searchResults.length})</h2>
+          <div class="cards-scroll">
+            ${searchResults.map(m => buildSearchCard(m, isAgeUnlocked)).join('')}
+          </div>
+        </div>
+      `;
+
+      browse.innerHTML = html;
+      wireCards();
+    } else {
+      browse.innerHTML = `<div class="no-results">No results for "<strong>${q}</strong>"</div>`;
+    }
+  } catch (err) {
+    console.error('Full search error:', err);
+  }
 }
 
 function buildSearchCard(m, isAgeUnlocked) {
