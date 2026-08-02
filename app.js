@@ -518,17 +518,17 @@ async function renderMovieDetail(id) {
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
-<div class="player-outer-wrapper" style="width: 100%; max-width: 900px; margin: 0 auto 20px auto; padding: 0 10px; box-sizing: border-box;">
-  <div id="backdrop-player-box" style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #232d45;">
-    
-    <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
-    
-    <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(229, 9, 20, 0.95); border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 8px 25px rgba(0,0,0,0.7); transition: transform 0.2s;">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-    
-  </div>
-</div>
+      <div class="player-outer-wrapper" style="width: 100%; max-width: 900px; margin: 0 auto 25px auto; padding: 0 10px; box-sizing: border-box;">
+        <div id="backdrop-player-box" style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #232d45;">
+          
+          <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
+          
+          <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(229, 9, 20, 0.95); border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 8px 25px rgba(0,0,0,0.7);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          
+        </div>
+      </div>
 
       <div class="detail-content">
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
@@ -641,41 +641,56 @@ function wireCards() {
 init();
 
 /* --- Overlay Video Player (اصلاح‌شده بدون رفرش شدن) --- */
+/* --- Overlay Video Player (کد جدید با قابلیت پخش سرورهای چندگانه) --- */
 document.addEventListener("click", function(e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
 
   if (playBtn) {
-    const backdrop = playBtn.parentElement;
-    if (backdrop) {
-      backdrop.dataset.originalHtml = backdrop.innerHTML;
-      backdrop.style.position = "relative";
-      backdrop.style.width = "100%";
+    let movieId = "";
+    const hashParts = window.location.hash.split("/");
+    if (hashParts.length > 1 && hashParts[1]) {
+      movieId = hashParts[1];
+    } else if (window.currentMovieId) {
+      movieId = window.currentMovieId;
+    }
 
-      let movieId = "";
-      const hashParts = window.location.hash.split("/");
-      if (hashParts.length > 1 && hashParts[1]) {
-        movieId = hashParts[1];
-      } else if (window.currentMovieId) {
-        movieId = window.currentMovieId;
-      }
+    if (movieId && movieId !== "") {
+      const box = document.getElementById("backdrop-player-box");
+      if (box) {
+        // لینک جدید سرور چندگانه (مستقیماً با TMDB/IMDb ID)
+        const playerSrc = `https://vidsrc.me/embed/movie?imdb=${movieId}`;
 
-      if (movieId && movieId !== "") {
-        backdrop.innerHTML = `
-          <div style="position:relative; width:100%; height:460px; margin:10px 0 15px 0; background:#000; border-radius:12px; overflow:hidden;">
-            <button id="hero-close-btn" style="position:absolute; top:14px; right:14px; z-index:101; color:#fff; background:rgba(0,0,0,0.8); border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">✕ Close</button>
-            <iframe
-              src="https://vidlink.pro/movie/${movieId}?primaryColor=e50914"
-              style="width:100%; height:100%; border:none;"
-              allow="autoplay; encrypted-media; fullscreen"
-              allowfullscreen>
-            </iframe>
-          </div>`;
-      } else {
-        alert("Error: Movie ID not found.");
+        box.innerHTML = `
+          <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
+          <iframe
+            src="${playerSrc}"
+            style="width: 100%; height: 100%; border: none;"
+            allow="autoplay; encrypted-media; fullscreen"
+            allowfullscreen>
+          </iframe>
+        `;
       }
+    } else {
+      alert("Error: Movie ID not found.");
     }
   }
+
+  if (closeBtn) {
+    let movieId = window.location.hash.split("/")[1] || "";
+    const movie = allMovies.find(m => m.id == movieId);
+    const box = document.getElementById("backdrop-player-box");
+    
+    if (box && movie) {
+      box.innerHTML = `
+        <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
+        <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(229, 9, 20, 0.95); border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 8px 25px rgba(0,0,0,0.7);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      `;
+    }
+  }
+});
 
   if (closeBtn) {
     const backdrop = closeBtn.closest("[data-original-html]");
