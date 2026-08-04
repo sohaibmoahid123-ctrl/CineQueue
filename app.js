@@ -643,8 +643,17 @@ document.addEventListener("click", function (e) {
       box.style.position = "relative";
       box.style.zIndex = "50";
 
-      const targetId = movie ? (movie.tmdbId || movie.id || rawId) : rawId;
-      const playerSrc = `https://streamingnow.mov/movie/${targetId}`;
+      let playerSrc = "";
+      if (movie && movie.imdbId) {
+        playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
+      } else if (movie && movie.tmdbId) {
+        playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
+      } else {
+        const isImdb = String(rawId).startsWith("tt");
+        playerSrc = isImdb
+          ? `https://multiembed.mov/?video_id=${rawId}`
+          : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
+      }
 
       box.innerHTML = `
         <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
