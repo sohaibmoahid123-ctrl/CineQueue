@@ -655,9 +655,8 @@ document.addEventListener("click", function (e) {
           : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
       }
 
-      // Updated button style: translucent background with better blur, subtle border
       box.innerHTML = `
-        <button id="hero-close-btn" style="position: absolute; bottom: 55px; right: 15px; z-index: 100; color: #fff; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background-color 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.7)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.4)'; this.style.opacity='0.85'">✕ Close Player</button>
+        <button id="hero-close-btn" style="position: absolute; top: 52px; left: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.7)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.4)'; this.style.opacity='0.85'">✕ Close Player</button>
         <iframe
           src="${playerSrc}"
           style="width: 100%; height: 100%; border: none;"
