@@ -660,26 +660,21 @@ document.addEventListener("click", function (e) {
   }
 
   if (closeBtn) {
-    const box = document.getElementById("backdrop-player-box");
-    if (box) {
-      box.style.zIndex = "auto";
-    }
-  }
-});
-
-  if (closeBtn) {
     const rawId = getMovieId();
     const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
     const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
     const box = document.getElementById("backdrop-player-box");
 
-    if (box && movie) {
-      box.innerHTML = `
-        <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover;">
-        <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 64px; height: 64px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-      `;
+    if (box) {
+      box.style.zIndex = "auto";
+      if (movie) {
+        box.innerHTML = `
+          <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover;">
+          <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 64px; height: 64px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        `;
+      }
     }
   }
 });
