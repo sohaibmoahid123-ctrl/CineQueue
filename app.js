@@ -631,7 +631,6 @@ document.addEventListener("click", function (e) {
   if (playBtn) {
     const rawId = getMovieId();
     const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
-
     const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
 
     if (!rawId && !movie) {
@@ -644,14 +643,8 @@ document.addEventListener("click", function (e) {
       box.style.position = "relative";
       box.style.zIndex = "50";
 
-      let playerSrc = "";
-      if (movie && movie.imdbId) {
-        playerSrc = `https://streamingnow.mov/movie/${movie.imdbId}`;
-      } else if (movie && movie.tmdbId) {
-        playerSrc = `https://streamingnow.mov/movie/${movie.tmdbId}`;
-      } else {
-        playerSrc = `https://streamingnow.mov/movie/${rawId}`;
-      }
+      const targetId = movie ? (movie.tmdbId || movie.id || rawId) : rawId;
+      const playerSrc = `https://streamingnow.mov/movie/${targetId}`;
 
       box.innerHTML = `
         <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
@@ -666,9 +659,22 @@ document.addEventListener("click", function (e) {
   }
 
   if (closeBtn) {
+    const rawId = getMovieId();
+    const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
+    const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
     const box = document.getElementById("backdrop-player-box");
+
     if (box) {
       box.style.zIndex = "auto";
+      const poster = movie && movie.posterUrl ? movie.posterUrl : "";
+      const title = movie && movie.title ? movie.title : "";
+
+      box.innerHTML = `
+        <img id="detail-poster-img" src="${poster}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;">
+        <button id="hero-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 64px; height: 64px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      `;
     }
   }
 });
