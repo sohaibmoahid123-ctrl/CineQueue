@@ -619,7 +619,6 @@ function wireCards() {
 init();
 
 // ── Overlay Video Player Listener ──────────────────────────────
-// --- Overlay Video Player Listener ---
 document.addEventListener("click", function (e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
