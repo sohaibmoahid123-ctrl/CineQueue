@@ -619,20 +619,20 @@ function wireCards() {
 init();
 
 // ── Overlay Video Player Listener ──────────────────────────────
+// --- Overlay Video Player Listener ---
 document.addEventListener("click", function (e) {
   const playBtn = e.target.closest("#hero-play-btn");
   const closeBtn = e.target.closest("#hero-close-btn");
 
   const getMovieId = () => {
     const hashParts = window.location.hash.split("/");
-    return (hashParts.length > 1 && hashParts[1]) ? hashParts[1] : (window.currentMovieId || "");
+    return hashParts.length > 1 && hashParts[1] ? hashParts[1] : (window.currentMovieId || "");
   };
 
   if (playBtn) {
     const rawId = getMovieId();
     const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
-    
-    // Find the movie object to check its available IDs
+
     const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
 
     if (!rawId && !movie) {
@@ -642,25 +642,14 @@ document.addEventListener("click", function (e) {
 
     const box = document.getElementById("backdrop-player-box");
     if (box) {
-      let playerSrc = "";
+      box.style.position = "relative";
+      box.style.zIndex = "50";
 
-      // Check if we have an explicit IMDb ID or TMDB ID
-      if (movie && movie.imdbId) {
-        // Option A: Using IMDb ID (e.g., tt8385148)
-        playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
-      } else if (movie && movie.tmdbId) {
-        // Option B: Using TMDB ID (requires &tmdb=1)
-        playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
-      } else {
-        // Fallback assuming the raw ID is an IMDb ID or numeric TMDB ID
-        const isImdb = String(rawId).startsWith("tt");
-        playerSrc = isImdb 
-          ? `https://multiembed.mov/?video_id=${rawId}` 
-          : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
-      }
+      const targetId = movie ? (movie.tmdbId || movie.id || rawId) : rawId;
+      const playerSrc = `https://streamingnow.mov/movie/${targetId}.html`;
 
       box.innerHTML = `
-        <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
+        <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.85); border: 1px solid #232d45; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(4px);">✕ Close Player</button>
         <iframe
           src="${playerSrc}"
           style="width: 100%; height: 100%; border: none;"
@@ -670,6 +659,14 @@ document.addEventListener("click", function (e) {
       `;
     }
   }
+
+  if (closeBtn) {
+    const box = document.getElementById("backdrop-player-box");
+    if (box) {
+      box.style.zIndex = "auto";
+    }
+  }
+});
 
   if (closeBtn) {
     const rawId = getMovieId();
