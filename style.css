@@ -814,3 +814,7 @@ input { font: inherit; }
     border-radius: 12px !important;
     min-width: 200px;
 }
+#backdrop-player-box {
+  position: relative !important;
+  z-index: 50 !important;
+}
