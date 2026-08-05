@@ -641,7 +641,7 @@ document.addEventListener("click", function (e) {
     const box = document.getElementById("backdrop-player-box");
     if (box) {
       box.style.position = "relative";
-      box.style.zIndex = "50";
+      box.style.zIndex = "999";
 
       let playerSrc = "";
       if (movie && movie.imdbId) {
@@ -656,18 +656,34 @@ document.addEventListener("click", function (e) {
       }
 
       box.innerHTML = `
-        <button id="hero-close-btn" style="position: absolute; top: 52px; left: 12px; z-index: 100; color: #fff; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.7)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.4)'; this.style.opacity='0.85'">✕ Close Player</button>
+        <button id="hero-close-btn" style="position: absolute; top: 12px; right: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: all 0.2s ease; opacity: 0.9;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.85)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.6)'; this.style.opacity='0.9'">✕ Close Player</button>
         <iframe
           src="${playerSrc}"
-          style="width: 100%; height: 100%; border: none;"
-          allow="autoplay; encrypted-media; fullscreen"
+          style="width: 100%; height: 100%; border: none; display: block;"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
           allowfullscreen>
         </iframe>
       `;
+
+      // درخواست مجزا برای اجازه دادن به اندروید جهت فول‌اسکرین شدن باکس
+      if (box.requestFullscreen) {
+        box.requestFullscreen().catch(() => {});
+      } else if (box.webkitRequestFullscreen) {
+        box.webkitRequestFullscreen().catch(() => {});
+      }
     }
   }
 
   if (closeBtn) {
+    // خروج از حالت Fullscreen اگر فعال باشد
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen().catch(() => {});
+      }
+    }
+
     const rawId = getMovieId();
     const moviesList = typeof allMovies !== "undefined" ? allMovies : [];
     const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
