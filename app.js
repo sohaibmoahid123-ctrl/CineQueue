@@ -6,10 +6,10 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const app = document.getElementById('app');
-const meta = document.createElement('meta');
-meta.name = 'monetag';
-meta.content = '9eeed071f1e7a6ed7e9238e8ec43f4dc';
-document.head.appendChild(meta);
+const adScript = document.createElement('script');
+adScript.dataset.zone = '11510328';
+adScript.src = 'https://al5sm.com/tag.min.js';
+document.head.appendChild(adScript);
 
 let allMovies      = [];
 let featuredMovies = [];
