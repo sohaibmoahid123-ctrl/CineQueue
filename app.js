@@ -661,9 +661,7 @@ document.addEventListener("click", function (e) {
           src="${playerSrc}"
           style="width: 100%; height: 100%; border: none;"
           allow="autoplay; encrypted-media; fullscreen"
-          allowfullscreen="true"
-          webkitallowfullscreen="true"
-          mozallowfullscreen="true">
+          allowfullscreen>
         </iframe>
       `;
     }
