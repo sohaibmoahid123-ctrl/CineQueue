@@ -668,6 +668,38 @@ box.innerHTML = `
     frameborder="0">
   </iframe>
 `;
+// دکمه فول‌اسکرین
+const iframe = box.querySelector("iframe");
+const fullscreenBtn = document.createElement("button");
+fullscreenBtn.id = "hero-fullscreen-btn";
+fullscreenBtn.innerHTML = "⛶ Fullscreen";
+fullscreenBtn.style.cssText = `
+  position: absolute;
+  top: 12px;
+  left: 100px;
+  z-index: 1000;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+`;
+
+box.appendChild(fullscreenBtn);
+
+fullscreenBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen().catch(() => {
+      if (box.requestFullscreen) box.requestFullscreen();
+    });
+  } else if (box.requestFullscreen) {
+    box.requestFullscreen();
+  }
+});
     }
   }
 
