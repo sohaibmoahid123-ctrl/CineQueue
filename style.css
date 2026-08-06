@@ -814,3 +814,17 @@ input { font: inherit; }
     border-radius: 12px !important;
     min-width: 200px;
 }
+#backdrop-player-box {
+  width: 100%;
+  height: 56.25vw;          /* نسبت ۱۶:۹ */
+  max-height: 80vh;         /* روی موبایل خیلی بزرگ نشه */
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+/* وقتی پلیر باز می‌شه، ارتفاع کامل بشه */
+#backdrop-player-box:has(iframe) {
+  height: 56.25vw;
+  max-height: 100dvh;       /* برای موبایل بهتره */
+}
