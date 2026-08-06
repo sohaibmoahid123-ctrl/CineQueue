@@ -668,24 +668,28 @@ box.innerHTML = `
     frameborder="0">
   </iframe>
 `;
-// دکمه فول‌اسکرین
+// دکمه فول‌اسکرین (پایین سمت راست)
 const iframe = box.querySelector("iframe");
 const fullscreenBtn = document.createElement("button");
 fullscreenBtn.id = "hero-fullscreen-btn";
-fullscreenBtn.innerHTML = "⛶ Fullscreen";
+fullscreenBtn.innerHTML = "⛶";
+fullscreenBtn.title = "Fullscreen";
 fullscreenBtn.style.cssText = `
   position: absolute;
-  top: 12px;
-  left: 100px;
+  bottom: 12px;
+  right: 60px;
   z-index: 1000;
+  width: 36px;
+  height: 36px;
   color: #fff;
   background: rgba(0,0,0,0.55);
   border: 1px solid rgba(255,255,255,0.15);
-  padding: 7px 14px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 box.appendChild(fullscreenBtn);
