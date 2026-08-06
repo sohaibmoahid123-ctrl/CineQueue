@@ -655,15 +655,19 @@ document.addEventListener("click", function (e) {
           : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
       }
 
-      box.innerHTML = `
-        <button id="hero-close-btn" style="position: absolute; top: 48px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.5)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.3)'; this.style.opacity='0.85'">✕ Close Player</button>
-        <iframe
-          src="${playerSrc}"
-          style="width: 100%; height: 100%; border: none;"
-          allow="autoplay; encrypted-media; fullscreen"
-          allowfullscreen>
-        </iframe>
-      `;
+box.innerHTML = `
+  <button id="hero-close-btn" style="position: absolute; top: 48px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.5)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.3)'; this.style.opacity='0.85'">✕ Close Player</button>
+  <iframe
+    src="${playerSrc}"
+    style="width: 100%; height: 100%; border: none; display: block;"
+    allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
+    allowfullscreen
+    webkitallowfullscreen
+    mozallowfullscreen
+    playsinline
+    frameborder="0">
+  </iframe>
+`;
     }
   }
 
