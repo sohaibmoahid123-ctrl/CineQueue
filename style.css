@@ -828,20 +828,3 @@ input { font: inherit; }
   height: 56.25vw;
   max-height: 100dvh;       /* برای موبایل بهتره */
 }
-fullscreenBtn.style.cssText = `
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  z-index: 1000;
-  width: 34px;
-  height: 34px;
-  color: #fff;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
