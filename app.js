@@ -45,31 +45,41 @@ async function init() {
   try {
     const pagesToFetch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    // ۱. دریافت لیست ژانرها
-    const genresRes = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json());
+    let genreMap = {};
+    try {
+      const genresRes = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json());
+      if (genresRes && genresRes.genres) {
+        genresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
+      }
+    } catch (e) {
+      console.error("Genre fetch error:", e);
+    }
 
-    // ۲. دریافت همزمان فیلم‌ها و سریال‌ها
     const moviePromises = pagesToFetch.map(page =>
-      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`).then(res => res.json())
+      fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`)
+        .then(res => res.json())
+        .catch(() => ({ results: [] }))
     );
 
     const tvPromises = pagesToFetch.map(page =>
-      fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=${page}`).then(res => res.json())
+      fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=${page}`)
+        .then(res => res.json())
+        .catch(() => ({ results: [] }))
     );
 
-    const moviesDataList = await Promise.all(moviePromises);
-    const tvDataList = await Promise.all(tvPromises);
+    const [moviesDataList, tvDataList] = await Promise.all([
+      Promise.all(moviePromises),
+      Promise.all(tvPromises)
+    ]);
 
     let rawMovies = [];
 
-    // استخراج فیلم‌ها
     moviesDataList.forEach(p => {
       if (p && p.results) {
         p.results.forEach(m => rawMovies.push({ ...m, media_type: 'movie' }));
       }
     });
 
-    // استخراج سریال‌ها و یکسان‌سازی عنوان
     tvDataList.forEach(p => {
       if (p && p.results) {
         p.results.forEach(tv => {
@@ -85,13 +95,7 @@ async function init() {
 
     rawMovies = rawMovies.filter(m => !m.adult);
 
-    const genreMap = {};
-    if (genresRes && genresRes.genres) {
-      genresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
-    }
-
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance'];
-
     const genreCounts = {
       'Popular Movies': 0,
       'Action': 0,
@@ -145,20 +149,15 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
-    if (typeof renderMovies === "function") {
-      renderMovies(allMovies);
-    }
   } catch (err) {
-    console.error("Fetch Error:", err);
-    const app = document.getElementById('app') || document.body;
-    app.innerHTML = '<div class="error"><h2>Could not load movies.</h2><p>Please refresh the page.</p></div>';
+    console.error("Init Error:", err);
   } finally {
     hideLoading();
   }
 }
-  window.addEventListener('hashchange', route);
-  route();
-}
+
+window.addEventListener('hashchange', route);
+route();
 
 // ── Router ────────────────────────────────────────────────────
 function route() {
