@@ -43,18 +43,27 @@ async function getAutoDownloadLinks(movie) {
 async function init() {
   showLoading();
   try {
-    const pagesToFetch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const pagesToFetch = [1, 2, 3, 4, 5]; // ۵ صفحه کافیه (حدود ۱۰۰ فیلم + ۱۰۰ سریال)
 
+    // ── گرفتن ژانرهای فیلم و سریال ──
     let genreMap = {};
     try {
-      const genresRes = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json());
-      if (genresRes && genresRes.genres) {
-        genresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
+      const [movieGenresRes, tvGenresRes] = await Promise.all([
+        fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(r => r.json()),
+        fetch(`${BASE_URL}/genre/tv/list?api_key=${API_KEY}&language=en-US`).then(r => r.json())
+      ]);
+
+      if (movieGenresRes?.genres) {
+        movieGenresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
+      }
+      if (tvGenresRes?.genres) {
+        tvGenresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
       }
     } catch (e) {
       console.error("Genre fetch error:", e);
     }
 
+    // ── گرفتن فیلم‌ها و سریال‌های محبوب ──
     const moviePromises = pagesToFetch.map(page =>
       fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`)
         .then(res => res.json())
@@ -72,30 +81,62 @@ async function init() {
       Promise.all(tvPromises)
     ]);
 
-    let rawMovies = [];
+    let rawItems = [];
 
+    // فیلم‌ها
     moviesDataList.forEach(p => {
-      if (p && p.results) {
-        p.results.forEach(m => rawMovies.push({ ...m, media_type: 'movie' }));
+      if (p?.results) {
+        p.results.forEach(m => {
+          if (!m.adult) {
+            rawItems.push({ ...m, media_type: 'movie' });
+          }
+        });
       }
     });
 
+    // سریال‌ها
     tvDataList.forEach(p => {
-      if (p && p.results) {
+      if (p?.results) {
         p.results.forEach(tv => {
-          rawMovies.push({
+          rawItems.push({
             ...tv,
             title: tv.name || tv.original_name,
-            release_date: tv.first_air_date || '2026',
+            release_date: tv.first_air_date || '2025',
             media_type: 'tv'
           });
         });
       }
     });
 
-    rawMovies = rawMovies.filter(m => !m.adult);
+    // مرتب‌سازی بر اساس محبوبیت
+    rawItems.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-    const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance'];
+    // ── ساخت آبجکت نهایی ──
+    const buildItem = (item, assignedGenre) => {
+      const isTv = item.media_type === 'tv';
+      const embedBase = isTv
+        ? `https://vidsrc.to/embed/tv/${item.id}`
+        : `https://vidsrc.to/embed/movie/${item.id}`;
+
+      return {
+        id: item.id,
+        title: item.title,
+        posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
+        synopsis: item.overview || 'No synopsis available.',
+        year: parseInt((item.release_date || '2025').split('-')[0]),
+        rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
+        durationMinutes: 120,
+        genre: assignedGenre,
+        director: 'TMDB Cinema',
+        cast: ['Popular Actor'],
+        mediaType: item.media_type,
+        downloadUrl1080p: embedBase,
+        downloadUrl720p: embedBase
+      };
+    };
+
+    // ── دسته‌بندی هوشمند ──
+    const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
     const genreCounts = {
       'Popular Movies': 0,
       'Action': 0,
@@ -107,47 +148,44 @@ async function init() {
 
     allMovies = [];
 
-    const buildMovieObj = (movie, assignedGenre) => ({
-      id: movie.id,
-      title: movie.title,
-      posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
-      synopsis: movie.overview || 'No synopsis available.',
-      year: parseInt(movie.release_date ? movie.release_date.split('-')[0] : '2026'),
-      rating: movie.vote_average ? parseFloat(movie.vote_average.toFixed(1)) : 7.0,
-      durationMinutes: 120,
-      genre: assignedGenre,
-      director: 'TMDB Cinema',
-      cast: ['Popular Actor'],
-      mediaType: movie.media_type || 'movie',
-      downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
-      downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
-    });
-
-    for (const movie of rawMovies) {
+    for (const item of rawItems) {
+      // اول ۱۵ تا محبوب‌ترین رو به Popular بده
       if (genreCounts['Popular Movies'] < 15) {
-        allMovies.push(buildMovieObj(movie, 'Popular Movies'));
+        allMovies.push(buildItem(item, 'Popular Movies'));
         genreCounts['Popular Movies']++;
         continue;
       }
 
-      if (movie.genre_ids && movie.genre_ids.includes(16)) {
-        if (genreCounts['Animation'] < 15) {
-          allMovies.push(buildMovieObj(movie, 'Animation'));
-          genreCounts['Animation']++;
-          continue;
-        }
+      // انیمیشن (id = 16 هم برای فیلم هم سریال)
+      if (item.genre_ids?.includes(16) && genreCounts['Animation'] < 15) {
+        allMovies.push(buildItem(item, 'Animation'));
+        genreCounts['Animation']++;
+        continue;
       }
 
-      if (movie.genre_ids) {
-        const matchedName = movie.genre_ids.map(id => genreMap[id]).find(name => allowedGenres.includes(name));
-        if (matchedName && genreCounts[matchedName] < 15) {
-          allMovies.push(buildMovieObj(movie, matchedName));
-          genreCounts[matchedName]++;
+      // بقیه ژانرها
+      if (item.genre_ids) {
+        const matchedName = item.genre_ids
+          .map(id => genreMap[id])
+          .find(name => allowedGenres.includes(name));
+
+        if (matchedName) {
+          // نرمال‌سازی نام ژانر
+          let finalGenre = matchedName;
+          if (matchedName === 'Action & Adventure') finalGenre = 'Action';
+          if (matchedName === 'Sci-Fi & Fantasy') finalGenre = 'Action'; // یا هر چی دلت می‌خواد
+
+          if (genreCounts[finalGenre] < 15) {
+            allMovies.push(buildItem(item, finalGenre));
+            genreCounts[finalGenre]++;
+          }
         }
       }
     }
 
     featuredMovies = allMovies.slice(0, 5);
+
+    console.log('Loaded items:', allMovies.length, genreCounts); // برای دیباگ
 
     if (typeof renderMovies === "function") {
       renderMovies(allMovies);
@@ -164,7 +202,6 @@ async function init() {
 
 window.addEventListener('hashchange', route);
 route();
-
 // ── Router ────────────────────────────────────────────────────
 function route() {
   const hash = window.location.hash.slice(1);
