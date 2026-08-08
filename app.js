@@ -208,6 +208,10 @@ function showLoading() {
       <div class="loading-spinner"></div>
     </div>`;
 }
+function hideLoading() {
+  const loading = document.querySelector('.loading-screen');
+  if (loading) loading.remove();
+}
 
 // ── Home Page ─────────────────────────────────────────────────
 function renderHome() {
