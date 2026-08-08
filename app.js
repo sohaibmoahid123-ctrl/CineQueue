@@ -45,6 +45,10 @@ async function init() {
   try {
     const pagesToFetch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+    // ۱. دریافت لیست ژانرها
+    const genresRes = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json());
+
+    // ۲. دریافت همزمان فیلم‌ها و سریال‌ها
     const moviePromises = pagesToFetch.map(page =>
       fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`).then(res => res.json())
     );
@@ -53,30 +57,28 @@ async function init() {
       fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=${page}`).then(res => res.json())
     );
 
-    const [genresRes, ...pagesData] = await Promise.all([
-      fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json()),
-      ...moviePromises,
-      ...tvPromises
-    ]);
+    const moviesDataList = await Promise.all(moviePromises);
+    const tvDataList = await Promise.all(tvPromises);
 
     let rawMovies = [];
 
-    pagesData.forEach(p => {
+    // استخراج فیلم‌ها
+    moviesDataList.forEach(p => {
       if (p && p.results) {
-        p.results.forEach(item => {
-          if (item.name && !item.title) {
-            rawMovies.push({
-              ...item,
-              title: item.name,
-              release_date: item.first_air_date || '2026',
-              media_type: 'tv'
-            });
-          } else {
-            rawMovies.push({
-              ...item,
-              media_type: 'movie'
-            });
-          }
+        p.results.forEach(m => rawMovies.push({ ...m, media_type: 'movie' }));
+      }
+    });
+
+    // استخراج سریال‌ها و یکسان‌سازی عنوان
+    tvDataList.forEach(p => {
+      if (p && p.results) {
+        p.results.forEach(tv => {
+          rawMovies.push({
+            ...tv,
+            title: tv.name || tv.original_name,
+            release_date: tv.first_air_date || '2026',
+            media_type: 'tv'
+          });
         });
       }
     });
@@ -84,7 +86,7 @@ async function init() {
     rawMovies = rawMovies.filter(m => !m.adult);
 
     const genreMap = {};
-    if (genresRes.genres) {
+    if (genresRes && genresRes.genres) {
       genresRes.genres.forEach(g => { genreMap[g.id] = g.name; });
     }
 
@@ -143,17 +145,17 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
+    if (typeof renderMovies === "function") {
+      renderMovies(allMovies);
+    }
   } catch (err) {
+    console.error("Fetch Error:", err);
     const app = document.getElementById('app') || document.body;
     app.innerHTML = '<div class="error"><h2>Could not load movies.</h2><p>Please refresh the page.</p></div>';
-    return;
   } finally {
     hideLoading();
   }
 }
-
-window.addEventListener('hashchange', route);
-route();
 
 // ── Router ────────────────────────────────────────────────────
 function route() {
