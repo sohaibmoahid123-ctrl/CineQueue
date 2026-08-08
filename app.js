@@ -44,19 +44,43 @@ async function init() {
   showLoading();
   try {
     const pagesToFetch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const fetchPromises = pagesToFetch.map(page => 
+
+    const moviePromises = pagesToFetch.map(page =>
       fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`).then(res => res.json())
+    );
+
+    const tvPromises = pagesToFetch.map(page =>
+      fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=${page}`).then(res => res.json())
     );
 
     const [genresRes, ...pagesData] = await Promise.all([
       fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`).then(res => res.json()),
-      ...fetchPromises
+      ...moviePromises,
+      ...tvPromises
     ]);
 
     let rawMovies = [];
+
     pagesData.forEach(p => {
-      if (p.results) rawMovies.push(...p.results);
+      if (p && p.results) {
+        p.results.forEach(item => {
+          if (item.name && !item.title) {
+            rawMovies.push({
+              ...item,
+              title: item.name,
+              release_date: item.first_air_date || '2026',
+              media_type: 'tv'
+            });
+          } else {
+            rawMovies.push({
+              ...item,
+              media_type: 'movie'
+            });
+          }
+        });
+      }
     });
+
     rawMovies = rawMovies.filter(m => !m.adult);
 
     const genreMap = {};
@@ -65,7 +89,7 @@ async function init() {
     }
 
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance'];
-    
+
     const genreCounts = {
       'Popular Movies': 0,
       'Action': 0,
@@ -88,6 +112,7 @@ async function init() {
       genre: assignedGenre,
       director: 'TMDB Cinema',
       cast: ['Popular Actor'],
+      mediaType: movie.media_type || 'movie',
       downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
       downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
     });
@@ -108,7 +133,7 @@ async function init() {
       }
 
       if (movie.genre_ids) {
-        const matchedName = movie.genre_ids.map(id => genreMap[id]).find(name => allowedGenres.includes(name) && name !== 'Animation');
+        const matchedName = movie.genre_ids.map(id => genreMap[id]).find(name => allowedGenres.includes(name));
         if (matchedName && genreCounts[matchedName] < 15) {
           allMovies.push(buildMovieObj(movie, matchedName));
           genreCounts[matchedName]++;
@@ -118,10 +143,17 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
+    if (typeof renderMovies === "function") {
+      renderMovies(allMovies);
+    }
   } catch (err) {
+    const app = document.getElementById('app') || document.body;
     app.innerHTML = '<div class="error"><h2>Could not load movies.</h2><p>Please refresh the page.</p></div>';
     return;
+  } finally {
+    hideLoading();
   }
+}
 
   window.addEventListener('hashchange', route);
   route();
