@@ -149,6 +149,12 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
+    if (typeof renderMovies === "function") {
+      renderMovies(allMovies);
+    } else if (typeof route === "function") {
+      route();
+    }
+
   } catch (err) {
     console.error("Init Error:", err);
   } finally {
