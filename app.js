@@ -39,13 +39,11 @@ async function getAutoDownloadLinks(movie) {
   }
 }
 
-// ── Boot ──────────────────────────────────────────────────────
 async function init() {
   showLoading();
   try {
-    const pagesToFetch = [1, 2, 3, 4, 5]; // ۵ صفحه کافیه (حدود ۱۰۰ فیلم + ۱۰۰ سریال)
+    const pagesToFetch = [1, 2, 3, 4, 5];
 
-    // ── گرفتن ژانرهای فیلم و سریال ──
     let genreMap = {};
     try {
       const [movieGenresRes, tvGenresRes] = await Promise.all([
@@ -63,7 +61,6 @@ async function init() {
       console.error("Genre fetch error:", e);
     }
 
-    // ── گرفتن فیلم‌ها و سریال‌های محبوب ──
     const moviePromises = pagesToFetch.map(page =>
       fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false`)
         .then(res => res.json())
@@ -83,7 +80,6 @@ async function init() {
 
     let rawItems = [];
 
-    // فیلم‌ها
     moviesDataList.forEach(p => {
       if (p?.results) {
         p.results.forEach(m => {
@@ -94,7 +90,6 @@ async function init() {
       }
     });
 
-    // سریال‌ها
     tvDataList.forEach(p => {
       if (p?.results) {
         p.results.forEach(tv => {
@@ -108,10 +103,8 @@ async function init() {
       }
     });
 
-    // مرتب‌سازی بر اساس محبوبیت
     rawItems.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-    // ── ساخت آبجکت نهایی ──
     const buildItem = (item, assignedGenre) => {
       const isTv = item.media_type === 'tv';
       const embedBase = isTv
@@ -135,7 +128,6 @@ async function init() {
       };
     };
 
-    // ── دسته‌بندی هوشمند ──
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
     const genreCounts = {
       'Popular Movies': 0,
@@ -149,31 +141,27 @@ async function init() {
     allMovies = [];
 
     for (const item of rawItems) {
-      // اول ۱۵ تا محبوب‌ترین رو به Popular بده
       if (genreCounts['Popular Movies'] < 15) {
         allMovies.push(buildItem(item, 'Popular Movies'));
         genreCounts['Popular Movies']++;
         continue;
       }
 
-      // انیمیشن (id = 16 هم برای فیلم هم سریال)
       if (item.genre_ids?.includes(16) && genreCounts['Animation'] < 15) {
         allMovies.push(buildItem(item, 'Animation'));
         genreCounts['Animation']++;
         continue;
       }
 
-      // بقیه ژانرها
       if (item.genre_ids) {
         const matchedName = item.genre_ids
           .map(id => genreMap[id])
           .find(name => allowedGenres.includes(name));
 
         if (matchedName) {
-          // نرمال‌سازی نام ژانر
           let finalGenre = matchedName;
           if (matchedName === 'Action & Adventure') finalGenre = 'Action';
-          if (matchedName === 'Sci-Fi & Fantasy') finalGenre = 'Action'; // یا هر چی دلت می‌خواد
+          if (matchedName === 'Sci-Fi & Fantasy') finalGenre = 'Action';
 
           if (genreCounts[finalGenre] < 15) {
             allMovies.push(buildItem(item, finalGenre));
@@ -185,13 +173,9 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
-    console.log('Loaded items:', allMovies.length, genreCounts); // برای دیباگ
+    console.log('Loaded items:', allMovies.length, genreCounts);
 
-    if (typeof renderMovies === "function") {
-      renderMovies(allMovies);
-    } else if (typeof route === "function") {
-      route();
-    }
+    route();
 
   } catch (err) {
     console.error("Init Error:", err);
@@ -201,7 +185,7 @@ async function init() {
 }
 
 window.addEventListener('hashchange', route);
-route();
+
 // ── Router ────────────────────────────────────────────────────
 function route() {
   const hash = window.location.hash.slice(1);
