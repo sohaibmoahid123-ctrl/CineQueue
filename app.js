@@ -156,6 +156,9 @@ async function init() {
     hideLoading();
   }
 }
+  window.addEventListener('hashchange', route);
+  route();
+}
 
 // ── Router ────────────────────────────────────────────────────
 function route() {
