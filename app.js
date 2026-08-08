@@ -143,9 +143,6 @@ async function init() {
 
     featuredMovies = allMovies.slice(0, 5);
 
-    if (typeof renderMovies === "function") {
-      renderMovies(allMovies);
-    }
   } catch (err) {
     const app = document.getElementById('app') || document.body;
     app.innerHTML = '<div class="error"><h2>Could not load movies.</h2><p>Please refresh the page.</p></div>';
@@ -155,9 +152,8 @@ async function init() {
   }
 }
 
-  window.addEventListener('hashchange', route);
-  route();
-}
+window.addEventListener('hashchange', route);
+route();
 
 // ── Router ────────────────────────────────────────────────────
 function route() {
