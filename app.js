@@ -955,17 +955,22 @@ window.changeServer = function(serverUrl, btnElement) {
     btnElement.classList.add('active');
   }
 };
-// تابع پخش قسمت‌های مختلف سریال
-window.selectTvEpisode = function(movieId, season, ep, btn) {
+// تابع پخش قسمت‌های مختلف سریال با لینک VIP
+window.selectTvEpisode = function(tvId, season, ep, btn) {
   // ۱. قرمز کردن دکمه قسمت انتخاب شده
   const buttons = document.querySelectorAll('.ep-btn');
   buttons.forEach(b => b.style.background = '#232d45');
   if (btn) btn.style.background = '#e50914';
 
-  // ۲. جایگذاری مستقیم iframe پخش سریال
+  // ۲. تشخیص هوشمند آی‌دی (IMDb با tt یا TMDB عددی)
+  const isImdb = String(tvId).startsWith('tt');
+  const streamUrl = isImdb 
+    ? `https://multiembed.mov/directstream.php?video_id=${tvId}&s=${season}&e=${ep}`
+    : `https://multiembed.mov/directstream.php?video_id=${tvId}&tmdb=1&s=${season}&e=${ep}`;
+
+  // ۳. قرار دادن مستقیم iframe در باکس پخش
   const playerBox = document.getElementById("backdrop-player-box");
   if (playerBox) {
-    const streamUrl = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
     playerBox.innerHTML = `
       <iframe src="${streamUrl}" 
               style="width:100%; height:100%; border:none; border-radius:12px;" 
@@ -975,31 +980,6 @@ window.selectTvEpisode = function(movieId, season, ep, btn) {
 };
 
 // تابع تغییر فصل
-window.selectTvSeason = function(movieId, seasonNum) {
-  window.selectTvEpisode(movieId, seasonNum, 1);
+window.selectTvSeason = function(tvId, seasonNum) {
+  window.selectTvEpisode(tvId, seasonNum, 1);
 };
-
-// تابع پخش قسمت‌های مختلف سریال
-window.selectTvEpisode = function(movieId, season, ep, btn) {
-  // ۱. قرمز کردن دکمه قسمت انتخاب شده
-  const buttons = document.querySelectorAll('.ep-btn');
-  buttons.forEach(b => b.style.background = '#232d45');
-  if (btn) btn.style.background = '#e50914';
-
-  // ۲. جایگذاری مستقیم iframe پخش سریال طبق مستندات MultiEmbed
-  const playerBox = document.getElementById("backdrop-player-box");
-  if (playerBox) {
-    const streamUrl = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
-    playerBox.innerHTML = `
-      <iframe src="${streamUrl}" 
-              style="width:100%; height:100%; border:none; border-radius:12px;" 
-              allowfullscreen></iframe>
-    `;
-  }
-};
-
-// تابع تغییر فصل
-window.selectTvSeason = function(movieId, seasonNum) {
-  window.selectTvEpisode(movieId, seasonNum, 1);
-};
-
