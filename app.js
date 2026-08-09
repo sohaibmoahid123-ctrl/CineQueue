@@ -677,9 +677,10 @@ window.selectTvSeason = function(tvId, season) {
   const grid = document.getElementById('episodes-btn-grid');
   if (!grid) return;
 
-  // بازسازی دکمه‌های قسمت‌ها برای فصل جدید
   grid.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
-    <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
+    <button class="ep-btn ${ep === 1 ? 'active' : ''}" 
+            onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" 
+            style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
       Ep ${ep}
     </button>
   `).join('');
@@ -689,6 +690,7 @@ window.selectTvSeason = function(tvId, season) {
 };
 
 window.selectTvEpisode = function(tvId, season, episode, btnElement) {
+  // ۱. هایلایت دکمه قسمت
   if (btnElement) {
     document.querySelectorAll('.ep-btn').forEach(btn => {
       btn.style.background = '#232d45';
@@ -698,29 +700,64 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
     btnElement.classList.add('active');
   }
 
-  // ۱. آپدیت استریم آنلاین در آی‌فریم (در صورت باز بودن پلیر)
-  const box = document.getElementById("backdrop-player-box");
-  const iframe = box ? box.querySelector("iframe") : null;
-  
-  // لینک استریم سریال (PLACEHOLDER استریم)
-  const streamUrl = `https://multiembed.mov/directstream.php?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
-
-  if (iframe) {
-    iframe.src = streamUrl;
-  }
-
-  // ۲. آپدیت دکمه‌های بخش دانلود
+  // ۲. آپدیت عنوان دانلود
   const epTitle = document.getElementById('download-ep-title');
+  if (epTitle) epTitle.innerText = `(Season ${season} Episode ${episode})`;
+
+  // ۳. آپدیت لینک‌های دانلود
   const srv1 = document.getElementById('download-srv-1');
   const srv2 = document.getElementById('download-srv-2');
-
-  if (epTitle) epTitle.innerText = `(Season ${season} Episode ${episode})`;
-  
-  // لینک‌های دانلود سریال (PLACEHOLDER دانلود)
   if (srv1) srv1.href = `https://tv-download-provider-1.com/get?id=${tvId}&s=${season}&e=${episode}`;
   if (srv2) srv2.href = `https://tv-download-provider-2.com/get?id=${tvId}&s=${season}&e=${episode}`;
-};
 
+  // ۴. ساخت کامل پلیر (مهم‌ترین قسمت)
+  const box = document.getElementById("backdrop-player-box");
+  if (!box) return;
+
+  const streamUrl = `https://multiembed.mov/directstream.php?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
+
+  box.innerHTML = `
+    <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px);">
+      ✕ Close Player
+    </button>
+    <iframe
+      src="${streamUrl}"
+      style="width: 100%; height: 100%; border: none; display: block;"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
+      allowfullscreen
+      webkitallowfullscreen
+      mozallowfullscreen
+      playsinline
+      frameborder="0">
+    </iframe>
+  `;
+
+  // دکمه فول‌اسکرین
+  const iframe = box.querySelector("iframe");
+  const fullscreenBtn = document.createElement("button");
+  fullscreenBtn.id = "hero-fullscreen-btn";
+  fullscreenBtn.innerHTML = "⛶";
+  fullscreenBtn.title = "Fullscreen";
+  fullscreenBtn.style.cssText = `
+    position: absolute !important; bottom: 8px !important; right: 8px !important; z-index: 9999 !important;
+    width: 34px !important; height: 34px !important; color: #fff !important;
+    background: rgba(0,0,0,0.65) !important; border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 6px !important; cursor: pointer !important; font-size: 16px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+  `;
+  box.appendChild(fullscreenBtn);
+
+  fullscreenBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    if (iframe.requestFullscreen) {
+      iframe.requestFullscreen().catch(() => {
+        if (box.requestFullscreen) box.requestFullscreen();
+      });
+    } else if (box.requestFullscreen) {
+      box.requestFullscreen();
+    }
+  });
+};
 // ── Header ────────────────────────────────────────────────────
 function buildHeader() {
   return `
