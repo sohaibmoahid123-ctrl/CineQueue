@@ -716,7 +716,7 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
   const box = document.getElementById("backdrop-player-box");
   if (!box) return;
 
-  const streamUrl = `https://multiembed.mov/directstream.php?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
+ const streamUrl = `https://multiembed.mov/?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
 
   box.innerHTML = `
     <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px);">
