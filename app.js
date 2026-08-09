@@ -920,30 +920,25 @@ window.selectTvEpisode = function(movieId, season, ep) {
 
 // تابع پخش قسمت‌های مختلف سریال
 window.selectTvEpisode = function(movieId, season, ep, btn) {
-  // ۱. تغییر استایل دکمه انتخاب شده (قرمز شدن دکمه فعال)
+  // ۱. قرمز کردن دکمه قسمت انتخاب شده
   const buttons = document.querySelectorAll('.ep-btn');
   buttons.forEach(b => b.style.background = '#232d45');
   if (btn) btn.style.background = '#e50914';
 
-  // ۲. پیدا کردن کادر ویدیو و تغییر آدرس آن به قسمت جدید
-  const iframe = document.querySelector("#backdrop-player-box iframe");
-  if (iframe) {
-    iframe.src = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
-  } else {
-    // اگر پلیر هنوز باز نشده بود، پلیر را با آدرس قسمت جدید جایگزین می‌کنیم
-    const playerBox = document.getElementById("backdrop-player-box");
-    if (playerBox) {
-      playerBox.innerHTML = `
-        <iframe src="https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}" 
-                style="width:100%; height:100%; border:none; border-radius:12px;" 
-                allowfullscreen></iframe>
-      `;
-    }
+  // ۲. جایگذاری مستقیم iframe پخش سریال طبق مستندات MultiEmbed
+  const playerBox = document.getElementById("backdrop-player-box");
+  if (playerBox) {
+    const streamUrl = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
+    playerBox.innerHTML = `
+      <iframe src="${streamUrl}" 
+              style="width:100%; height:100%; border:none; border-radius:12px;" 
+              allowfullscreen></iframe>
+    `;
   }
 };
 
-// تابع تغییر فصل سریال
+// تابع تغییر فصل
 window.selectTvSeason = function(movieId, seasonNum) {
-  // با تغییر فصل، خودکار قسمت ۱ از فصل جدید پخش می‌شود
   window.selectTvEpisode(movieId, seasonNum, 1);
 };
+
