@@ -911,11 +911,28 @@ window.changeServer = function(serverUrl, btnElement) {
     btnElement.classList.add('active');
   }
 };
-window.selectTvEpisode = function(movieId, season, ep) {
-  const iframe = document.querySelector("#backdrop-player-box iframe");
-  if (iframe) {
-    iframe.src = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
+// تابع پخش قسمت‌های مختلف سریال
+window.selectTvEpisode = function(movieId, season, ep, btn) {
+  // ۱. قرمز کردن دکمه قسمت انتخاب شده
+  const buttons = document.querySelectorAll('.ep-btn');
+  buttons.forEach(b => b.style.background = '#232d45');
+  if (btn) btn.style.background = '#e50914';
+
+  // ۲. جایگذاری مستقیم iframe پخش سریال
+  const playerBox = document.getElementById("backdrop-player-box");
+  if (playerBox) {
+    const streamUrl = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
+    playerBox.innerHTML = `
+      <iframe src="${streamUrl}" 
+              style="width:100%; height:100%; border:none; border-radius:12px;" 
+              allowfullscreen></iframe>
+    `;
   }
+};
+
+// تابع تغییر فصل
+window.selectTvSeason = function(movieId, seasonNum) {
+  window.selectTvEpisode(movieId, seasonNum, 1);
 };
 
 // تابع پخش قسمت‌های مختلف سریال
