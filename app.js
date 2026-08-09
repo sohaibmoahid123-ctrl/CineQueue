@@ -816,6 +816,11 @@ document.addEventListener("click", function (e) {
       return;
     }
 
+    const isTv = (movie && movie.mediaType === 'tv');
+    if (isTv) {
+      return;
+    }
+    
     const box = document.getElementById("backdrop-player-box");
     if (box) {
       box.style.position = "relative";
