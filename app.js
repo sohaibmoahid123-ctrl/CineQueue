@@ -588,7 +588,7 @@ async function renderMovieDetail(id) {
       <div class="detail-content">
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
         ${isTv ? `
-        <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 0 auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px;">
+        <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 50px auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px; position: relative; z-index: 10;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
             <h3 style="margin: 0; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 8px;">
               📺 Select Season & Episode
@@ -609,6 +609,7 @@ async function renderMovieDetail(id) {
           </div>
         </div>
         ` : ''}
+
 
         <div class="detail-layout">
           <div class="detail-poster-wrap">
