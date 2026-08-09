@@ -584,31 +584,31 @@ async function renderMovieDetail(id) {
         </div>
       </div>
 
-      ${isTv ? `
-      <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 0 auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-          <h3 style="margin: 0; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-            📺 Select Season & Episode
-          </h3>
-          <select id="season-picker" onchange="window.selectTvSeason(${movie.id}, this.value)" style="background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 6px; padding: 6px 12px; font-weight: bold; cursor: pointer;">
-            <option value="1">Season 1</option>
-            <option value="2">Season 2</option>
-            <option value="3">Season 3</option>
-          </select>
-        </div>
-
-        <div id="episodes-btn-grid" style="display: flex; gap: 8px; flex-wrap: wrap; overflow-x: auto; padding-bottom: 5px;">
-          ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
-            <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${movie.id}, 1, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
-              Ep ${ep}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-      ` : ''}
 
       <div class="detail-content">
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
+        ${isTv ? `
+        <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 0 auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+              📺 Select Season & Episode
+            </h3>
+            <select id="season-picker" onchange="window.selectTvSeason(${movie.id}, this.value)" style="background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 6px; padding: 6px 12px;">
+              <option value="1">Season 1</option>
+              <option value="2">Season 2</option>
+              <option value="3">Season 3</option>
+            </select>
+          </div>
+
+          <div id="episodes-btn-grid" style="display: flex; gap: 8px; flex-wrap: wrap; overflow-x: auto;">
+            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
+              <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${movie.id}, 1, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                Ep ${ep}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
 
         <div class="detail-layout">
           <div class="detail-poster-wrap">
