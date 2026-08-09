@@ -565,7 +565,7 @@ async function renderMovieDetail(id) {
     return;
   }
 
-  const isTv = movie.mediaType === 'tv';
+  const isTv = movie.mediaType === 'tv' || movie.genre === 'TV Series' || !!movie.first_air_date;
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
 
   if (!isTv) {
@@ -895,7 +895,8 @@ const observer = new MutationObserver(() => {
       targetArea.appendChild(btn);
     }
   }
-});
+}); 
+
 observer.observe(document.body, { childList: true, subtree: true });
 
 window.changeServer = function(serverUrl, btnElement) {
@@ -907,5 +908,11 @@ window.changeServer = function(serverUrl, btnElement) {
   document.querySelectorAll('.srv-btn').forEach(btn => btn.classList.remove('active'));
   if (btnElement) {
     btnElement.classList.add('active');
+  }
+};
+window.selectTvEpisode = function(movieId, season, ep) {
+  const iframe = document.querySelector("#backdrop-player-box iframe");
+  if (iframe) {
+    iframe.src = `https://multiembed.mov/directstream.php?video_id=${movieId}&tmdb=1&s=${season}&e=${ep}`;
   }
 };
