@@ -565,9 +565,12 @@ async function renderMovieDetail(id) {
     return;
   }
 
+  const isTv = movie.mediaType === 'tv';
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
 
-  getAutoDownloadLinks(movie);
+  if (!isTv) {
+    getAutoDownloadLinks(movie);
+  }
 
   app.innerHTML = `
     ${buildHeader()}
@@ -580,6 +583,29 @@ async function renderMovieDetail(id) {
           </button>
         </div>
       </div>
+
+      ${isTv ? `
+      <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 0 auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+          <h3 style="margin: 0; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+            📺 Select Season & Episode
+          </h3>
+          <select id="season-picker" onchange="window.selectTvSeason(${movie.id}, this.value)" style="background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 6px; padding: 6px 12px; font-weight: bold; cursor: pointer;">
+            <option value="1">Season 1</option>
+            <option value="2">Season 2</option>
+            <option value="3">Season 3</option>
+          </select>
+        </div>
+
+        <div id="episodes-btn-grid" style="display: flex; gap: 8px; flex-wrap: wrap; overflow-x: auto; padding-bottom: 5px;">
+          ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
+            <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${movie.id}, 1, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
+              Ep ${ep}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      ` : ''}
 
       <div class="detail-content">
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
@@ -615,14 +641,14 @@ async function renderMovieDetail(id) {
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
           <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download Video
+            Download ${isTv ? '<span id="download-ep-title" style="color: #e50914;">(Season 1 Episode 1)</span>' : 'Video'}
           </h3>
           <div style="display: flex; gap: 12px; width: 100%;">
-            <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-1" href="${isTv ? `https://tv-download-provider-1.com/get?id=${movie.id}&s=1&e=1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
             </a>
-            <a href="https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-2" href="${isTv ? `https://tv-download-provider-2.com/get?id=${movie.id}&s=1&e=1` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
             </a>
@@ -644,6 +670,55 @@ async function renderMovieDetail(id) {
   wireCards();
   wireSearch();
 }
+
+// ── TV Episode Handler Functions ──────────────────────────────
+window.selectTvSeason = function(tvId, season) {
+  const grid = document.getElementById('episodes-btn-grid');
+  if (!grid) return;
+
+  // بازسازی دکمه‌های قسمت‌ها برای فصل جدید
+  grid.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
+    <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
+      Ep ${ep}
+    </button>
+  `).join('');
+
+  // پیش‌فرض: پخش قسمت اول فصل انتخاب شده
+  window.selectTvEpisode(tvId, season, 1);
+};
+
+window.selectTvEpisode = function(tvId, season, episode, btnElement) {
+  if (btnElement) {
+    document.querySelectorAll('.ep-btn').forEach(btn => {
+      btn.style.background = '#232d45';
+      btn.classList.remove('active');
+    });
+    btnElement.style.background = '#e50914';
+    btnElement.classList.add('active');
+  }
+
+  // ۱. آپدیت استریم آنلاین در آی‌فریم (در صورت باز بودن پلیر)
+  const box = document.getElementById("backdrop-player-box");
+  const iframe = box ? box.querySelector("iframe") : null;
+  
+  // لینک استریم سریال (PLACEHOLDER استریم)
+  const streamUrl = `https://multiembed.mov/directstream.php?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
+
+  if (iframe) {
+    iframe.src = streamUrl;
+  }
+
+  // ۲. آپدیت دکمه‌های بخش دانلود
+  const epTitle = document.getElementById('download-ep-title');
+  const srv1 = document.getElementById('download-srv-1');
+  const srv2 = document.getElementById('download-srv-2');
+
+  if (epTitle) epTitle.innerText = `(Season ${season} Episode ${episode})`;
+  
+  // لینک‌های دانلود سریال (PLACEHOLDER دانلود)
+  if (srv1) srv1.href = `https://tv-download-provider-1.com/get?id=${tvId}&s=${season}&e=${episode}`;
+  if (srv2) srv2.href = `https://tv-download-provider-2.com/get?id=${tvId}&s=${season}&e=${episode}`;
+};
 
 // ── Header ────────────────────────────────────────────────────
 function buildHeader() {
@@ -697,7 +772,7 @@ document.addEventListener("click", function (e) {
     const movie = moviesList.find(m => m.id == rawId || m.tmdbId == rawId || m.imdbId == rawId);
 
     if (!rawId && !movie) {
-      alert("Error: Movie ID not found.");
+      alert("Error: Item ID not found.");
       return;
     }
 
@@ -707,69 +782,76 @@ document.addEventListener("click", function (e) {
       box.style.zIndex = "50";
 
       let playerSrc = "";
-      if (movie && movie.imdbId) {
-        playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
-      } else if (movie && movie.tmdbId) {
-        playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
+      const isTv = movie && movie.mediaType === 'tv';
+
+      if (isTv) {
+        // لینک پیش‌فرض استریم سریال (فصل ۱ قسمت ۱)
+        playerSrc = `https://multiembed.mov/directstream.php?video_id=${movie.id}&tmdb=1&s=1&e=1`;
       } else {
-        const isImdb = String(rawId).startsWith("tt");
-        playerSrc = isImdb
-          ? `https://multiembed.mov/?video_id=${rawId}`
-          : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
+        if (movie && movie.imdbId) {
+          playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
+        } else if (movie && movie.tmdbId) {
+          playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
+        } else {
+          const isImdb = String(rawId).startsWith("tt");
+          playerSrc = isImdb
+            ? `https://multiembed.mov/?video_id=${rawId}`
+            : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
+        }
       }
 
-box.innerHTML = `
-  <button id="hero-close-btn" style="position: absolute; top: 48px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.5)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.3)'; this.style.opacity='0.85'">✕ Close Player</button>
-  <iframe
-    src="${playerSrc}"
-    style="width: 100%; height: 100%; border: none; display: block;"
-    allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
-    allowfullscreen
-    webkitallowfullscreen
-    mozallowfullscreen
-    playsinline
-    frameborder="0">
-  </iframe>
-`;
-// دکمه فول‌اسکرین (پایین سمت راست)// دکمه فول‌اسکرین (پایین سمت راست)
-const iframe = box.querySelector("iframe");
-const fullscreenBtn = document.createElement("button");
-fullscreenBtn.id = "hero-fullscreen-btn";
-fullscreenBtn.innerHTML = "⛶";
-fullscreenBtn.title = "Fullscreen";
+      box.innerHTML = `
+        <button id="hero-close-btn" style="position: absolute; top: 48px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: all 0.2s ease; opacity: 0.85;" onmouseover="this.style.backgroundColor='rgba(0,0,0,0.5)'; this.style.opacity='1'" onmouseout="this.style.backgroundColor='rgba(0,0,0,0.3)'; this.style.opacity='0.85'">✕ Close Player</button>
+        <iframe
+          src="${playerSrc}"
+          style="width: 100%; height: 100%; border: none; display: block;"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
+          allowfullscreen
+          webkitallowfullscreen
+          mozallowfullscreen
+          playsinline
+          frameborder="0">
+        </iframe>
+      `;
 
-fullscreenBtn.style.cssText = `
-  position: absolute !important;
-  bottom: 6px !important;
-  right: 8px !important;
-  z-index: 9999 !important;
-  width: 32px !important;
-  height: 32px !important;
-  color: #fff !important;
-  background: rgba(0, 0, 0, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 6px !important;
-  cursor: pointer !important;
-  font-size: 16px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  margin: 0 !important;
-`;
+      const iframe = box.querySelector("iframe");
+      const fullscreenBtn = document.createElement("button");
+      fullscreenBtn.id = "hero-fullscreen-btn";
+      fullscreenBtn.innerHTML = "⛶";
+      fullscreenBtn.title = "Fullscreen";
 
-box.appendChild(fullscreenBtn);
+      fullscreenBtn.style.cssText = `
+        position: absolute !important;
+        bottom: 6px !important;
+        right: 8px !important;
+        z-index: 9999 !important;
+        width: 32px !important;
+        height: 32px !important;
+        color: #fff !important;
+        background: rgba(0, 0, 0, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      `;
 
-fullscreenBtn.addEventListener("click", function(e) {
-  e.stopPropagation();
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen().catch(() => {
-      if (box.requestFullscreen) box.requestFullscreen();
-    });
-  } else if (box.requestFullscreen) {
-    box.requestFullscreen();
-  }
-});
+      box.appendChild(fullscreenBtn);
+
+      fullscreenBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (iframe.requestFullscreen) {
+          iframe.requestFullscreen().catch(() => {
+            if (box.requestFullscreen) box.requestFullscreen();
+          });
+        } else if (box.requestFullscreen) {
+          box.requestFullscreen();
+        }
+      });
     }
   }
 
