@@ -404,10 +404,12 @@ function wireSearch() {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
       try {
-        const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
-        const data = await res.json();
+        const [movieRes, tvRes] = await Promise.all([
+          fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json()),
+          fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json())
+        ]);
 
-        const searchResults = (data.results || []).slice(0, 10).map(movie => ({
+        const movieResults = (movieRes.results || []).map(movie => ({
           id: movie.id,
           title: movie.title,
           posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
@@ -417,8 +419,29 @@ function wireSearch() {
           durationMinutes: 120,
           genre: 'Search Result',
           director: 'TMDB Cinema',
-          cast: ['Popular Actor']
+          cast: ['Popular Actor'],
+          mediaType: 'movie',
+          popularity: movie.popularity || 0
         }));
+
+        const tvResults = (tvRes.results || []).map(tv => ({
+          id: tv.id,
+          title: tv.name || tv.original_name,
+          posterUrl: tv.poster_path ? `${IMAGE_URL}${tv.poster_path}` : '',
+          synopsis: tv.overview || 'No synopsis available.',
+          year: parseInt(tv.first_air_date ? tv.first_air_date.split('-')[0] : '2026'),
+          rating: tv.vote_average ? parseFloat(tv.vote_average.toFixed(1)) : 7.0,
+          durationMinutes: 120,
+          genre: 'Search Result',
+          director: 'TMDB Cinema',
+          cast: ['Popular Actor'],
+          mediaType: 'tv',
+          popularity: tv.popularity || 0
+        }));
+
+        const searchResults = [...movieResults, ...tvResults]
+          .sort((a, b) => b.popularity - a.popularity)
+          .slice(0, 10);
 
         searchResults.forEach(m => {
           if (!allMovies.some(existing => existing.id === m.id)) {
@@ -472,10 +495,12 @@ async function executeFullSearch(q) {
   if (!browse) return;
 
   try {
-    const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
-    const data = await res.json();
+    const [movieRes, tvRes] = await Promise.all([
+      fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json()),
+      fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json())
+    ]);
 
-    const searchResults = (data.results || []).map(movie => ({
+    const movieResults = (movieRes.results || []).map(movie => ({
       id: movie.id,
       title: movie.title,
       posterUrl: movie.poster_path ? `${IMAGE_URL}${movie.poster_path}` : '',
@@ -487,9 +512,31 @@ async function executeFullSearch(q) {
       isAdult: movie.adult || false,
       director: 'TMDB Cinema',
       cast: ['Popular Actor'],
+      mediaType: 'movie',
+      popularity: movie.popularity || 0,
       downloadUrl1080p: `https://vidsrc.to/embed/movie/${movie.id}`,
       downloadUrl720p: `https://vidsrc.to/embed/movie/${movie.id}`
     }));
+
+    const tvResults = (tvRes.results || []).map(tv => ({
+      id: tv.id,
+      title: tv.name || tv.original_name,
+      posterUrl: tv.poster_path ? `${IMAGE_URL}${tv.poster_path}` : '',
+      synopsis: tv.overview || 'No synopsis available.',
+      year: parseInt(tv.first_air_date ? tv.first_air_date.split('-')[0] : '2026'),
+      rating: tv.vote_average ? parseFloat(tv.vote_average.toFixed(1)) : 7.0,
+      durationMinutes: 120,
+      genre: 'Search Result',
+      isAdult: tv.adult || false,
+      director: 'TMDB Cinema',
+      cast: ['Popular Actor'],
+      mediaType: 'tv',
+      popularity: tv.popularity || 0,
+      downloadUrl1080p: `https://vidsrc.to/embed/tv/${tv.id}`,
+      downloadUrl720p: `https://vidsrc.to/embed/tv/${tv.id}`
+    }));
+
+    const searchResults = [...movieResults, ...tvResults].sort((a, b) => b.popularity - a.popularity);
 
     searchResults.forEach(m => {
       if (!allMovies.some(existing => existing.id === m.id)) {
@@ -536,10 +583,14 @@ function buildSearchCard(m, isAgeUnlocked) {
 
   const adultClass = (isSensitive && !isAgeUnlocked) ? 'adult-content' : '';
   const adultBadge = isSensitive ? `<span class="adult-badge">+18</span>` : '';
+  const typeBadge = m.mediaType === 'tv'
+    ? `<span style="position:absolute; top:6px; left:6px; background:rgba(0,0,0,0.7); color:#fff; font-size:0.65rem; font-weight:bold; padding:2px 6px; border-radius:4px; z-index:2;">TV</span>`
+    : '';
 
   return `
     <div class="movie-card ${adultClass}" data-id="${m.id}">
       <div class="card-poster">
+        ${typeBadge}
         ${adultBadge}
         <img src="${m.posterUrl}" alt="${m.title}" loading="lazy" />
         <div class="card-overlay">
