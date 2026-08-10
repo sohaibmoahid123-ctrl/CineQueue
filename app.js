@@ -39,6 +39,21 @@ async function getAutoDownloadLinks(movie) {
   }
 }
 
+// Fetch the real season/episode structure for a TV show from TMDB
+async function getTvSeasonsInfo(tvId) {
+  try {
+    const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`);
+    const data = await res.json();
+    const seasons = (data.seasons || [])
+      .filter(s => s.season_number > 0 && s.episode_count > 0)
+      .map(s => ({ season_number: s.season_number, episode_count: s.episode_count }));
+    return seasons.length > 0 ? seasons : [{ season_number: 1, episode_count: 10 }];
+  } catch (err) {
+    console.error('TV seasons fetch error:', err);
+    return [{ season_number: 1, episode_count: 10 }];
+  }
+}
+
 async function init() {
   showLoading();
   try {
@@ -572,6 +587,20 @@ async function renderMovieDetail(id) {
     getAutoDownloadLinks(movie);
   }
 
+  // Get the REAL season/episode structure for this show from TMDB
+  // (cached on the movie object so we don't re-fetch every time the page opens)
+  let seasonsInfo = [{ season_number: 1, episode_count: 10 }];
+  if (isTv) {
+    if (movie.seasonsInfo) {
+      seasonsInfo = movie.seasonsInfo;
+    } else {
+      seasonsInfo = await getTvSeasonsInfo(movie.id);
+      movie.seasonsInfo = seasonsInfo;
+    }
+  }
+  const firstSeasonNumber = seasonsInfo[0].season_number;
+  const firstSeasonEpisodeCount = seasonsInfo[0].episode_count;
+
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
@@ -579,7 +608,7 @@ async function renderMovieDetail(id) {
         <div id="backdrop-player-box" style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #232d45;">
           <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
 <button id="hero-play-btn" 
-  onclick="${isTv ? `window.selectTvEpisode(${movie.id}, 1, 1)` : ''}" 
+  onclick="${isTv ? `window.selectTvEpisode(${movie.id}, ${firstSeasonNumber}, 1)` : ''}" 
   style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; padding: 15px;">
   <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
 </button>
@@ -596,15 +625,13 @@ async function renderMovieDetail(id) {
               📺 Select Season & Episode
             </h3>
             <select id="season-picker" onchange="window.selectTvSeason(${movie.id}, this.value)" style="background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 6px; padding: 6px 12px;">
-              <option value="1">Season 1</option>
-              <option value="2">Season 2</option>
-              <option value="3">Season 3</option>
+              ${seasonsInfo.map(s => `<option value="${s.season_number}">Season ${s.season_number}</option>`).join('')}
             </select>
           </div>
 
           <div id="episodes-btn-grid" style="display: flex; gap: 8px; flex-wrap: wrap; overflow-x: auto;">
-            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
-              <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${movie.id}, 1, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            ${Array.from({ length: firstSeasonEpisodeCount }, (_, i) => i + 1).map(ep => `
+              <button class="ep-btn ${ep === 1 ? 'active' : ''}" onclick="window.selectTvEpisode(${movie.id}, ${firstSeasonNumber}, ${ep}, this)" style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
                 Ep ${ep}
               </button>
             `).join('')}
@@ -644,14 +671,14 @@ async function renderMovieDetail(id) {
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
           <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download ${isTv ? '<span id="download-ep-title" style="color: #e50914;">(Season 1 Episode 1)</span>' : 'Video'}
+            Download ${isTv ? `<span id="download-ep-title" style="color: #e50914;">(Season ${firstSeasonNumber} Episode 1)</span>` : 'Video'}
           </h3>
           <div style="display: flex; gap: 12px; width: 100%;">
-            <a id="download-srv-1" href="${isTv ? `https://tv-download-provider-1.com/get?id=${movie.id}&s=1&e=1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-1" href="${isTv ? `https://tv-download-provider-1.com/get?id=${movie.id}&s=${firstSeasonNumber}&e=1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
             </a>
-            <a id="download-srv-2" href="${isTv ? `https://tv-download-provider-2.com/get?id=${movie.id}&s=1&e=1` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-2" href="${isTv ? `https://tv-download-provider-2.com/get?id=${movie.id}&s=${firstSeasonNumber}&e=1` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
             </a>
@@ -679,7 +706,12 @@ window.selectTvSeason = function(tvId, season) {
   const grid = document.getElementById('episodes-btn-grid');
   if (!grid) return;
 
-  grid.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(ep => `
+  // Look up the real episode count for the chosen season from TMDB data
+  const movie = allMovies.find(m => m.id == tvId);
+  const seasonData = movie?.seasonsInfo?.find(s => s.season_number == season);
+  const episodeCount = seasonData ? seasonData.episode_count : 10;
+
+  grid.innerHTML = Array.from({ length: episodeCount }, (_, i) => i + 1).map(ep => `
     <button class="ep-btn ${ep === 1 ? 'active' : ''}" 
             onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" 
             style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
@@ -820,29 +852,23 @@ document.addEventListener("click", function (e) {
     if (isTv) {
       return;
     }
-    
+
     const box = document.getElementById("backdrop-player-box");
     if (box) {
       box.style.position = "relative";
       box.style.zIndex = "50";
 
       let playerSrc = "";
-      const isTv = movie && movie.mediaType === 'tv';
 
-      if (isTv) {
-        // لینک پیش‌فرض استریم سریال (فصل ۱ قسمت ۱)
-        playerSrc = `https://multiembed.mov/directstream.php?video_id=${movie.id}&tmdb=1&s=1&e=1`;
+      if (movie && movie.imdbId) {
+        playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
+      } else if (movie && movie.tmdbId) {
+        playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
       } else {
-        if (movie && movie.imdbId) {
-          playerSrc = `https://multiembed.mov/?video_id=${movie.imdbId}`;
-        } else if (movie && movie.tmdbId) {
-          playerSrc = `https://multiembed.mov/?video_id=${movie.tmdbId}&tmdb=1`;
-        } else {
-          const isImdb = String(rawId).startsWith("tt");
-          playerSrc = isImdb
-            ? `https://multiembed.mov/?video_id=${rawId}`
-            : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
-        }
+        const isImdb = String(rawId).startsWith("tt");
+        playerSrc = isImdb
+          ? `https://multiembed.mov/?video_id=${rawId}`
+          : `https://multiembed.mov/?video_id=${rawId}&tmdb=1`;
       }
 
       box.innerHTML = `
@@ -933,10 +959,10 @@ const observer = new MutationObserver(() => {
       btn.id = "hero-play-btn";
       btn.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>`;
       btn.style.cssText = "position:absolute; top:42%; left:50%; transform:translate(-50%,-50%); background:rgba(229,9,20,0.9); border:none; border-radius:50%; width:75px; height:75px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:99; box-shadow:0 8px 25px rgba(0,0,0,0.6); transition:transform 0.2s;";
-      
+
       btn.onmouseover = () => btn.style.transform = "translate(-50%,-50%) scale(1.1)";
       btn.onmouseout = () => btn.style.transform = "translate(-50%,-50%) scale(1)";
-      
+
       targetArea.appendChild(btn);
     }
   }
@@ -949,7 +975,7 @@ window.changeServer = function(serverUrl, btnElement) {
   if (player) {
     player.src = serverUrl;
   }
-  
+
   document.querySelectorAll('.srv-btn').forEach(btn => btn.classList.remove('active'));
   if (btnElement) {
     btnElement.classList.add('active');
