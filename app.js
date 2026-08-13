@@ -725,11 +725,11 @@ async function renderMovieDetail(id) {
             Download ${isTv ? `<span id="download-ep-title" style="color: #e50914;">(Season ${firstSeasonNumber} Episode 1)</span>` : 'Video'}
           </h3>
           <div style="display: flex; gap: 12px; width: 100%;">
-            <a id="download-srv-1" href="${isTv ? `https://tv-download-provider-1.com/get?id=${movie.id}&s=${firstSeasonNumber}&e=1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-1" href="${isTv ? `https://video.moviepire.co/embed/tv/${movie.id}/${firstSeasonNumber}/1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
             </a>
-            <a id="download-srv-2" href="${isTv ? `https://tv-download-provider-2.com/get?id=${movie.id}&s=${firstSeasonNumber}&e=1` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a id="download-srv-2" href="${isTv ? `https://video.moviepire.co/embed/tv/${movie.id}/${firstSeasonNumber}/1?download=true` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
             </a>
@@ -792,8 +792,8 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
   // ۳. آپدیت لینک‌های دانلود
   const srv1 = document.getElementById('download-srv-1');
   const srv2 = document.getElementById('download-srv-2');
-  if (srv1) srv1.href = `https://tv-download-provider-1.com/get?id=${tvId}&s=${season}&e=${episode}`;
-  if (srv2) srv2.href = `https://tv-download-provider-2.com/get?id=${tvId}&s=${season}&e=${episode}`;
+  if (srv1) srv1.href = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${episode}`;
+  if (srv2) srv2.href = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${episode}?download=true`;
 
   // ۴. ساخت کامل پلیر (مهم‌ترین قسمت)
   const box = document.getElementById("backdrop-player-box");
