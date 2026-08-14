@@ -639,7 +639,6 @@ async function renderMovieDetail(id) {
   }
 
   // Get the REAL season/episode structure for this show from TMDB
-  // (cached on the movie object so we don't re-fetch every time the page opens)
   let seasonsInfo = [{ season_number: 1, episode_count: 10 }];
   if (isTv) {
     if (movie.seasonsInfo) {
@@ -652,23 +651,42 @@ async function renderMovieDetail(id) {
   const firstSeasonNumber = seasonsInfo[0].season_number;
   const firstSeasonEpisodeCount = seasonsInfo[0].episode_count;
 
+  // ---- ساخت لیست دانلود اپیزودها (برای سریال) ----
+  function buildEpisodeDownloadList(seasonNum, episodeCount) {
+    let items = '';
+    for (let ep = 1; ep <= episodeCount; ep++) {
+      const srv1 = `https://video.moviepire.co/embed/tv/${movie.id}/${seasonNum}/${ep}`;
+      const srv2 = `https://video.moviepire.co/embed/tv/${movie.id}/${seasonNum}/${ep}?download=true`;
+      items += `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#0f1629; border-radius:8px; margin-bottom:6px; border-left:3px solid #e50914;">
+          <span style="color:#fff; font-weight:600; min-width:60px;">Ep ${ep}</span>
+          <div style="display:flex; gap:8px;">
+            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۱</a>
+            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۲</a>
+          </div>
+        </div>
+      `;
+    }
+    return items;
+  }
+
   app.innerHTML = `
     ${buildHeader()}
     <main class="detail-main">
       <div class="player-outer-wrapper" style="width: 100%; max-width: 900px; margin: 0 auto 20px auto; padding: 0 10px; box-sizing: border-box;">
         <div id="backdrop-player-box" style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #232d45;">
           <img id="detail-poster-img" src="${movie.posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(4px) brightness(0.6); transform: scale(1.05);" />
-<button id="hero-play-btn" 
-  onclick="${isTv ? `window.selectTvEpisode(${movie.id}, ${firstSeasonNumber}, 1)` : ''}" 
-  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; padding: 15px;">
-  <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
-</button>
+          <button id="hero-play-btn" 
+            onclick="${isTv ? `window.selectTvEpisode(${movie.id}, ${firstSeasonNumber}, 1)` : ''}" 
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; padding: 15px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#FFFFFF" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
       </div>
 
-
       <div class="detail-content">
         <button class="back-btn" onclick="history.back()">&#8592; Back</button>
+        
         ${isTv ? `
         <div class="tv-episodes-wrapper" style="max-width: 900px; margin: 50px auto 25px auto; padding: 15px; background: #161d2f; border: 1px solid #232d45; border-radius: 12px; position: relative; z-index: 10;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -689,7 +707,6 @@ async function renderMovieDetail(id) {
           </div>
         </div>
         ` : ''}
-
 
         <div class="detail-layout">
           <div class="detail-poster-wrap">
@@ -719,22 +736,36 @@ async function renderMovieDetail(id) {
           </div>
         </div>
 
+        <!-- ======= بخش دانلود ======= -->
+        ${isTv ? `
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
           <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download ${isTv ? `<span id="download-ep-title" style="color: #e50914;">(Season ${firstSeasonNumber} Episode 1)</span>` : 'Video'}
+            Download Episodes
+          </h3>
+          <div id="episode-download-list">
+            ${buildEpisodeDownloadList(firstSeasonNumber, firstSeasonEpisodeCount)}
+          </div>
+        </div>
+        ` : `
+        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
+          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Video
           </h3>
           <div style="display: flex; gap: 12px; width: 100%;">
-            <a id="download-srv-1" href="${isTv ? `https://video.moviepire.co/embed/tv/${movie.id}/${firstSeasonNumber}/1` : `https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a href="${`https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e50914; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 1 (MP4)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">1080P, 720P</div>
             </a>
-            <a id="download-srv-2" href="${isTv ? `https://video.moviepire.co/embed/tv/${movie.id}/${firstSeasonNumber}/1?download=true` : `https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
+            <a href="${`https://movies-api.accel.li/api/v2/list_movies.json?query_term=${movie.imdb_id || movie.id}`}" target="_blank" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #232d45; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none;">
               <div style="font-size: 1rem; font-weight: 800;">SERVER 2 (TORRENT/HD)</div>
               <div style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;">HIGH QUALITY</div>
             </a>
           </div>
         </div>
+        `}
+        <!-- ======= پایان بخش دانلود ======= -->
 
         ${related.length > 0 ? `
         <div class="more-section" style="margin-top: 30px;">
@@ -757,11 +788,11 @@ window.selectTvSeason = function(tvId, season) {
   const grid = document.getElementById('episodes-btn-grid');
   if (!grid) return;
 
-  // Look up the real episode count for the chosen season from TMDB data
   const movie = allMovies.find(m => m.id == tvId);
   const seasonData = movie?.seasonsInfo?.find(s => s.season_number == season);
   const episodeCount = seasonData ? seasonData.episode_count : 10;
 
+  // به‌روزرسانی دکمه‌های اپیزود
   grid.innerHTML = Array.from({ length: episodeCount }, (_, i) => i + 1).map(ep => `
     <button class="ep-btn ${ep === 1 ? 'active' : ''}" 
             onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" 
@@ -769,6 +800,26 @@ window.selectTvSeason = function(tvId, season) {
       Ep ${ep}
     </button>
   `).join('');
+
+  // به‌روزرسانی لیست دانلود اپیزودها
+  const downloadList = document.getElementById('episode-download-list');
+  if (downloadList) {
+    let items = '';
+    for (let ep = 1; ep <= episodeCount; ep++) {
+      const srv1 = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${ep}`;
+      const srv2 = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${ep}?download=true`;
+      items += `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#0f1629; border-radius:8px; margin-bottom:6px; border-left:3px solid #e50914;">
+          <span style="color:#fff; font-weight:600; min-width:60px;">Ep ${ep}</span>
+          <div style="display:flex; gap:8px;">
+            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۱</a>
+            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۲</a>
+          </div>
+        </div>
+      `;
+    }
+    downloadList.innerHTML = items;
+  }
 
   // پیش‌فرض: پخش قسمت اول فصل انتخاب شده
   window.selectTvEpisode(tvId, season, 1);
@@ -785,21 +836,11 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
     btnElement.classList.add('active');
   }
 
-  // ۲. آپدیت عنوان دانلود
-  const epTitle = document.getElementById('download-ep-title');
-  if (epTitle) epTitle.innerText = `(Season ${season} Episode ${episode})`;
-
-  // ۳. آپدیت لینک‌های دانلود
-  const srv1 = document.getElementById('download-srv-1');
-  const srv2 = document.getElementById('download-srv-2');
-  if (srv1) srv1.href = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${episode}`;
-  if (srv2) srv2.href = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${episode}?download=true`;
-
-  // ۴. ساخت کامل پلیر (مهم‌ترین قسمت)
+  // ۲. ساخت پلیر
   const box = document.getElementById("backdrop-player-box");
   if (!box) return;
 
- const streamUrl = `https://multiembed.mov/?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
+  const streamUrl = `https://multiembed.mov/?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
 
   box.innerHTML = `
     <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px);">
@@ -843,6 +884,7 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
     }
   });
 };
+
 // ── Header ────────────────────────────────────────────────────
 function buildHeader() {
   return `
