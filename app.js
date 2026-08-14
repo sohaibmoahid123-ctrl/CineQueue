@@ -617,6 +617,21 @@ window.unlockAdultPosters = function() {
   if (banner) banner.remove();
 };
 
+// ── Toggle Download List (for TV shows) ─────────────────────
+window.toggleDownloadList = function() {
+  const list = document.getElementById('episode-download-list');
+  const icon = document.getElementById('download-toggle-icon');
+  if (list) {
+    if (list.style.display === 'none' || list.style.display === '') {
+      list.style.display = 'block';
+      if (icon) icon.innerHTML = '▲';
+    } else {
+      list.style.display = 'none';
+      if (icon) icon.innerHTML = '▼';
+    }
+  }
+};
+
 // ── Movie Detail Page ──────────────────────────────────────────
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
@@ -651,23 +666,27 @@ async function renderMovieDetail(id) {
   const firstSeasonNumber = seasonsInfo[0].season_number;
   const firstSeasonEpisodeCount = seasonsInfo[0].episode_count;
 
-  // ---- ساخت لیست دانلود اپیزودها (برای سریال) ----
-  function buildEpisodeDownloadList(seasonNum, episodeCount) {
+  // ---- Build episode download list (for TV) ----
+  function buildEpisodeDownloadList(seasonNum, episodeCount, isOpen = false) {
     let items = '';
     for (let ep = 1; ep <= episodeCount; ep++) {
-      const srv1 = `https://video.moviepire.co/embed/tv/${movie.id}/${seasonNum}/${ep}`;
-      const srv2 = `https://video.moviepire.co/embed/tv/${movie.id}/${seasonNum}/${ep}?download=true`;
+      const srv1 = `https://video.moviepire.co/download/tv/${movie.id}/${seasonNum}/${ep}`;
+      const srv2 = `https://video.moviepire.co/download/tv/${movie.id}/${seasonNum}/${ep}?download=true`;
       items += `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#0f1629; border-radius:8px; margin-bottom:6px; border-left:3px solid #e50914;">
-          <span style="color:#fff; font-weight:600; min-width:60px;">Ep ${ep}</span>
-          <div style="display:flex; gap:8px;">
-            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۱</a>
-            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۲</a>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; background:#0f1629; border-radius:6px; margin-bottom:4px; border-left:3px solid #e50914;">
+          <span style="color:#fff; font-weight:500; min-width:50px; font-size:0.85rem;">Ep ${ep}</span>
+          <div style="display:flex; gap:6px;">
+            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 1</a>
+            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 2</a>
           </div>
         </div>
       `;
     }
-    return items;
+    return `
+      <div id="episode-download-list" style="display: ${isOpen ? 'block' : 'none'}; margin-top:10px;">
+        ${items}
+      </div>
+    `;
   }
 
   app.innerHTML = `
@@ -736,21 +755,22 @@ async function renderMovieDetail(id) {
           </div>
         </div>
 
-        <!-- ======= بخش دانلود ======= -->
+        <!-- ======= DOWNLOAD SECTION ======= -->
         ${isTv ? `
-        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
-          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download Episodes
-          </h3>
-          <div id="episode-download-list">
-            ${buildEpisodeDownloadList(firstSeasonNumber, firstSeasonEpisodeCount)}
+        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleDownloadList()">
+            <h3 style="display: flex; align-items: center; gap: 8px; margin:0; font-size:1rem; color:#fff;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Episodes
+            </h3>
+            <span id="download-toggle-icon" style="color:#fff; font-size:1.2rem;">▼</span>
           </div>
+          ${buildEpisodeDownloadList(firstSeasonNumber, firstSeasonEpisodeCount, false)}
         </div>
         ` : `
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
-          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color:#fff; font-size:1rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download Video
           </h3>
           <div style="display: flex; gap: 12px; width: 100%;">
@@ -765,7 +785,7 @@ async function renderMovieDetail(id) {
           </div>
         </div>
         `}
-        <!-- ======= پایان بخش دانلود ======= -->
+        <!-- ======= END DOWNLOAD SECTION ======= -->
 
         ${related.length > 0 ? `
         <div class="more-section" style="margin-top: 30px;">
@@ -792,7 +812,7 @@ window.selectTvSeason = function(tvId, season) {
   const seasonData = movie?.seasonsInfo?.find(s => s.season_number == season);
   const episodeCount = seasonData ? seasonData.episode_count : 10;
 
-  // به‌روزرسانی دکمه‌های اپیزود
+  // Update episode buttons
   grid.innerHTML = Array.from({ length: episodeCount }, (_, i) => i + 1).map(ep => `
     <button class="ep-btn ${ep === 1 ? 'active' : ''}" 
             onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" 
@@ -801,32 +821,36 @@ window.selectTvSeason = function(tvId, season) {
     </button>
   `).join('');
 
-  // به‌روزرسانی لیست دانلود اپیزودها
+  // Update download list with correct links
   const downloadList = document.getElementById('episode-download-list');
   if (downloadList) {
     let items = '';
     for (let ep = 1; ep <= episodeCount; ep++) {
-      const srv1 = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${ep}`;
-      const srv2 = `https://video.moviepire.co/embed/tv/${tvId}/${season}/${ep}?download=true`;
+      const srv1 = `https://video.moviepire.co/download/tv/${tvId}/${season}/${ep}`;
+      const srv2 = `https://video.moviepire.co/download/tv/${tvId}/${season}/${ep}?download=true`;
       items += `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#0f1629; border-radius:8px; margin-bottom:6px; border-left:3px solid #e50914;">
-          <span style="color:#fff; font-weight:600; min-width:60px;">Ep ${ep}</span>
-          <div style="display:flex; gap:8px;">
-            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۱</a>
-            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:bold;">سرور ۲</a>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; background:#0f1629; border-radius:6px; margin-bottom:4px; border-left:3px solid #e50914;">
+          <span style="color:#fff; font-weight:500; min-width:50px; font-size:0.85rem;">Ep ${ep}</span>
+          <div style="display:flex; gap:6px;">
+            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 1</a>
+            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 2</a>
           </div>
         </div>
       `;
     }
     downloadList.innerHTML = items;
+    // Keep it closed when switching seasons
+    downloadList.style.display = 'none';
+    const icon = document.getElementById('download-toggle-icon');
+    if (icon) icon.innerHTML = '▼';
   }
 
-  // پیش‌فرض: پخش قسمت اول فصل انتخاب شده
+  // Default: play first episode
   window.selectTvEpisode(tvId, season, 1);
 };
 
 window.selectTvEpisode = function(tvId, season, episode, btnElement) {
-  // ۱. هایلایت دکمه قسمت
+  // 1. Highlight episode button
   if (btnElement) {
     document.querySelectorAll('.ep-btn').forEach(btn => {
       btn.style.background = '#232d45';
@@ -836,7 +860,7 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
     btnElement.classList.add('active');
   }
 
-  // ۲. ساخت پلیر
+  // 2. Build player
   const box = document.getElementById("backdrop-player-box");
   if (!box) return;
 
@@ -858,7 +882,7 @@ window.selectTvEpisode = function(tvId, season, episode, btnElement) {
     </iframe>
   `;
 
-  // دکمه فول‌اسکرین
+  // Fullscreen button
   const iframe = box.querySelector("iframe");
   const fullscreenBtn = document.createElement("button");
   fullscreenBtn.id = "hero-fullscreen-btn";
