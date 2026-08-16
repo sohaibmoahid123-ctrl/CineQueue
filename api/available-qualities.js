@@ -8,14 +8,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      'Referer': 'https://moviesmods.best/'
+    const customHeaders = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Referer': 'https://google.com'
     };
 
+    // اگر عنوان فیلم فرستاده شده، آن را جستجو کن
     if (!targetUrl.startsWith('http')) {
       const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(targetUrl)}`;
-      const searchRes = await fetch(searchUrl, { headers });
+      const searchRes = await fetch(searchUrl, { headers: customHeaders });
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
       
@@ -27,33 +30,29 @@ module.exports = async (req, res) => {
       }
     }
 
-    const response = await fetch(targetUrl, { headers });
+    // دریافت مستقیم صفحه فیلم
+    const response = await fetch(targetUrl, { headers: customHeaders });
     const html = await response.text();
     const $ = cheerio.load(html);
 
     const downloadOptions = [];
 
-    // پیمایش تمام دکمه‌های دانلود موجود در صفحه
-    $('a').each((index, el) => {
+    // استخراج تمام لینک‌هایی که دکمه دانلود دارند
+    $('a').each((i, el) => {
       const href = $(el).attr('href') || '';
-      const btnText = $(el).text().trim();
+      const text = $(el).text().trim();
 
-      if (href.startsWith('http') && (btnText.includes('CLICK HERE TO DOWNLOAD') || btnText.includes('DOWNLOAD'))) {
-        // خواندن عنوان کیفیت از متن بالای دکمه
-        let qualityTitle = $(el).parent().prev().text().trim() || $(el).prev().text().trim();
+      if (href.startsWith('http') && (text.includes('DOWNLOAD') || text.includes('CLICK HERE'))) {
+        // دریافت عنوان کیفیت بالای دکمه
+        let qualityName = $(el).parent().prev().text().trim() || $(el).prev('p, h3, h4').text().trim();
         
-        // اگر عنوان بالای دکمه پیدا نشد، از متن خود دکمه استفاده کن
-        if (!qualityTitle || qualityTitle.length > 50) {
-          qualityTitle = 'Download Option ' + (downloadOptions.length + 1);
+        if (!qualityName || qualityName.length > 60) {
+          qualityName = `Option ${downloadOptions.length + 1}`;
         }
 
-        // استخراج حجم داخل دکمه (مثلاً [450MB])
-        const sizeMatch = btnText.match(/\[(.*?)\]/);
-        const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
-
         downloadOptions.push({
-          id: downloadOptions.length, // شناسه عددی دقیق برای هر دکمه
-          label: `${qualityTitle}${sizeText}`,
+          id: downloadOptions.length,
+          label: `${qualityName} ${text.includes('[') ? text.substring(text.indexOf('[')) : ''}`,
           link: href
         });
       }
@@ -61,8 +60,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ 
       success: downloadOptions.length > 0, 
-      options: downloadOptions,
-      movieUrl: targetUrl 
+      options: downloadOptions 
     });
 
   } catch (error) {
