@@ -6,64 +6,40 @@ module.exports = async (req, res) => {
   
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const rawQuery = req.query.url;
-  if (!rawQuery) {
-    return res.status(400).json({ error: 'Movie title is required' });
-  }
-
-  const fetchWithProxy = async (targetUrl) => {
-    // استفاده از پروکسی برای دور زدن محدودیت IP ورسل
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-    const response = await fetch(proxyUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
-      }
-    });
-    return await response.text();
+  const customHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Referer': 'https://moviesmods.best/'
   };
 
   try {
-    let targetPageUrl = rawQuery;
+    // ۱. باز کردن مستقیم صفحه اصلی یا لینک ورودی
+    const targetUrl = req.query.url && req.query.url.startsWith('http') 
+      ? req.query.url 
+      : 'https://moviesmods.best/';
 
-    if (!rawQuery.startsWith('http')) {
-      const cleanTitle = rawQuery.split('(')[0].trim();
-      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
-      
-      // دریافت HTML سرچ از طریق پروکسی
-      const searchHtml = await fetchWithProxy(searchUrl);
-      const $search = cheerio.load(searchHtml);
-      
-      let matchedLink = null;
+    const homeRes = await fetch(targetUrl, { headers: customHeaders });
+    const homeHtml = await homeRes.text();
+    const $home = cheerio.load(homeHtml);
 
-      $search('article, .post-item, h2.entry-title, h3.entry-title').each((i, el) => {
-        const link = $(el).find('a').first().attr('href');
-        if (link && link.includes('moviesmods.best') && !link.endsWith('moviesmods.best/')) {
-          matchedLink = link;
-          return false;
-        }
-      });
-
-      if (!matchedLink) {
-        matchedLink = $search('.entry-title a').first().attr('href');
+    // ۲. استخراج لینک اولین فیلم موجود در صفحه
+    let moviePageUrl = targetUrl;
+    if (!req.query.url || !req.query.url.startsWith('http')) {
+      const firstCardLink = $home('article a, .post-item a, h2.entry-title a, h3.entry-title a').first().attr('href');
+      if (firstCardLink) {
+        moviePageUrl = firstCardLink;
       }
-
-      if (!matchedLink) {
-        return res.status(200).json({ 
-          success: false, 
-          stage: 'NOT_FOUND',
-          message: `No results found for "${cleanTitle}".` 
-        });
-      }
-
-      targetPageUrl = matchedLink;
     }
 
-    // دریافت HTML صفحه فیلم از طریق پروکسی
-    const pageHtml = await fetchWithProxy(targetPageUrl);
+    // ۳. باز کردن صفحه خودِ فیلم
+    const pageRes = await fetch(moviePageUrl, { headers: customHeaders });
+    const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
     const downloadOptions = [];
 
+    // ۴. استخراج دکمه‌های دانلود CLICK HERE TO DOWNLOAD
     $('a[href^="http"]').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
@@ -95,7 +71,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ 
       success: downloadOptions.length > 0,
-      targetUrl: targetPageUrl,
+      targetUrl: moviePageUrl,
       totalOptions: downloadOptions.length,
       options: downloadOptions 
     });
@@ -107,4 +83,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-
