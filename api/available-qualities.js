@@ -2,7 +2,6 @@ const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
   let targetUrl = req.query.url;
-  const quality = req.query.quality || '1080p';
 
   if (!targetUrl) {
     return res.status(400).json({ error: 'URL is required' });
@@ -12,6 +11,7 @@ module.exports = async (req, res) => {
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.5',
       'Referer': 'https://moviesmods.best/'
     };
 
@@ -23,6 +23,7 @@ module.exports = async (req, res) => {
     let html = await response.text();
     let $ = cheerio.load(html);
 
+    // اگر صفحه سرچ بود، وارد اولين پست بشو
     if (targetUrl.includes('/?s=')) {
       const firstLink = $('article a, .post-title a, h2 a, h3 a').first().attr('href');
       if (firstLink) {
@@ -33,39 +34,41 @@ module.exports = async (req, res) => {
       }
     }
 
-    let finalDownloadLink = null;
+    const availableQualities = [];
 
-    // پیدا کردن دکمه مدنظر بر اساس کیفیت
+    // بررسی تمام تک‌های a موجود در کل صفحه بدون محدود کردن به کلاس خاص
     $('a').each((_, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text() || '';
       const parentText = $(el).parent().text() || '';
-      const prevText = $(el).parent().prev().text() || '';
-      const fullContext = (text + ' ' + parentText + ' ' + prevText).toLowerCase();
+      const fullContext = (text + ' ' + parentText + ' ' + href).toLowerCase();
 
-      if (href.startsWith('http') && fullContext.includes(quality.toLowerCase())) {
-        finalDownloadLink = href;
-        return false; // خروج از حلقه
+      if (fullContext.includes('1080p') && !availableQualities.includes('1080p')) {
+        availableQualities.push('1080p');
+      }
+      if (fullContext.includes('720p') && !availableQualities.includes('720p')) {
+        availableQualities.push('720p');
+      }
+      if (fullContext.includes('480p') && !availableQualities.includes('480p')) {
+        availableQualities.push('480p');
+      }
+      if ((fullContext.includes('2160p') || fullContext.includes('4k')) && !availableQualities.includes('2160p')) {
+        availableQualities.push('2160p');
       }
     });
 
-    // Fallback: اگر دقیقاً بر اساس کیفیت پیدا نشد، اولین لینک معتبر دانلود را برمی‌گرداند
-    if (!finalDownloadLink) {
-      $('a').each((_, el) => {
-        const href = $(el).attr('href') || '';
-        const text = $(el).text() || '';
-        if (href.startsWith('http') && (text.includes('DOWNLOAD') || text.includes('CLICK HERE'))) {
-          finalDownloadLink = href;
-          return false;
-        }
-      });
+    // اگر باز هم هیچی پیدا نشد ولی لینک‌هایی وجود داشت، حداقل کیفیت‌های عمومی را خروجی بده
+    if (availableQualities.length === 0 && html.length > 2000) {
+      if (html.includes('1080p')) availableQualities.push('1080p');
+      if (html.includes('720p')) availableQualities.push('720p');
+      if (html.includes('480p')) availableQualities.push('480p');
     }
 
-    if (finalDownloadLink) {
-      return res.status(200).json({ success: true, url: finalDownloadLink });
-    }
-
-    return res.status(404).json({ error: 'Download link not found' });
+    return res.status(200).json({ 
+      success: availableQualities.length > 0, 
+      qualities: availableQualities,
+      htmlLength: html.length 
+    });
 
   } catch (error) {
     return res.status(500).json({ error: error.message });
