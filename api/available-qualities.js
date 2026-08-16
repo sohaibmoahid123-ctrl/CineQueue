@@ -3,14 +3,32 @@ const cheerio = require('cheerio');
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   const rawQuery = req.query.url;
-  if (!rawQuery) return res.status(400).json({ error: 'Movie title is required' });
+  if (!rawQuery) {
+    return res.status(400).json({ error: 'Movie title or URL is required' });
+  }
 
-  const customHeaders = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+  const browserHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Referer': 'https://moviesmods.best/'
+  };
+
+  const fetchWithTimeout = (url, options = {}, timeout = 12000) => {
+    return Promise.race([
+      fetch(url, options),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request Timeout')), timeout)
+      )
+    ]);
   };
 
   try {
@@ -18,40 +36,56 @@ module.exports = async (req, res) => {
 
     if (!rawQuery.startsWith('http')) {
       const cleanTitle = rawQuery.split('(')[0].trim();
+      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
       
-      // جستجوی لینک دقیق پست در گوگل/داک‌داک‌گو بجای سرچ داخلی سایت
-      const searchEngineUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(`site:moviesmods.best ${cleanTitle}`)}`;
+      const searchRes = await fetchWithTimeout(searchUrl, { headers: browserHeaders });
       
-      const searchRes = await fetch(searchEngineUrl, { headers: customHeaders });
+      if (!searchRes.ok) {
+        return res.status(200).json({ 
+          success: false, 
+          stage: 'SEARCH_FAILED',
+          message: `Search server responded with status: ${searchRes.status}` 
+        });
+      }
+      
       const searchHtml = await searchRes.text();
-      const $ddg = cheerio.load(searchHtml);
+      const $search = cheerio.load(searchHtml);
+      
+      let matchedLink = null;
 
-      let foundLink = null;
-      $ddg('a.result__url').each((i, el) => {
-        const href = $(el).attr('href');
-        if (href && href.includes('moviesmods.best')) {
-          // استخراج لینک واقعی از ریدایرکت داک‌داک‌گو
-          const match = href.match(/uddg=(https?%3A%2F%2F[^&]+)/);
-          if (match) {
-            foundLink = decodeURIComponent(match[1]);
-            return false;
-          }
+      // دریافت لینک مستقیم پست از کارت‌های نتیجه جستجو
+      $search('article, .post-item, h2.entry-title, h3.entry-title').each((i, el) => {
+        const link = $(el).find('a').first().attr('href');
+        if (link && link.includes('moviesmods.best') && !link.endsWith('moviesmods.best/')) {
+          matchedLink = link;
+          return false;
         }
       });
 
-      if (!foundLink) {
-        return res.status(200).json({
-          success: false,
-          stage: 'NOT_INDEXED',
-          message: `فیلم "${cleanTitle}" در ایندکس سایت پیدا نشد.`
+      if (!matchedLink) {
+        matchedLink = $search('.entry-title a').first().attr('href');
+      }
+
+      if (!matchedLink) {
+        return res.status(200).json({ 
+          success: false, 
+          stage: 'NOT_FOUND',
+          message: `No results found for "${cleanTitle}".` 
         });
       }
 
-      targetPageUrl = foundLink;
+      targetPageUrl = matchedLink;
     }
 
-    // باز کردن مستقیم صفحه فیلم
-    const pageRes = await fetch(targetPageUrl, { headers: customHeaders });
+    const pageRes = await fetchWithTimeout(targetPageUrl, { headers: browserHeaders });
+    if (!pageRes.ok) {
+      return res.status(200).json({
+        success: false,
+        stage: 'PAGE_FETCH_FAILED',
+        message: `Failed to load movie page: ${pageRes.status}`
+      });
+    }
+
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
@@ -61,17 +95,28 @@ module.exports = async (req, res) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      const isExternal = href && !href.includes('moviesmods.best') && !href.includes('telegram');
-      const isDownloadBtn = text.toUpperCase().includes('CLICK HERE TO DOWNLOAD') || text.toUpperCase().includes('DOWNLOAD');
+      const isExternalDownload = href && 
+        !href.includes('moviesmods.best') && 
+        !href.includes('telegram') && 
+        !href.includes('t.me');
 
-      if (isExternal && isDownloadBtn) {
-        let qualityLabel = $(el).parent().prev().text().trim() || $(el).closest('p').prev('p').text().trim();
-        if (!qualityLabel || qualityLabel.length > 40) qualityLabel = `Option ${downloadOptions.length + 1}`;
+      const isDownloadText = text.toUpperCase().includes('CLICK HERE TO DOWNLOAD') || 
+                             text.toUpperCase().includes('DOWNLOAD');
+
+      if (isExternalDownload && isDownloadText) {
+        let qualityLabel = $(el).parent().prev().text().trim() || 
+                           $(el).closest('p').prev('p').text().trim() || 
+                           $(el).prev().text().trim();
+
+        if (!qualityLabel || qualityLabel.length > 40) {
+          qualityLabel = `Quality Option ${downloadOptions.length + 1}`;
+        }
 
         const sizeMatch = text.match(/\[(.*?)\]/);
         const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
 
-        if (!downloadOptions.some(opt => opt.link === href)) {
+        const isDuplicate = downloadOptions.some(opt => opt.link === href);
+        if (!isDuplicate) {
           downloadOptions.push({
             id: downloadOptions.length + 1,
             label: `${qualityLabel}${sizeText}`,
@@ -81,13 +126,17 @@ module.exports = async (req, res) => {
       }
     });
 
-    return res.status(200).json({
+    return res.status(200).json({ 
       success: downloadOptions.length > 0,
       targetUrl: targetPageUrl,
-      options: downloadOptions
+      totalOptions: downloadOptions.length,
+      options: downloadOptions 
     });
 
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ 
+      success: false,
+      error: error.message || 'Internal Server Error'
+    });
   }
 };
