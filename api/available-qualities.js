@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     let targetPageUrl = rawQuery;
 
     if (!rawQuery.startsWith('http')) {
-      // استخراج کلمه اصلی فیلم (مثلاً از Soulm8te کلمه Soul یا Soulm8te)
+      // استفاده مستقیم از عبارت جستجو بدون دستکاری حروف/اعداد
       const cleanTitle = rawQuery.split('(')[0].trim();
       const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
       
@@ -27,86 +27,69 @@ module.exports = async (req, res) => {
       const $search = cheerio.load(searchHtml);
       
       let matchedLink = null;
-      
-      // کلمات کلیدی اصلی اسم فیلم برای تطبیق
-      const searchKeywords = cleanTitle.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(' ').filter(w => w.length > 2);
 
-      // بررسی تمام پست‌های موجود در صفحه نتایج
-      $search('article, .post-item, .entry-title').each((i, el) => {
+      // انتخاب اولین کارت نتیجه جستجو
+      $search('article, .post-item, .latest-post, h2.entry-title, h3.entry-title').each((i, el) => {
         const linkEl = $(el).find('a').first();
-        const postTitle = linkEl.text().toLowerCase();
         const href = linkEl.attr('href');
-
-        if (href) {
-          // بررسی اینکه آیا تمام کلمات کلیدی فیلم در تیتر پست وجود دارند یا خیر
-          const isMatch = searchKeywords.every(word => postTitle.includes(word));
-          if (isMatch) {
-            matchedLink = href;
-            return false; // پیدا شد، خروج از حلقه
-          }
+        if (href && href.includes('moviesmods.best')) {
+          matchedLink = href;
+          return false;
         }
       });
 
-      // اگر هیچ پستی دقیقاً با اسم فیلم تطابق نداشت، پست‌های نامربوط را باز نکن!
+      if (!matchedLink) {
+        // تست آخرین لایه دریافت لینک در صورت نبود کارت استاندارد
+        matchedLink = $search('a[href*="moviesmods.best/"]').first().attr('href');
+      }
+
       if (!matchedLink) {
         return res.status(200).json({ 
           success: false, 
-          stage: 'NOT_FOUND_ON_TARGET', 
-          message: `The movie "${cleanTitle}" is not available on the download provider yet.` 
+          stage: 'SEARCH_FAILED',
+          message: `Could not find link for "${cleanTitle}".` 
         });
       }
 
       targetPageUrl = matchedLink;
     }
 
-    // باز کردن صفحه اصلی خودِ فیلم
+    // دریافت مستقیم HTML صفحه پست
     const pageRes = await fetch(targetPageUrl, { headers: customHeaders });
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
     const downloadOptions = [];
 
-    // استخراج لینک‌های دانلود
-    $('a.maxbutton, a[href*="nexdrive"], a[href*="download"], .entry-content a').each((i, el) => {
+    // خواندن دکمه‌های دانلود CLICK HERE TO DOWNLOAD
+    $('a').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      if (href.startsWith('http') && !href.includes('moviesmods.best') && !href.includes('telegram')) {
-        let parentText = $(el).parent().prev().text().trim() || $(el).parent().prev('p, h3, h4').text().trim();
-        
-        if (!parentText || parentText.length > 50) {
-          parentText = $(el).closest('p, div').prev().text().trim();
+      if (href.startsWith('http') && text.toUpperCase().includes('CLICK HERE TO DOWNLOAD')) {
+        // استخراج عنوان کیفیت از تگ متنی بالای دکمه
+        let qualityLabel = $(el).parent().prev().text().trim() || 
+                           $(el).closest('p').prev('p').text().trim() || 
+                           $(el).prev().text().trim();
+
+        if (!qualityLabel || qualityLabel.length > 40) {
+          qualityLabel = `Quality ${downloadOptions.length + 1}`;
         }
 
-        if (!parentText || parentText.length > 50) {
-          parentText = `Option ${downloadOptions.length + 1}`;
-        }
-
+        // استخراج حجم از داخل متن دکمه مثل [450MB]
         const sizeMatch = text.match(/\[(.*?)\]/);
         const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
 
-        const isDuplicate = downloadOptions.some(opt => opt.link === href);
-        if (!isDuplicate) {
-          downloadOptions.push({
-            id: downloadOptions.length,
-            label: `${parentText}${sizeText}`,
-            link: href
-          });
-        }
+        downloadOptions.push({
+          id: downloadOptions.length,
+          label: `${qualityLabel}${sizeText}`,
+          link: href
+        });
       }
     });
 
-    if (downloadOptions.length === 0) {
-      return res.status(200).json({ 
-        success: false, 
-        stage: 'PARSING_FAILED', 
-        targetUrl: targetPageUrl, 
-        message: 'Movie page found, but download links could not be extracted.' 
-      });
-    }
-
     return res.status(200).json({ 
-      success: true, 
+      success: downloadOptions.length > 0, 
       targetUrl: targetPageUrl,
       options: downloadOptions 
     });
