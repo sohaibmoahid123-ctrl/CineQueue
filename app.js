@@ -1241,64 +1241,45 @@ window.showDownloadPage = async function(movieTitle) {
   const container = document.getElementById('moviesmod-container');
   if (!container) return;
 
-  // 1. Loading State
   container.innerHTML = `
-    <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #fff; text-align: center; border: 1px solid #232d45;">
-      <p style="margin: 0;">⏳ Searching available qualities for "${movieTitle}"...</p>
+    <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #fff; text-align: center;">
+      <p style="margin: 0;">⌛ Searching available links for "${movieTitle}"...</p>
     </div>
   `;
 
   try {
-const targetUrl = "https://moviesmods.best/3893670-soulm8te-2026-english-audio-web-dl-720p-480p-1080p.html";
-
-    // 2. Fetch available qualities
-    const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(targetUrl)}`);
+    const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(movieTitle)}`);
     const data = await res.json();
 
-    if (data.success && data.qualities && data.qualities.length > 0) {
-      let buttonsHtml = data.qualities.map(q => `
-        <button onclick="fetchFastLink('${targetUrl}', '${q}')" 
-                style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-           Download ${q}
+    if (data.success && data.options && data.options.length > 0) {
+      let buttonsHtml = data.options.map(opt => `
+        <button onclick="window.open('${opt.link}', '_blank')"
+                style="background: #10b981; color: white; border: none; padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; text-align: left; width: 100%;">
+          ⚡ Download ${opt.label}
         </button>
       `).join('');
 
       container.innerHTML = `
-        <div style="background: #161d2f; padding: 15px; border-radius: 8px; border: 1px solid #232d45;">
-          <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem;">Select Quality:</p>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div style="background: #161d2f; padding: 15px; border-radius: 8px; border: 1px solid #2e3856;">
+          <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem; margin-bottom: 12px;">Select Quality / Option:</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
             ${buttonsHtml}
           </div>
         </div>
       `;
     } else {
       container.innerHTML = `
-        <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #232d45;">
+        <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #ef4444;">
           ❌ No qualities found for this movie.
         </div>
       `;
     }
   } catch (err) {
     container.innerHTML = `
-      <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #232d45;">
-        ❌ Scraper error occurred. Please try again.
+      <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444;">
+        ❌ Connection error.
       </div>
     `;
   }
 };
 
-window.fetchFastLink = async function(targetUrl, quality) {
-  alert(`Fetching ${quality} link... Please wait.`);
-  try {
-    const res = await fetch(`/api/fast-link?url=${encodeURIComponent(targetUrl)}&quality=${quality}`);
-    const data = await res.json();
-
-    if (data.success && data.url) {
-      window.open(data.url, '_blank');
-    } else {
-      alert('Download link not found.');
-    }
-  } catch (err) {
-    alert('Error fetching download link.');
-  }
-};
