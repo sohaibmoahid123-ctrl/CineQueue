@@ -1,7 +1,6 @@
 const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
-  // مدیریت CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   
@@ -11,7 +10,7 @@ module.exports = async (req, res) => {
 
   const rawQuery = req.query.url;
   if (!rawQuery) {
-    return res.status(400).json({ error: 'اسم فیلم یا لینک لازمه' });
+    return res.status(400).json({ error: 'Movie title is required' });
   }
 
   const customHeaders = {
@@ -34,58 +33,36 @@ module.exports = async (req, res) => {
     let targetPageUrl = rawQuery;
 
     if (!rawQuery.startsWith('http')) {
+      // استفاده دقیق از همان کلمه‌ای که کاربر فرستاده (مثلا Soulm8te)
       const cleanTitle = rawQuery.split('(')[0].trim();
       const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
       
       const searchRes = await fetchWithTimeout(searchUrl, { headers: customHeaders });
-      
       if (!searchRes.ok) {
-        return res.status(200).json({ 
-          success: false, 
-          stage: 'SEARCH_FAILED',
-          message: `جستجو با خطا مواجه شد: ${searchRes.status}` 
-        });
+        return res.status(200).json({ success: false, message: `خطا در سرچ: ${searchRes.status}` });
       }
       
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
       
-      const selectors = [
-        'article .entry-title a',
-        '.post-item a[href*="moviesmods.best"]',
-        '.latest-post a[href*="moviesmods.best"]',
-        'h2.entry-title a',
-        'h3.entry-title a'
-      ];
-      
-      let matchedLink = null;
-      for (const selector of selectors) {
-        const link = $search(selector).first().attr('href');
-        if (link && link.includes('moviesmods.best')) {
-          matchedLink = link;
-          break;
-        }
-      }
+      // گرفتن لینک دقیق از تیتر پست‌های نتیجه سرچ
+      let matchedLink = $search('.entry-title a, h2.entry-title a, h3.entry-title a, article h2 a').first().attr('href');
 
       if (!matchedLink) {
         return res.status(200).json({ 
           success: false, 
           stage: 'SEARCH_FAILED',
-          message: `فیلم "${cleanTitle}" پیدا نشد` 
+          message: `فیلم "${cleanTitle}" در سرچ سایت پیدا نشد.` 
         });
       }
 
       targetPageUrl = matchedLink;
     }
 
+    // باز کردن صفحه اصلی فیلم
     const pageRes = await fetchWithTimeout(targetPageUrl, { headers: customHeaders });
-    
     if (!pageRes.ok) {
-      return res.status(200).json({
-        success: false,
-        stage: 'PAGE_FETCH_FAILED',
-        message: `خطا در دریافت صفحه: ${pageRes.status}`
-      });
+      return res.status(200).json({ success: false, message: `خطا در باز کردن صفحه: ${pageRes.status}` });
     }
 
     const pageHtml = await pageRes.text();
@@ -93,12 +70,11 @@ module.exports = async (req, res) => {
 
     const downloadOptions = [];
 
-    // بررسی دقیق‌تر دکمه‌های اصلی دانلود
+    // استخراج دکمه‌های دانلود CLICK HERE TO DOWNLOAD
     $('a[href^="http"]').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      // حذف لینک‌های تبلیغاتی، دامنه اصلی یا گروه‌های تلگرامی
       const isExternalDownload = href && 
         !href.includes('moviesmods.best') && 
         !href.includes('telegram') && 
@@ -108,7 +84,6 @@ module.exports = async (req, res) => {
                              text.toUpperCase().includes('DOWNLOAD');
 
       if (isExternalDownload && isDownloadText) {
-        // استخراج کیفیت از المان قبل از دکمه
         let qualityLabel = $(el).parent().prev().text().trim() || 
                            $(el).closest('p').prev('p').text().trim() || 
                            $(el).prev().text().trim();
@@ -117,11 +92,9 @@ module.exports = async (req, res) => {
           qualityLabel = `Option ${downloadOptions.length + 1}`;
         }
 
-        // استخراج حجم درون دکمه
         const sizeMatch = text.match(/\[(.*?)\]/);
         const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
 
-        // جلوگیری از ثبت لینک‌های تکراری
         const isDuplicate = downloadOptions.some(opt => opt.link === href);
         if (!isDuplicate) {
           downloadOptions.push({
@@ -141,9 +114,6 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ 
-      success: false,
-      error: error.message 
-    });
+    return res.status(500).json({ success: false, error: error.message });
   }
 };
