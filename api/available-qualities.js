@@ -8,81 +8,58 @@ module.exports = async (req, res) => {
 
   const rawQuery = req.query.url;
   if (!rawQuery) {
-    return res.status(400).json({ error: 'Movie title or URL is required' });
+    return res.status(400).json({ error: 'Movie title is required' });
   }
 
-  const browserHeaders = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Referer': 'https://moviesmods.best/'
-  };
-
-  const fetchWithTimeout = (url, options = {}, timeout = 10000) => {
-    return Promise.race([
-      fetch(url, options),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-    ]);
+  const fetchWithProxy = async (targetUrl) => {
+    // استفاده از پروکسی برای دور زدن محدودیت IP ورسل
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+    const response = await fetch(proxyUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+      }
+    });
+    return await response.text();
   };
 
   try {
     let targetPageUrl = rawQuery;
 
     if (!rawQuery.startsWith('http')) {
-      // ۱. آماده‌سازی عبارات سرچ متوالی (Fallback Terms)
-      const fullTitle = rawQuery.split('(')[0].trim(); // مثلا Evil Dead Burn 2026
-      const titleWithoutYear = fullTitle.replace(/\b(19|20)\d{2}\b/g, '').trim(); // مثلا Evil Dead Burn
-      const mainKeyword = titleWithoutYear.split(' ')[0]; // کلمه اول، مثلا Evil
-
-      const searchTerms = [fullTitle, titleWithoutYear, mainKeyword].filter(Boolean);
+      const cleanTitle = rawQuery.split('(')[0].trim();
+      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
+      
+      // دریافت HTML سرچ از طریق پروکسی
+      const searchHtml = await fetchWithProxy(searchUrl);
+      const $search = cheerio.load(searchHtml);
+      
       let matchedLink = null;
 
-      // ۲. تست سرچ‌ها به ترتیب تا پیدا شدن نتیجه
-      for (const term of searchTerms) {
-        if (matchedLink) break;
-
-        const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(term)}`;
-        try {
-          const searchRes = await fetchWithTimeout(searchUrl, { headers: browserHeaders });
-          if (!searchRes.ok) continue;
-
-          const searchHtml = await searchRes.text();
-          const $search = cheerio.load(searchHtml);
-
-          $search('article, .post-item, h2.entry-title, h3.entry-title').each((i, el) => {
-            const link = $(el).find('a').first().attr('href');
-            const cardText = $(el).text().toLowerCase();
-
-            // چک کردن اینکه آیا کارت مربوط به کلمه کلیدی ماست یا صفحه اصلی
-            if (link && link.includes('moviesmods.best') && !link.endsWith('moviesmods.best/')) {
-              const termWords = titleWithoutYear.toLowerCase().split(' ');
-              const matchesWord = termWords.some(w => w.length > 2 && cardText.includes(w));
-
-              if (matchesWord) {
-                matchedLink = link;
-                return false;
-              }
-            }
-          });
-        } catch (e) {
-          // ادامه به عبارت بعدی در صورت تایم‌اوت
+      $search('article, .post-item, h2.entry-title, h3.entry-title').each((i, el) => {
+        const link = $(el).find('a').first().attr('href');
+        if (link && link.includes('moviesmods.best') && !link.endsWith('moviesmods.best/')) {
+          matchedLink = link;
+          return false;
         }
+      });
+
+      if (!matchedLink) {
+        matchedLink = $search('.entry-title a').first().attr('href');
       }
 
       if (!matchedLink) {
         return res.status(200).json({ 
           success: false, 
           stage: 'NOT_FOUND',
-          message: `No available links found for "${fullTitle}".` 
+          message: `No results found for "${cleanTitle}".` 
         });
       }
 
       targetPageUrl = matchedLink;
     }
 
-    // ۳. باز کردن صفحه پست نهایی و استخراج لینک‌ها
-    const pageRes = await fetchWithTimeout(targetPageUrl, { headers: browserHeaders });
-    const pageHtml = await pageRes.text();
+    // دریافت HTML صفحه فیلم از طریق پروکسی
+    const pageHtml = await fetchWithProxy(targetPageUrl);
     const $ = cheerio.load(pageHtml);
 
     const downloadOptions = [];
@@ -91,7 +68,7 @@ module.exports = async (req, res) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      const isExternal = href && !href.includes('moviesmods.best') && !href.includes('telegram') && !href.includes('t.me');
+      const isExternal = href && !href.includes('moviesmods.best') && !href.includes('telegram');
       const isDownloadBtn = text.toUpperCase().includes('CLICK HERE TO DOWNLOAD') || text.toUpperCase().includes('DOWNLOAD');
 
       if (isExternal && isDownloadBtn) {
@@ -126,7 +103,8 @@ module.exports = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ 
       success: false,
-      error: error.message || 'Server error' 
+      error: error.message 
     });
   }
 };
+
