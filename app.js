@@ -1249,7 +1249,7 @@ window.showDownloadPage = async function(movieTitle) {
   `;
 
   try {
-    const targetUrl = `https://moviesmods.one/?s=${encodeURIComponent(movieTitle)}`;
+const targetUrl = movieTitle;
 
     // 2. Fetch available qualities
     const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(targetUrl)}`);
