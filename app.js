@@ -1268,18 +1268,21 @@ window.showDownloadPage = async function(movieTitle) {
         </div>
       `;
     } else {
+      // نمایش علت دقیق عدم دریافت کیفیت‌ها
+      const errorMsg = data.message || 'No qualities found for this movie.';
+      const errorStage = data.stage ? `[Stage: ${data.stage}] ` : '';
+      
       container.innerHTML = `
         <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #ef4444;">
-          ❌ No qualities found for this movie.
+          ❌ ${errorStage}${errorMsg}
         </div>
       `;
     }
   } catch (err) {
     container.innerHTML = `
       <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444;">
-        ❌ Connection error.
+        ❌ Connection error: ${err.message}
       </div>
     `;
   }
 };
-
