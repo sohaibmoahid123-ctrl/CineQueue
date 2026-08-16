@@ -1,10 +1,10 @@
 const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
-  const movieTitle = req.query.url;
+  const query = req.query.url; // می‌تواند IMDb ID یا عنوان فیلم باشد
 
-  if (!movieTitle) {
-    return res.status(400).json({ error: 'Movie title is required' });
+  if (!query) {
+    return res.status(400).json({ error: 'Query param is required' });
   }
 
   const customHeaders = {
@@ -15,27 +15,24 @@ module.exports = async (req, res) => {
   };
 
   try {
-    let targetPageUrl = movieTitle;
+    let targetPageUrl = query;
 
-    if (!movieTitle.startsWith('http')) {
-      const cleanSearchQuery = movieTitle
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/[^a-zA-Z0-9 ]/g, " ")
-        .trim();
-
-      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanSearchQuery)}`;
+    if (!query.startsWith('http')) {
+      // سرچ مستقیم ID یا عنوان
+      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(query)}`;
       
       const searchRes = await fetch(searchUrl, { headers: customHeaders });
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
       
-      const foundLink = $search('article h2 a, .post-title a, h2.entry-title a, h3 a, .entry-title a').first().attr('href');
+      // گرفتن اولین نتیجه معتبر که پست فیلم باشد
+      const foundLink = $search('article h2 a, .post-title a, h2.entry-title a, h3 a').first().attr('href');
 
       if (!foundLink) {
         return res.status(200).json({ 
           success: false, 
           stage: 'SEARCH_FAILED', 
-          message: `Could not find "${cleanSearchQuery}" on target site.` 
+          message: `No movie found on target site for ID/Title: "${query}"` 
         });
       }
 
@@ -48,16 +45,14 @@ module.exports = async (req, res) => {
 
     const downloadOptions = [];
 
-    // استخراج بر اساس تمام لینک‌های موجود در کلاس‌های دکمه یا لینک‌های مربوط به دانلود
+    // استخراج دکمه‌های لینک دانلود
     $('a.maxbutton, a[href*="nexdrive"], a[href*="download"], .entry-content a').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      // فیلتر کردن لینک‌های معتبر دانلود
       if (href.startsWith('http') && !href.includes('moviesmods.best') && !href.includes('telegram')) {
-        
-        // استخراج عنوان کیفیت از لایه‌های متنی بالای دکمه
         let parentText = $(el).parent().prev().text().trim() || $(el).parent().prev('p, h3, h4').text().trim();
+        
         if (!parentText || parentText.length > 50) {
           parentText = $(el).closest('p, div').prev().text().trim();
         }
@@ -66,11 +61,9 @@ module.exports = async (req, res) => {
           parentText = `Option ${downloadOptions.length + 1}`;
         }
 
-        // استخراج حجم از متن دکمه یا متن همراه آن
         const sizeMatch = text.match(/\[(.*?)\]/);
         const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
 
-        // جلوگیری از افزودن لینک‌های تکراری
         const isDuplicate = downloadOptions.some(opt => opt.link === href);
         if (!isDuplicate) {
           downloadOptions.push({
@@ -87,7 +80,7 @@ module.exports = async (req, res) => {
         success: false, 
         stage: 'PARSING_FAILED', 
         targetUrl: targetPageUrl, 
-        message: 'Movie page found, but no download buttons matched.' 
+        message: 'Movie page found, but no download links matched.' 
       });
     }
 
