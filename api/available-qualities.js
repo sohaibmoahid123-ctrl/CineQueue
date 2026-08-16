@@ -1,10 +1,10 @@
 const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
-  const query = req.query.url; // می‌تواند IMDb ID یا عنوان فیلم باشد
+  const rawQuery = req.query.url;
 
-  if (!query) {
-    return res.status(400).json({ error: 'Query param is required' });
+  if (!rawQuery) {
+    return res.status(400).json({ error: 'Movie query is required' });
   }
 
   const customHeaders = {
@@ -15,37 +15,58 @@ module.exports = async (req, res) => {
   };
 
   try {
-    let targetPageUrl = query;
+    let targetPageUrl = rawQuery;
 
-    if (!query.startsWith('http')) {
-      // سرچ مستقیم ID یا عنوان
-      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(query)}`;
+    if (!rawQuery.startsWith('http')) {
+      // استخراج کلمه اصلی فیلم (مثلاً از Soulm8te کلمه Soul یا Soulm8te)
+      const cleanTitle = rawQuery.split('(')[0].trim();
+      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanTitle)}`;
       
       const searchRes = await fetch(searchUrl, { headers: customHeaders });
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
       
-      // گرفتن اولین نتیجه معتبر که پست فیلم باشد
-      const foundLink = $search('article h2 a, .post-title a, h2.entry-title a, h3 a').first().attr('href');
+      let matchedLink = null;
+      
+      // کلمات کلیدی اصلی اسم فیلم برای تطبیق
+      const searchKeywords = cleanTitle.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(' ').filter(w => w.length > 2);
 
-      if (!foundLink) {
+      // بررسی تمام پست‌های موجود در صفحه نتایج
+      $search('article, .post-item, .entry-title').each((i, el) => {
+        const linkEl = $(el).find('a').first();
+        const postTitle = linkEl.text().toLowerCase();
+        const href = linkEl.attr('href');
+
+        if (href) {
+          // بررسی اینکه آیا تمام کلمات کلیدی فیلم در تیتر پست وجود دارند یا خیر
+          const isMatch = searchKeywords.every(word => postTitle.includes(word));
+          if (isMatch) {
+            matchedLink = href;
+            return false; // پیدا شد، خروج از حلقه
+          }
+        }
+      });
+
+      // اگر هیچ پستی دقیقاً با اسم فیلم تطابق نداشت، پست‌های نامربوط را باز نکن!
+      if (!matchedLink) {
         return res.status(200).json({ 
           success: false, 
-          stage: 'SEARCH_FAILED', 
-          message: `No movie found on target site for ID/Title: "${query}"` 
+          stage: 'NOT_FOUND_ON_TARGET', 
+          message: `The movie "${cleanTitle}" is not available on the download provider yet.` 
         });
       }
 
-      targetPageUrl = foundLink;
+      targetPageUrl = matchedLink;
     }
 
+    // باز کردن صفحه اصلی خودِ فیلم
     const pageRes = await fetch(targetPageUrl, { headers: customHeaders });
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
     const downloadOptions = [];
 
-    // استخراج دکمه‌های لینک دانلود
+    // استخراج لینک‌های دانلود
     $('a.maxbutton, a[href*="nexdrive"], a[href*="download"], .entry-content a').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
@@ -80,7 +101,7 @@ module.exports = async (req, res) => {
         success: false, 
         stage: 'PARSING_FAILED', 
         targetUrl: targetPageUrl, 
-        message: 'Movie page found, but no download links matched.' 
+        message: 'Movie page found, but download links could not be extracted.' 
       });
     }
 
