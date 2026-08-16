@@ -1236,3 +1236,69 @@ window.changeServer = function(serverUrl, btnElement) {
     btnElement.classList.add('active');
   }
 };
+// --- Scraper Functions ---
+window.showDownloadPage = async function(movieTitle) {
+  const container = document.getElementById('moviesmod-container');
+  if (!container) return;
+
+  // 1. Loading State
+  container.innerHTML = `
+    <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #fff; text-align: center; border: 1px solid #232d45;">
+      <p style="margin: 0;">⏳ Searching available qualities for "${movieTitle}"...</p>
+    </div>
+  `;
+
+  try {
+    const targetUrl = `https://moviesmods.one/?s=${encodeURIComponent(movieTitle)}`;
+
+    // 2. Fetch available qualities
+    const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(targetUrl)}`);
+    const data = await res.json();
+
+    if (data.success && data.qualities && data.qualities.length > 0) {
+      let buttonsHtml = data.qualities.map(q => `
+        <button onclick="fetchFastLink('${targetUrl}', '${q}')" 
+                style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+           Download ${q}
+        </button>
+      `).join('');
+
+      container.innerHTML = `
+        <div style="background: #161d2f; padding: 15px; border-radius: 8px; border: 1px solid #232d45;">
+          <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem;">Select Quality:</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            ${buttonsHtml}
+          </div>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #232d45;">
+          ❌ No qualities found for this movie.
+        </div>
+      `;
+    }
+  } catch (err) {
+    container.innerHTML = `
+      <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #232d45;">
+        ❌ Scraper error occurred. Please try again.
+      </div>
+    `;
+  }
+};
+
+window.fetchFastLink = async function(targetUrl, quality) {
+  alert(`Fetching ${quality} link... Please wait.`);
+  try {
+    const res = await fetch(`/api/fast-link?url=${encodeURIComponent(targetUrl)}&quality=${quality}`);
+    const data = await res.json();
+
+    if (data.success && data.url) {
+      window.open(data.url, '_blank');
+    } else {
+      alert('Download link not found.');
+    }
+  } catch (err) {
+    alert('Error fetching download link.');
+  }
+};
