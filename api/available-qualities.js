@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
-  const movieTitle = req.query.url; // عنوان فیلم ورودی از CineQueue
+  const movieTitle = req.query.url;
 
   if (!movieTitle) {
     return res.status(400).json({ error: 'Movie title is required' });
@@ -17,63 +17,72 @@ module.exports = async (req, res) => {
   try {
     let targetPageUrl = movieTitle;
 
-    // اگر ورودی لینک مستقیم نبود، ابتدا در سایت سرچ کن
     if (!movieTitle.startsWith('http')) {
-      // پاک‌سازی عنوان فیلم برای سرچ بهتر (حذف سال و کاراکترهای اضافی)
-      const cleanSearchQuery = movieTitle.split('(')[0].replace(/[^a-zA-Z0-9 ]/g, "").trim();
+      const cleanSearchQuery = movieTitle
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/[^a-zA-Z0-9 ]/g, " ")
+        .trim();
+
       const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(cleanSearchQuery)}`;
       
       const searchRes = await fetch(searchUrl, { headers: customHeaders });
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
       
-      // پیدا کردن اولین لینک پست فیلم از نتایج سرچ
-      const foundLink = $search('article h2 a, .post-title a, h2.entry-title a, h3 a').first().attr('href');
+      const foundLink = $search('article h2 a, .post-title a, h2.entry-title a, h3 a, .entry-title a').first().attr('href');
 
       if (!foundLink) {
-        // اشکال‌یابی: سرچ نتوانست فیلم را پیدا کند
         return res.status(200).json({ 
           success: false, 
           stage: 'SEARCH_FAILED', 
-          message: `Search returned no results for "${cleanSearchQuery}"` 
+          message: `Could not find "${cleanSearchQuery}" on target site.` 
         });
       }
 
       targetPageUrl = foundLink;
     }
 
-    // دریافت HTML صفحه اختصاصی فیلم
     const pageRes = await fetch(targetPageUrl, { headers: customHeaders });
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
     const downloadOptions = [];
 
-    // پیمایش و استخراج تمام دکمه‌های دانلود موجود در صفحه
-    $('a').each((i, el) => {
+    // استخراج بر اساس تمام لینک‌های موجود در کلاس‌های دکمه یا لینک‌های مربوط به دانلود
+    $('a.maxbutton, a[href*="nexdrive"], a[href*="download"], .entry-content a').each((i, el) => {
       const href = $(el).attr('href') || '';
       const text = $(el).text().trim();
 
-      if (href.startsWith('http') && (text.includes('CLICK HERE TO DOWNLOAD') || text.includes('DOWNLOAD'))) {
-        let qualityName = $(el).parent().prev().text().trim() || $(el).prev().text().trim();
+      // فیلتر کردن لینک‌های معتبر دانلود
+      if (href.startsWith('http') && !href.includes('moviesmods.best') && !href.includes('telegram')) {
         
-        if (!qualityName || qualityName.length > 60) {
-          qualityName = `Option ${downloadOptions.length + 1}`;
+        // استخراج عنوان کیفیت از لایه‌های متنی بالای دکمه
+        let parentText = $(el).parent().prev().text().trim() || $(el).parent().prev('p, h3, h4').text().trim();
+        if (!parentText || parentText.length > 50) {
+          parentText = $(el).closest('p, div').prev().text().trim();
         }
 
+        if (!parentText || parentText.length > 50) {
+          parentText = `Option ${downloadOptions.length + 1}`;
+        }
+
+        // استخراج حجم از متن دکمه یا متن همراه آن
         const sizeMatch = text.match(/\[(.*?)\]/);
         const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
 
-        downloadOptions.push({
-          id: downloadOptions.length,
-          label: `${qualityName}${sizeText}`,
-          link: href
-        });
+        // جلوگیری از افزودن لینک‌های تکراری
+        const isDuplicate = downloadOptions.some(opt => opt.link === href);
+        if (!isDuplicate) {
+          downloadOptions.push({
+            id: downloadOptions.length,
+            label: `${parentText}${sizeText}`,
+            link: href
+          });
+        }
       }
     });
 
     if (downloadOptions.length === 0) {
-      // اشکال‌یابی: صفحه فیلم پیدا شد اما دکمه‌ها خوانده نشدند (تغییر ساختار HTML)
       return res.status(200).json({ 
         success: false, 
         stage: 'PARSING_FAILED', 
