@@ -10,64 +10,59 @@ module.exports = async (req, res) => {
   try {
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
       'Referer': 'https://moviesmods.best/'
     };
 
     if (!targetUrl.startsWith('http')) {
-      targetUrl = `https://moviesmods.best/?s=${encodeURIComponent(targetUrl)}`;
-    }
-
-    let response = await fetch(targetUrl, { headers });
-    let html = await response.text();
-    let $ = cheerio.load(html);
-
-    // اگر صفحه سرچ بود، وارد اولين پست بشو
-    if (targetUrl.includes('/?s=')) {
-      const firstLink = $('article a, .post-title a, h2 a, h3 a').first().attr('href');
+      const searchUrl = `https://moviesmods.best/?s=${encodeURIComponent(targetUrl)}`;
+      const searchRes = await fetch(searchUrl, { headers });
+      const searchHtml = await searchRes.text();
+      const $search = cheerio.load(searchHtml);
+      
+      const firstLink = $search('article a, .post-title a, h2 a, h3 a').first().attr('href');
       if (firstLink) {
         targetUrl = firstLink;
-        response = await fetch(targetUrl, { headers });
-        html = await response.text();
-        $ = cheerio.load(html);
+      } else {
+        return res.status(200).json({ success: false, options: [], message: 'Movie not found' });
       }
     }
 
-    const availableQualities = [];
+    const response = await fetch(targetUrl, { headers });
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-    // بررسی تمام تک‌های a موجود در کل صفحه بدون محدود کردن به کلاس خاص
-    $('a').each((_, el) => {
+    const downloadOptions = [];
+
+    // پیمایش تمام دکمه‌های دانلود موجود در صفحه
+    $('a').each((index, el) => {
       const href = $(el).attr('href') || '';
-      const text = $(el).text() || '';
-      const parentText = $(el).parent().text() || '';
-      const fullContext = (text + ' ' + parentText + ' ' + href).toLowerCase();
+      const btnText = $(el).text().trim();
 
-      if (fullContext.includes('1080p') && !availableQualities.includes('1080p')) {
-        availableQualities.push('1080p');
-      }
-      if (fullContext.includes('720p') && !availableQualities.includes('720p')) {
-        availableQualities.push('720p');
-      }
-      if (fullContext.includes('480p') && !availableQualities.includes('480p')) {
-        availableQualities.push('480p');
-      }
-      if ((fullContext.includes('2160p') || fullContext.includes('4k')) && !availableQualities.includes('2160p')) {
-        availableQualities.push('2160p');
+      if (href.startsWith('http') && (btnText.includes('CLICK HERE TO DOWNLOAD') || btnText.includes('DOWNLOAD'))) {
+        // خواندن عنوان کیفیت از متن بالای دکمه
+        let qualityTitle = $(el).parent().prev().text().trim() || $(el).prev().text().trim();
+        
+        // اگر عنوان بالای دکمه پیدا نشد، از متن خود دکمه استفاده کن
+        if (!qualityTitle || qualityTitle.length > 50) {
+          qualityTitle = 'Download Option ' + (downloadOptions.length + 1);
+        }
+
+        // استخراج حجم داخل دکمه (مثلاً [450MB])
+        const sizeMatch = btnText.match(/\[(.*?)\]/);
+        const sizeText = sizeMatch ? ` [${sizeMatch[1]}]` : '';
+
+        downloadOptions.push({
+          id: downloadOptions.length, // شناسه عددی دقیق برای هر دکمه
+          label: `${qualityTitle}${sizeText}`,
+          link: href
+        });
       }
     });
 
-    // اگر باز هم هیچی پیدا نشد ولی لینک‌هایی وجود داشت، حداقل کیفیت‌های عمومی را خروجی بده
-    if (availableQualities.length === 0 && html.length > 2000) {
-      if (html.includes('1080p')) availableQualities.push('1080p');
-      if (html.includes('720p')) availableQualities.push('720p');
-      if (html.includes('480p')) availableQualities.push('480p');
-    }
-
     return res.status(200).json({ 
-      success: availableQualities.length > 0, 
-      qualities: availableQualities,
-      htmlLength: html.length 
+      success: downloadOptions.length > 0, 
+      options: downloadOptions,
+      movieUrl: targetUrl 
     });
 
   } catch (error) {
