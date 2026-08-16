@@ -1249,7 +1249,7 @@ window.showDownloadPage = async function(movieTitle) {
   `;
 
   try {
-const targetUrl = movieTitle;
+const targetUrl = "https://moviesmods.best/3893670-soulm8te-2026-english-audio-web-dl-720p-480p-1080p.html";
 
     // 2. Fetch available qualities
     const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(targetUrl)}`);
