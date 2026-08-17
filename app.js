@@ -922,7 +922,7 @@ ${isTv ? `
     <div id="moviesmod-container" style="margin-top: 12px;"></div>
   </div>
 </div>
-` : `
+
         ` : `
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
           <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color:#fff; font-size:1rem;">
