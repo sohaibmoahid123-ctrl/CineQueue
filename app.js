@@ -883,26 +883,46 @@ async function renderMovieDetail(id) {
           </div>
         </div>
 
-        ${isTv ? `
-        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleDownloadList()">
-            <h3 style="display: flex; align-items: center; gap: 8px; margin:0; font-size:1rem; color:#fff;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download Seasons
-            </h3>
-            <span id="download-toggle-icon" style="color:#fff; font-size:1.2rem;">▼</span>
-          </div>
-          ${buildSeasonDownloadList(seasonsInfo, movie.id)}
+${isTv ? `
+<div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
+  
+  <!-- بخش Server 1 / Server 2 (بدون تغییر ظاهر) -->
+  <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleDownloadList()">
+    <h3 style="display: flex; align-items: center; gap: 8px; margin:0; font-size:1rem; color:#fff;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Seasons
+    </h3>
+    <span id="download-toggle-icon" style="color:#fff; font-size:1.2rem;">▼</span>
+  </div>
+  ${buildSeasonDownloadList(seasonsInfo, movie.id)}
 
-          <!-- اسکرپر MoviesMod برای سریال (بدون تغییر ظاهر دکمه‌های قبلی) -->
-          <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid #2e3856;">
-            <button onclick="showDownloadPage('${movie.title.replace(/'/g, "\\'")}', true)" 
-                    style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">
-              📥 FIND LINKS (MoviesMod)
-            </button>
-            <div id="moviesmod-container" style="margin-top: 12px;"></div>
-          </div>
-        </div>
+  <!-- بخش MoviesMod با انتخاب فصل -->
+  <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid #2e3856;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+      <span style="color: #9ca3af; font-size: 0.9rem; font-weight: 500;">MoviesMod Links:</span>
+      
+      <select id="moviesmod-season-select" 
+              style="background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 6px; padding: 6px 12px; font-size: 0.85rem; min-width: 120px;">
+        ${seasonsInfo.map(s => 
+          `<option value="${s.season_number}">Season ${s.season_number}</option>`
+        ).join('')}
+      </select>
+    </div>
+
+    <button onclick="
+        const seasonSelect = document.getElementById('moviesmod-season-select');
+        const selectedSeason = seasonSelect ? seasonSelect.value : 1;
+        const searchTitle = '${movie.title.replace(/'/g, "\\'")} Season ' + selectedSeason;
+        showDownloadPage(searchTitle, true, selectedSeason);
+      " 
+      style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">
+      📥 FIND LINKS (Selected Season)
+    </button>
+
+    <div id="moviesmod-container" style="margin-top: 12px;"></div>
+  </div>
+</div>
+` : `
         ` : `
         <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
           <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color:#fff; font-size:1rem;">
