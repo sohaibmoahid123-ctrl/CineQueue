@@ -16,6 +16,132 @@ let allMovies      = [];
 let featuredMovies = [];
 let heroIndex      = 0;
 let heroTimer      = null;
+// ====================== کمکی‌ها ======================
+function hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return bytes;
+}
+
+function allocAndWrite(wasmExports, allocFn, data) {
+  const ptr = wasmExports[allocFn](data.length);
+  new Uint8Array(wasmExports.memory.buffer).set(data, ptr);
+  return { ptr, len: data.length };
+}
+
+// ====================== لود کردن WASM ======================
+async function loadMakimaDL() {
+  const manifest = await fetch("https://www.1shows.org/makimaDL-manifest.json", {
+    cache: "no-store"
+  }).then(r => r.json());
+
+  const wasmBuffer = await fetch("https://www.1shows.org" + manifest.url, {
+    cache: "force-cache"
+  }).then(r => r.arrayBuffer());
+
+  const { instance } = await WebAssembly.instantiate(wasmBuffer, {
+    env: {
+      abort: () => { throw new Error("wasm abort"); }
+    }
+  });
+
+  return {
+    exports: instance.exports,
+    map: manifest.exports   // { alloc: "_h7dx", decryptDownload: "_1a0r", reset: "_zXjs", ... }
+  };
+}
+
+// ====================== رمزگشایی ======================
+async function decryptDownload(encrypted, token) {
+  const { exports, map } = await loadMakimaDL();
+
+  const tokenBytes = hexToBytes(token);
+  const ivBytes    = hexToBytes(encrypted.iv);
+  const ctBytes    = hexToBytes(encrypted.ct);
+  const tagBytes   = hexToBytes(encrypted.tag);
+
+  // تخصیص حافظه
+  const tokenMem = allocAndWrite(exports, map.alloc, tokenBytes);
+  const ivMem    = allocAndWrite(exports, map.alloc, ivBytes);
+  const ctMem    = allocAndWrite(exports, map.alloc, ctBytes);
+  const tagMem   = allocAndWrite(exports, map.alloc, tagBytes);
+
+  // بافر خروجی (هم‌اندازه ciphertext)
+  const outPtr = exports[map.alloc](ctBytes.length);
+
+  // فراخوانی تابع اصلی (۹ پارامتر)
+  const decryptedLen = exports[map.decryptDownload](
+    tokenMem.ptr, tokenMem.len,   // 1, 2
+    ivMem.ptr,    ivMem.len,      // 3, 4
+    ctMem.ptr,    ctMem.len,      // 5, 6
+    tagMem.ptr,   tagMem.len,     // 7, 8
+    outPtr                        // 9
+  );
+
+  if (decryptedLen < 0) {
+    exports[map.reset]();
+    throw new Error("makimaDL decrypt failed");
+  }
+
+  // خواندن نتیجه
+  const result = new Uint8Array(exports.memory.buffer, outPtr, decryptedLen);
+  const jsonStr = new TextDecoder().decode(result);
+
+  exports[map.reset](); // پاک کردن حافظه
+
+  return JSON.parse(jsonStr);
+}
+
+// ====================== گرفتن لینک دانلود ======================
+async function getDownloadSources(path) {
+  // 1. گرفتن توکن
+  const tokenRes = await fetch("https://api.viduki.net/download-token", {
+    cache: "no-store"
+  });
+  if (!tokenRes.ok) throw new Error("token fetch failed");
+  const { token } = await tokenRes.json();
+
+  // 2. گرفتن داده رمزشده
+  const dataRes = await fetch("https://api.viduki.net" + path, {
+    headers: {
+      "x-download-token": token
+    },
+    cache: "no-store"
+  });
+
+  const data = await dataRes.json();
+
+  if (dataRes.status === 404 || data?.error) {
+    return { sources: [] };
+  }
+
+  if (!data || typeof data.ct !== "string") {
+    throw new Error("unexpected download response shape");
+  }
+
+  // 3. رمزگشایی
+  return await decryptDownload(data, token);
+}
+
+// ====================== مثال استفاده ======================
+(async () => {
+  try {
+    // مثال: فیلم با آیدی مشخص
+    const result = await getDownloadSources("/download/movie/12345");
+    
+    console.log("نتیجه نهایی:");
+    console.log(result);
+    
+    // لینک‌های واقعی داخل result.sources هستن
+    result.sources?.forEach((src, i) => {
+      console.log(`لینک ${i + 1}:`, src.url);
+    });
+  } catch (err) {
+    console.error("خطا:", err);
+  }
+})();
 
 // ========== MOVIESMOD DOWNLOAD SCRAPER / LINK GENERATOR ==========
 function getMoviesModLink(title, isTv = false, season = null, episode = null) {
