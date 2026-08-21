@@ -1047,28 +1047,26 @@ ${isTv ? `
 
     <div id="moviesmod-container" style="margin-top: 12px;"></div>
   </div>
-  <!-- ================= SERVER 2 (NEW DECRYPTER) ================= -->
-<div style="margin-top: 20px; padding: 15px; background: #1a233a; border-radius: 10px; border: 1px solid #2e3856;">
-  <h4 style="margin: 0 0 10px 0; color: #4ecdc4;">📥 دانلود مستقیم (سرور اختصاصی دوم)</h4>
-  
+<!-- Server 2 (New Decrypter) -->
+<div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid #2e3856;">
   <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-    <!-- انتخاب فصل -->
+    <!-- Season Select -->
     <select id="new-season-select" style="flex: 1; background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 8px; padding: 8px;">
-      ${seasonsInfo.map(s => `<option value="${s.season_number}">فصل ${s.season_number}</option>`).join('')}
+      ${seasonsInfo.map(s => `<option value="${s.season_number}">Season ${s.season_number}</option>`).join('')}
     </select>
     
-    <!-- انتخاب قسمت -->
+    <!-- Episode Select -->
     <select id="new-episode-select" style="flex: 1; background: #232d45; color: #fff; border: 1px solid #324163; border-radius: 8px; padding: 8px;">
-      ${Array.from({length: 24}, (_, i) => `<option value="${i + 1}">قسمت ${i + 1}</option>`).join('')}
+      ${Array.from({length: 24}, (_, i) => `<option value="${i + 1}">Episode ${i + 1}</option>`).join('')}
     </select>
   </div>
 
-  <!-- دکمه جدید -->
+  <!-- Download Button -->
   <button id="new-server-btn" onclick="handleNewServerDownload('${movie.id}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-    دریافت لینک‌های این قسمت
+    📩 FIND LINKS (Server 2)
   </button>
 
-  <!-- نتایج این دکمه جدید -->
+  <!-- Links Output Container -->
   <div id="new-server-results" style="margin-top: 12px;"></div>
 </div>
 
