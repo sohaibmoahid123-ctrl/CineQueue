@@ -1373,3 +1373,35 @@ window.changeServer = function(serverUrl, btnElement) {
     btnElement.classList.add('active');
   }
 };
+
+// ================= SERVER 2 HANDLER =================
+async function handleNewServerDownload(showId) {
+  const season = document.getElementById('new-season-select').value;
+  const episode = document.getElementById('new-episode-select').value;
+  const resultsDiv = document.getElementById('new-server-results');
+  const btn = document.getElementById('new-server-btn');
+
+  resultsDiv.innerHTML = '<p style="color: #aaa; text-align: center;">⏳ Decrypting download links...</p>';
+  btn.disabled = true;
+
+  try {
+    const path = `/download/tv/${showId}/${season}/${episode}`;
+    const sources = await window.get1ShowsDownloadLinks(path);
+
+    if (sources && sources.length > 0) {
+      resultsDiv.innerHTML = sources.map(src => `
+        <a href="${src.url}" target="_blank" rel="noopener noreferrer" 
+           style="display: block; background: #161d2f; color: #2a9d8f; text-align: center; padding: 10px; margin-top: 8px; border-radius: 6px; text-decoration: none; font-weight: bold; border: 1px solid #324163;">
+           💾 Download ${src.quality || 'HD'}
+        </a>
+      `).join('');
+    } else {
+      resultsDiv.innerHTML = '<p style="color: #ff6b6b; text-align: center;">No links found for this episode.</p>';
+    }
+  } catch (err) {
+    console.error(err);
+    resultsDiv.innerHTML = '<p style="color: #ff6b6b; text-align: center;">Failed to fetch links from Server 2.</p>';
+  } finally {
+    btn.disabled = false;
+  }
+}
