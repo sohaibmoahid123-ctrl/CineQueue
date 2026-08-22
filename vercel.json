@@ -13,6 +13,10 @@
     { "source": "/api/movies", "destination": "/api/movies/index.json" },
     { "source": "/api/genres", "destination": "/api/genres/index.json" },
     { "source": "/api/watchlist", "destination": "/api/watchlist/index.json" },
+    
+    { "source": "/api-viduki/:path*", "destination": "https://api.viduki.net/:path*" },
+    { "source": "/api-1shows/:path*", "destination": "https://www.1shows.org/:path*" },
+
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
