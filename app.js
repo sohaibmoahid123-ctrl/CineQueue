@@ -79,12 +79,13 @@ async function decryptDownload(encrypted, token) {
 }
 
 async function getDownloadSources(path) {
-  const tokenRes = await fetch("/api-viduki/download-token", { cache: "no-store" });
+  // ۱. گرفتن توکن از API جدید خودمان
+  const tokenRes = await fetch("/api/viduki-token", { cache: "no-store" });
   if (!tokenRes.ok) throw new Error("token fetch failed");
   const { token } = await tokenRes.json();
 
-  const dataRes = await fetch("/api-viduki" + path, {
-    headers: { "x-download-token": token },
+  // ۲. گرفتن داده رمزشده از API جدید خودمان
+  const dataRes = await fetch(`/api/viduki-download?path=${encodeURIComponent(path)}&token=${token}`, {
     cache: "no-store"
   });
 
@@ -93,8 +94,10 @@ async function getDownloadSources(path) {
   if (dataRes.status === 404 || data?.error) return { sources: [] };
   if (!data || typeof data.ct !== "string") throw new Error("unexpected download response shape");
 
+  // ۳. رمزگشایی با WASM
   return await decryptDownload(data, token);
 }
+
 
 // ========== MOVIESMOD DOWNLOAD SCRAPER / LINK GENERATOR ==========
 function getMoviesModLink(title, isTv = false, season = null, episode = null) {
