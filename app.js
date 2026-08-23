@@ -1246,3 +1246,4 @@ window.changeServer = function(serverUrl, btnElement) {
   }
 };
 
+window.handleNewServerDownload = handleNewServerDownload;
