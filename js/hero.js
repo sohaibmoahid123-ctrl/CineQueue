@@ -57,7 +57,7 @@ function jumpHero(i) {
   }, 7000);
 }
 
-// ===== این خطوط آخر را حتماً اضافه کن =====
+// ===== این خطوط آخر را حتماً اضافه کن ===== //
 export function startHero() { ... }
 export function stopHeroTimer() { ... }
 export function paintHero() { ... }
