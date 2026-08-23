@@ -58,6 +58,10 @@ function jumpHero(i) {
 }
 
 // ===== این خطوط آخر را حتماً اضافه کن =====
+export function startHero() { ... }
+export function stopHeroTimer() { ... }
+export function paintHero() { ... }
+
 window.startHero = startHero;
 window.stopHeroTimer = stopHeroTimer;
 window.paintHero = paintHero;
