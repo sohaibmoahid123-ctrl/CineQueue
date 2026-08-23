@@ -1,26 +1,26 @@
 // ============================================================
-// hero.js - اسلایدر هیرو
+// CineQueue — hero.js
 // ============================================================
 
-let heroIndex = 0;
+let featuredMovies = [];
 let heroTimer = null;
+let heroIndex = 0;
 
-function startHero() {
-  heroIndex = 0;
-  paintHero();
-  heroTimer = setInterval(() => {
-    heroIndex = (heroIndex + 1) % featuredMovies.length;
-    paintHero();
-  }, 7000);
+export function setHeroMovies(movies) {
+  featuredMovies = movies || [];
 }
 
-function stopHeroTimer() {
-  if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+export function stopHeroTimer() {
+  if (heroTimer) {
+    clearInterval(heroTimer);
+    heroTimer = null;
+  }
 }
 
-function paintHero() {
+export function paintHero() {
   const section = document.getElementById('hero-section');
   if (!section || !featuredMovies.length) return;
+
   const m = featuredMovies[heroIndex];
   section.innerHTML = `
     <div class="hero-backdrop" style="background-image:url('${m.posterUrl}')">
@@ -40,14 +40,14 @@ function paintHero() {
         </div>
       </div>
       <div class="hero-dots">
-        ${featuredMovies.map((_, i) =>
-          `<span class="hero-dot ${i === heroIndex ? 'active' : ''}" onclick="jumpHero(${i})"></span>`
-        ).join('')}
+        ${featuredMovies.map((_, i) => `
+          <span class="hero-dot ${i === heroIndex ? 'active' : ''}" onclick="jumpHero(${i})"></span>
+        `).join('')}
       </div>
     </div>`;
 }
 
-function jumpHero(i) {
+export function jumpHero(i) {
   stopHeroTimer();
   heroIndex = i;
   paintHero();
@@ -57,11 +57,22 @@ function jumpHero(i) {
   }, 7000);
 }
 
-// ===== این خطوط آخر را حتماً اضافه کن ===== //
-export function startHero() { ... }
-export function stopHeroTimer() { ... }
-export function paintHero() { ... }
+export function startHero(movies) {
+  if (movies && movies.length) {
+    setHeroMovies(movies);
+  }
+  heroIndex = 0;
+  paintHero();
+  stopHeroTimer();
+  if (featuredMovies.length) {
+    heroTimer = setInterval(() => {
+      heroIndex = (heroIndex + 1) % featuredMovies.length;
+      paintHero();
+    }, 7000);
+  }
+}
 
+// اتصال توابع به window برای کارکرد onclickهای داخل HTML
 window.startHero = startHero;
 window.stopHeroTimer = stopHeroTimer;
 window.paintHero = paintHero;
