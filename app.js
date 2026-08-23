@@ -15,9 +15,6 @@ document.head.appendChild(adScript);
 
 let allMovies      = [];
 let featuredMovies = [];
-let heroIndex      = 0;
-let heroTimer      = null;
-
 
 
 async function init() {
