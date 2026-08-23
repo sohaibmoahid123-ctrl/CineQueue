@@ -562,19 +562,6 @@ window.unlockAdultPosters = function() {
   if (banner) banner.remove();
 };
 
-window.toggleDownloadList = function() {
-  const list = document.getElementById('episode-download-list');
-  const icon = document.getElementById('download-toggle-icon');
-  if (list) {
-    if (list.style.display === 'none' || list.style.display === '') {
-      list.style.display = 'block';
-      if (icon) icon.innerHTML = '▲';
-    } else {
-      list.style.display = 'none';
-      if (icon) icon.innerHTML = '▼';
-    }
-  }
-};
 
 
 async function renderMovieDetail(id) {
