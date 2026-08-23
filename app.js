@@ -774,63 +774,6 @@ ${isTv ? `
   wireSearch();
 }
 
-window.selectTvEpisode = function(tvId, season, episode, btnElement) {
-  if (btnElement) {
-    document.querySelectorAll('.ep-btn').forEach(btn => {
-      btn.style.background = '#232d45';
-      btn.classList.remove('active');
-    });
-    btnElement.style.background = '#e50914';
-    btnElement.classList.add('active');
-  }
-
-  const box = document.getElementById("backdrop-player-box");
-  if (!box) return;
-
-  const streamUrl = `https://multiembed.mov/?video_id=${tvId}&tmdb=1&s=${season}&e=${episode}`;
-
-  box.innerHTML = `
-    <button id="hero-close-btn" style="position: absolute; top: 12px; left: 12px; z-index: 1000; color: #fff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; backdrop-filter: blur(8px);">
-      ✕ Close Player
-    </button>
-    <iframe
-      src="${streamUrl}"
-      style="width: 100%; height: 100%; border: none; display: block;"
-      allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope"
-      allowfullscreen
-      webkitallowfullscreen
-      mozallowfullscreen
-      playsinline
-      frameborder="0">
-    </iframe>
-  `;
-
-  const iframe = box.querySelector("iframe");
-  const fullscreenBtn = document.createElement("button");
-  fullscreenBtn.id = "hero-fullscreen-btn";
-  fullscreenBtn.innerHTML = "⛶";
-  fullscreenBtn.title = "Fullscreen";
-  fullscreenBtn.style.cssText = `
-    position: absolute !important; bottom: 8px !important; right: 8px !important; z-index: 9999 !important;
-    width: 34px !important; height: 34px !important; color: #fff !important;
-    background: rgba(0,0,0,0.65) !important; border: 1px solid rgba(255,255,255,0.2) !important;
-    border-radius: 6px !important; cursor: pointer !important; font-size: 16px !important;
-    display: flex !important; align-items: center !important; justify-content: center !important;
-  `;
-  box.appendChild(fullscreenBtn);
-
-  fullscreenBtn.addEventListener("click", function(e) {
-    e.stopPropagation();
-    if (iframe.requestFullscreen) {
-      iframe.requestFullscreen().catch(() => {
-        if (box.requestFullscreen) box.requestFullscreen();
-      });
-    } else if (box.requestFullscreen) {
-      box.requestFullscreen();
-    }
-  });
-};
-
 function buildHeader() {
   return `
     <header class="site-header">
