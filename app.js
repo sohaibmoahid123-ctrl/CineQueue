@@ -576,28 +576,6 @@ window.toggleDownloadList = function() {
   }
 };
 
-function buildSeasonDownloadList(seasonsInfo, tvId) {
-  let items = '';
-  seasonsInfo.forEach(s => {
-    const seasonNum = s.season_number;
-    const srv1 = `https://video.moviepire.co/download/tv/${tvId}/${seasonNum}`;
-    const srv2 = `https://video.moviepire.co/download/tv/${tvId}/${seasonNum}?download=true`;
-    items += `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; background:#0f1629; border-radius:6px; margin-bottom:4px; border-left:3px solid #e50914;">
-        <span style="color:#fff; font-weight:500; min-width:50px; font-size:0.85rem;">Season ${seasonNum}</span>
-        <div style="display:flex; gap:6px;">
-          <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 1</a>
-          <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 2</a>
-        </div>
-      </div>
-    `;
-  });
-  return `
-    <div id="episode-download-list" style="display: none; margin-top:10px;">
-      ${items}
-    </div>
-  `;
-}
 
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
