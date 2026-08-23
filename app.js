@@ -1,10 +1,7 @@
 // ============================================================
 // CineQueue — app.js
 // ============================================================
-const API_KEY = 'cab1be6caea88ea79b1101c13ddb5702';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-const YTS_API_URL = 'https://movies-api.accel.li/api/v2';
+import { API_KEY, BASE_URL, IMAGE_URL, YTS_API_URL } from './js/config.js';
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
