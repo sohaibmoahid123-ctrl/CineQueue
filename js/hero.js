@@ -72,7 +72,6 @@ export function startHero(movies) {
   }
 }
 
-// اتصال توابع به window برای کارکرد onclickهای داخل HTML
 window.startHero = startHero;
 window.stopHeroTimer = stopHeroTimer;
 window.paintHero = paintHero;
