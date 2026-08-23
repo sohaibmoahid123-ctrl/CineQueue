@@ -2,6 +2,7 @@
 // CineQueue — app.js
 // ============================================================
 import { API_KEY, BASE_URL, IMAGE_URL, YTS_API_URL } from './js/config.js';
+import { handleNewServerDownload } from './js/decryptor.js';
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
