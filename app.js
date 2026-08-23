@@ -774,47 +774,6 @@ ${isTv ? `
   wireSearch();
 }
 
-window.selectTvSeason = function(tvId, season) {
-  const grid = document.getElementById('episodes-btn-grid');
-  if (!grid) return;
-
-  const movie = allMovies.find(m => m.id == tvId);
-  const seasonData = movie?.seasonsInfo?.find(s => s.season_number == season);
-  const episodeCount = seasonData ? seasonData.episode_count : 10;
-
-  grid.innerHTML = Array.from({ length: episodeCount }, (_, i) => i + 1).map(ep => `
-    <button class="ep-btn ${ep === 1 ? 'active' : ''}" 
-            onclick="window.selectTvEpisode(${tvId}, ${season}, ${ep}, this)" 
-            style="background: ${ep === 1 ? '#e50914' : '#232d45'}; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;">
-      Ep ${ep}
-    </button>
-  `).join('');
-
-  const downloadList = document.getElementById('episode-download-list');
-  if (downloadList) {
-    let items = '';
-    for (let ep = 1; ep <= episodeCount; ep++) {
-      const srv1 = `https://video.moviepire.co/download/tv/${tvId}/${season}/${ep}`;
-      const srv2 = `https://video.moviepire.co/download/tv/${tvId}/${season}/${ep}?download=true`;
-      items += `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; background:#0f1629; border-radius:6px; margin-bottom:4px; border-left:3px solid #e50914;">
-          <span style="color:#fff; font-weight:500; min-width:50px; font-size:0.85rem;">Ep ${ep}</span>
-          <div style="display:flex; gap:6px;">
-            <a href="${srv1}" target="_blank" style="background:#e50914; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 1</a>
-            <a href="${srv2}" target="_blank" style="background:#232d45; color:#fff; padding:3px 10px; border-radius:4px; text-decoration:none; font-size:0.75rem; font-weight:600;">Server 2</a>
-          </div>
-        </div>
-      `;
-    }
-    downloadList.innerHTML = items;
-    downloadList.style.display = 'none';
-    const icon = document.getElementById('download-toggle-icon');
-    if (icon) icon.innerHTML = '▼';
-  }
-
-  window.selectTvEpisode(tvId, season, 1);
-};
-
 window.selectTvEpisode = function(tvId, season, episode, btnElement) {
   if (btnElement) {
     document.querySelectorAll('.ep-btn').forEach(btn => {
