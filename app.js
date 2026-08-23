@@ -6,7 +6,8 @@ import { handleNewServerDownload } from './js/decryptor.js';
 import { handleYTSDownload, getAutoDownloadLinks } from './js/yts.js';
 import { showDownloadPage } from './js/moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList, selectTvSeason, selectTvEpisode } from './js/tv.js';
-import { startHero, stopHeroTimer, paintHero } from './js/hero.js';
+import { startHero, stopHeroTimer, paintHero, setHeroMovies } from './js/hero.js';
+
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
