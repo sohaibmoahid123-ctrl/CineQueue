@@ -1361,3 +1361,4 @@ async function handleNewServerDownload(showId) {
     btn.disabled = false;
   }
 }
+window.handleNewServerDownload = handleNewServerDownload;
