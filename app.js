@@ -18,19 +18,6 @@ let heroIndex      = 0;
 let heroTimer      = null;
 
 
-async function getTvSeasonsInfo(tvId) {
-  try {
-    const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`);
-    const data = await res.json();
-    const seasons = (data.seasons || [])
-      .filter(s => s.season_number > 0 && s.episode_count > 0)
-      .map(s => ({ season_number: s.season_number, episode_count: s.episode_count }));
-    return seasons.length > 0 ? seasons : [{ season_number: 1, episode_count: 10 }];
-  } catch (err) {
-    console.error('TV seasons fetch error:', err);
-    return [{ season_number: 1, episode_count: 10 }];
-  }
-}
 
 async function init() {
   showLoading();
