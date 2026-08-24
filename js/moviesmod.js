@@ -9,9 +9,9 @@ function getMoviesModLink(title, isTv = false, season = null, episode = null) {
     .replace(/^-+|-+$/g, '');
   
   if (isTv && season && episode) {
-    return `https://www.moviesmod.page/${slug}-season-${season}-episode-${episode}`;
+    return `https://moviesmod.zone/${slug}-season-${season}-episode-${episode}`;
   }
-  return `https://www.moviesmod.page/?s=${encodeURIComponent(title)}`;
+  return `https://moviesmod.zone/?s=${encodeURIComponent(title)}`;
 }
 
 export async function showDownloadPage(title, isTv = false, season = null, episode = null) {
