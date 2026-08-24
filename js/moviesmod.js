@@ -1,5 +1,5 @@
 // ============================================================
-// moviesmod.js  —  جستجو و نمایش لینک‌های MoviesMod (اصلاح‌شده)
+// moviesmod.js  —  جستجو و نمایش لینک‌های MoviesMod (با فیلتر سیزن)
 // ============================================================
 
 function getMoviesModLink(title, isTv = false, season = null, episode = null) {
@@ -30,14 +30,20 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
     }
   }
 
+  const seasonText = season ? ` (Season ${season})` : '';
   container.innerHTML = `
     <div style="background: #161d2f; padding: 15px; border-radius: 8px; color: #fff; text-align: center;">
-      <p style="margin: 0;">⌛ Searching available links for "${title}"...</p>
+      <p style="margin: 0;">⌛ Searching available links for "${title}"${seasonText}...</p>
     </div>
   `;
 
   try {
-    const res = await fetch(`/api/available-qualities?url=${encodeURIComponent(title)}`);
+    // season و episode رو هم به API می‌فرستیم
+    let apiUrl = `/api/available-qualities?url=${encodeURIComponent(title)}`;
+    if (season) apiUrl += `&season=${encodeURIComponent(season)}`;
+    if (episode) apiUrl += `&episode=${encodeURIComponent(episode)}`;
+
+    const res = await fetch(apiUrl);
     const data = await res.json();
 
     if (data.success && data.options && data.options.length > 0) {
@@ -51,7 +57,7 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
       container.innerHTML = `
         <div style="background: #161d2f; padding: 15px; border-radius: 8px; border: 1px solid #2e3856;">
           <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem; margin-bottom: 12px;">
-            Select Quality / Option:
+            Select Quality / Option${season ? ` — Season ${season}` : ''}:
             ${data.source ? `<span style="opacity:0.6;font-size:0.75rem;">(${data.source})</span>` : ''}
           </p>
           <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -86,5 +92,4 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
   container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// برای اینکه از HTML بشه صداش زد
 window.showDownloadPage = showDownloadPage;
