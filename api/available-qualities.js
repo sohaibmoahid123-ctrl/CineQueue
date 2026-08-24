@@ -1,7 +1,6 @@
 const cheerio = require('cheerio');
 
 module.exports = async (req, res) => {
-  // ====================== CORS ======================
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -21,7 +20,6 @@ module.exports = async (req, res) => {
     });
   }
 
-  // ====================== Helpers ======================
   const customHeaders = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -43,27 +41,57 @@ module.exports = async (req, res) => {
   };
 
   const cleanText = (text = '') => {
-    return text
-      .replace(/\s+/g, ' ')
-      .replace(/[\n\r\t]/g, ' ')
-      .trim();
+    return text.replace(/\s+/g, ' ').replace(/[\n\r\t]/g, ' ').trim();
   };
 
-  // تشخیص اینکه متن مربوط به سیزن درخواستی هست یا نه
+  // ====================== تشخیص سیزن ======================
   const matchesSeason = (text) => {
-    if (!requestedSeason) return true; // اگر سیزن نفرستاده، همه رو قبول کن
-
+    if (!requestedSeason) return true;
     const lower = text.toLowerCase();
-    const seasonNum = requestedSeason.replace(/^0+/, ''); // "02" → "2"
-
-    // الگوهای رایج: Season 2, Season 02, S02, S2, Season2
+    const seasonNum = requestedSeason.replace(/^0+/, '');
     const patterns = [
       new RegExp(`season\\s*0*${seasonNum}\\b`, 'i'),
       new RegExp(`\\bs0*${seasonNum}\\b`, 'i'),
       new RegExp(`season0*${seasonNum}\\b`, 'i')
     ];
-
     return patterns.some(p => p.test(lower));
+  };
+
+  // ====================== تشخیص اینکه لیبل مربوط به همین عنوان هست یا نه ======================
+  const isRelevantToQuery = (label, query) => {
+    if (!label || !query) return true;
+
+    const lowerLabel = label.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+
+    // کلمات کلیدی عنوان
+    const queryWords = lowerQuery
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !['the', 'and', 'for', 'with', 'season', 'episode'].includes(w));
+
+    if (queryWords.length === 0) return true;
+
+    // حداقل یکی از کلمات مهم عنوان باید داخل لیبل باشه
+    const hasQueryWord = queryWords.some(w => lowerLabel.includes(w));
+
+    // لیست سریال‌های معروف که نباید قاطی بشن (برای جلوگیری از related posts)
+    const foreignTitles = [
+      'solar opposites', 'victor lessard', 'citadel', 'house of the dragon',
+      'silo', 'outer banks', 'the boys', 'reacher', 'bridgerton', 'ted lasso',
+      'the night agent', 'fallout', 'shogun', 'the last of us'
+    ];
+
+    // اگر لیبل اسم سریال دیگه‌ای رو داره و اسم سریال فعلی رو نداره → رد
+    for (const foreign of foreignTitles) {
+      if (lowerLabel.includes(foreign) && !queryWords.some(w => foreign.includes(w))) {
+        // اگر خود query همون foreign باشه مشکلی نیست
+        if (!lowerQuery.includes(foreign.split(' ')[0])) {
+          return false;
+        }
+      }
+    }
+
+    return hasQueryWord;
   };
 
   const validDomains = [
@@ -89,13 +117,16 @@ module.exports = async (req, res) => {
     if (!href.startsWith('http')) return false;
     if (invalidKeywords.some(kw => lowerHref.includes(kw))) return false;
 
-    if (lowerHref.includes('moviesmod.zone') || lowerHref.includes('moviesmod.')) {
-      if (!/download|drive|server|file|episode|batch|zip/i.test(lowerText + lowerHref)) return false;
+    // لینک‌های داخلی moviesmod که صفحه فیلم دیگه‌ان رو رد کن
+    if ((lowerHref.includes('moviesmod.zone') || lowerHref.includes('moviesmod.')) &&
+        lowerHref.includes('/download-') &&
+        !/episode|batch|zip|server|drive/i.test(lowerText)) {
+      return false;
     }
 
     const hasValidDomain = validDomains.some(d => lowerHref.includes(d));
     const hasDownloadKeyword =
-      /download|episode links|batch|zip file|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|hdts|hdcam|google drive|fast server|instant/i.test(lowerText) ||
+      /download|episode links|batch|zip file|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|google drive|fast server|instant/i.test(lowerText) ||
       /download|file|drive|nexdrive|gdtot|driveseed|modpro|unblockedgames|episode|batch/i.test(lowerHref);
 
     return hasValidDomain || hasDownloadKeyword;
@@ -111,26 +142,37 @@ module.exports = async (req, res) => {
         .replace(/\s+/g, ' ')
         .trim();
 
-  // ====================== تابع استخراج لینک با فیلتر سیزن ======================
-  const extractLinksFromHtml = (html, sourceName) => {
+  // ====================== استخراج لینک فقط از محتوای اصلی ======================
+  const extractLinksFromHtml = (html, query) => {
     const $ = cheerio.load(html);
     const downloadOptions = [];
     const seenLinks = new Set();
 
-    // روش اصلی: هدینگ‌های کیفیت/سیزن رو پیدا کن
-    $('h2, h3, h4, strong, p, div').each((_, el) => {
+    // بخش‌های Related / Popular / More Posts رو کامل حذف کن تا لینک‌هاشون نیاد
+    $('.related-posts, .popular-posts, .more-posts, .jp-relatedposts, #related, .sidebar, aside, footer').remove();
+    $('h3, h4, h2').each((_, el) => {
+      const t = cleanText($(el).text()).toLowerCase();
+      if (t.includes('related') || t.includes('popular') || t.includes('you may also') || t.includes('more posts')) {
+        $(el).nextUntil('h2, h3').remove();
+        $(el).remove();
+      }
+    });
+
+    // فقط هدینگ‌های کیفیت/سیزن داخل محتوای اصلی
+    $('h2, h3, h4, strong, p').each((_, el) => {
       const headingText = cleanText($(el).text());
-      
-      // فقط هدینگ‌هایی که کیفیت یا سیزن دارن
+
       if (!/(480p|720p|1080p|2160p|4k|season\s*\d|web-dl|bluray|msubs|esubs)/i.test(headingText)) return;
       if (headingText.length > 140) return;
 
       // فیلتر سیزن
       if (!matchesSeason(headingText)) return;
 
-      // لینک‌های داخل و اطراف این هدینگ
+      // فیلتر عنوان (مربوط به همین سریال باشه)
+      if (!isRelevantToQuery(headingText, query)) return;
+
       const candidates = $(el).find('a[href^="http"]')
-        .add($(el).nextUntil('h2, h3, h4').find('a[href^="http"]').slice(0, 10));
+        .add($(el).nextUntil('h2, h3, h4').find('a[href^="http"]').slice(0, 8));
 
       candidates.each((_, aEl) => {
         const href = $(aEl).attr('href') || '';
@@ -139,19 +181,19 @@ module.exports = async (req, res) => {
         if (!isValidDownloadLink(href, text)) return;
         if (seenLinks.has(href)) return;
 
-        // لیبل بهتر بساز
+        // لینک صفحه فیلم دیگه رو رد کن
+        if (href.includes('/download-') && href.includes('moviesmod') && !text.match(/episode|batch|zip|server|drive/i)) {
+          return;
+        }
+
         let label = headingText;
 
-        // اگر متن دکمه مفید بود اضافه کن
         if (text && /episode links|batch|zip|download|google drive|fast server/i.test(text)) {
           label = `${headingText} — ${text}`;
         }
 
-        // سایز
-        const sizeMatch = (headingText + ' ' + text).match(/\[?\d+(\.\d+)?\s*(MB|GB)\]?/i);
-        if (sizeMatch && !label.includes(sizeMatch[0])) {
-          label += ` ${sizeMatch[0]}`;
-        }
+        // دوباره چک کن لیبل نهایی مربوط به همین عنوان باشه
+        if (!isRelevantToQuery(label, query)) return;
 
         seenLinks.add(href);
         downloadOptions.push({
@@ -162,96 +204,58 @@ module.exports = async (req, res) => {
       });
     });
 
-    // اگر با فیلتر سیزن چیزی پیدا نشد و سیزن درخواست شده بود، 
-    // یک بار دیگه بدون فیلتر سفت‌وسخت امتحان نکن (ترجیح می‌دیم خالی برگرده)
-    // فقط اگر سیزن نفرستاده بود همه رو جمع کن
-    if (downloadOptions.length === 0 && !requestedSeason) {
-      $('a[href^="http"]').each((_, el) => {
-        const href = $(el).attr('href') || '';
-        const text = cleanText($(el).text());
-
-        if (!isValidDownloadLink(href, text)) return;
-        if (seenLinks.has(href)) return;
-
-        let qualityLabel = cleanText(
-          $(el).parent().prev().text() ||
-          $(el).closest('p, div').prev('p, h3, h4, strong').text() ||
-          $(el).prev().text() ||
-          text
-        );
-
-        if (!qualityLabel || qualityLabel.length > 80) {
-          qualityLabel = text || `Option ${downloadOptions.length + 1}`;
-        }
-
-        seenLinks.add(href);
-        downloadOptions.push({
-          id: downloadOptions.length + 1,
-          label: qualityLabel.slice(0, 120),
-          link: href
-        });
-      });
-    }
-
     return downloadOptions;
   };
 
   // ====================== STAGE 1: WordPress REST API ======================
   try {
-    const wpApiUrl = `https://moviesmod.zone/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=8&_fields=id,title,content,link`;
+    const wpApiUrl = `https://moviesmod.zone/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=5&_fields=id,title,content,link`;
 
     const wpRes = await fetchWithTimeout(wpApiUrl, {
-      headers: {
-        ...customHeaders,
-        'Accept': 'application/json'
-      }
+      headers: { ...customHeaders, 'Accept': 'application/json' }
     }, 6000);
 
     if (wpRes.ok) {
       const posts = await wpRes.json();
 
       if (Array.isArray(posts) && posts.length > 0) {
-        const sortedPosts = posts.sort((a, b) => {
-          const titleA = (a.title?.rendered || '').toLowerCase();
-          const titleB = (b.title?.rendered || '').toLowerCase();
+        // فقط بهترین پست رو انتخاب کن (نه همه)
+        const scored = posts.map(post => {
+          const title = (post.title?.rendered || '').toLowerCase();
           const query = cleanSearchQuery.toLowerCase();
+          let score = 0;
 
-          const scoreA = titleA.includes(query) ? 2 : (query.split(' ').some(w => titleA.includes(w)) ? 1 : 0);
-          const scoreB = titleB.includes(query) ? 2 : (query.split(' ').some(w => titleB.includes(w)) ? 1 : 0);
-          return scoreB - scoreA;
+          if (title.includes(query)) score += 10;
+          query.split(' ').forEach(w => {
+            if (w.length > 2 && title.includes(w)) score += 2;
+          });
+          // اگر "download" و اسم سریال با هم بودن امتیاز بیشتر
+          if (title.includes('download') && score > 0) score += 3;
+
+          return { post, score };
         });
 
-        let allOptions = [];
+        scored.sort((a, b) => b.score - a.score);
+        const best = scored[0];
 
-        for (const post of sortedPosts) {
-          const content = post.content?.rendered || '';
-          if (!content) continue;
+        // فقط اگر امتیاز قابل قبول باشه
+        if (best && best.score >= 4) {
+          const content = best.post.content?.rendered || '';
+          if (content) {
+            const options = extractLinksFromHtml(content, cleanSearchQuery);
 
-          const options = extractLinksFromHtml(content, 'WP');
-          allOptions = allOptions.concat(options);
-
-          if (allOptions.length >= 12) break;
-        }
-
-        // حذف تکراری
-        const unique = [];
-        const seen = new Set();
-        for (const opt of allOptions) {
-          if (!seen.has(opt.link)) {
-            seen.add(opt.link);
-            unique.push(opt);
+            if (options.length > 0) {
+              return res.status(200).json({
+                success: true,
+                source: 'WordPress_REST_API',
+                query: cleanSearchQuery,
+                matchedTitle: best.post.title?.rendered || null,
+                season: requestedSeason || null,
+                totalOptions: options.length,
+                options: options.slice(0, 15)
+              });
+            }
           }
-        }
-
-        if (unique.length > 0) {
-          return res.status(200).json({
-            success: true,
-            source: 'WordPress_REST_API',
-            query: cleanSearchQuery,
-            season: requestedSeason || null,
-            totalOptions: unique.length,
-            options: unique.slice(0, 15)
-          });
         }
       }
     }
@@ -265,11 +269,7 @@ module.exports = async (req, res) => {
 
     if (!isDirectUrl) {
       const searchUrl = `https://moviesmod.zone/?s=${encodeURIComponent(cleanSearchQuery)}`;
-
-      const searchRes = await fetchWithTimeout(searchUrl, {
-        headers: customHeaders
-      }, 7000);
-
+      const searchRes = await fetchWithTimeout(searchUrl, { headers: customHeaders }, 7000);
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
 
@@ -287,13 +287,15 @@ module.exports = async (req, res) => {
 
         const fullHref = href.startsWith('http') ? href : `https://moviesmod.zone${href}`;
         const lowerText = (text + ' ' + titleAttr).toLowerCase();
-        const queryWords = cleanSearchQuery.toLowerCase().split(/\s+/);
+        const queryWords = cleanSearchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2);
 
         let score = 0;
         queryWords.forEach(word => {
-          if (word.length > 2 && lowerText.includes(word)) score += 1;
+          if (lowerText.includes(word)) score += 2;
         });
-        if (lowerText.includes('download')) score += 2;
+        if (lowerText.includes('download')) score += 3;
+        // امتیاز بیشتر اگر تقریباً کل عنوان داخل متن باشه
+        if (lowerText.includes(cleanSearchQuery.toLowerCase())) score += 8;
 
         if (score > bestScore) {
           bestScore = score;
@@ -301,23 +303,20 @@ module.exports = async (req, res) => {
         }
       });
 
-      if (!foundLink) {
+      if (!foundLink || bestScore < 4) {
         return res.status(200).json({
           success: false,
           stage: 'SEARCH_FAILED',
-          message: `No results found for "${cleanSearchQuery}".`
+          message: `No good match found for "${cleanSearchQuery}".`
         });
       }
 
       targetPageUrl = foundLink;
     }
 
-    const pageRes = await fetchWithTimeout(targetPageUrl, {
-      headers: customHeaders
-    }, 8000);
-
+    const pageRes = await fetchWithTimeout(targetPageUrl, { headers: customHeaders }, 8000);
     const pageHtml = await pageRes.text();
-    const downloadOptions = extractLinksFromHtml(pageHtml, 'Legacy');
+    const downloadOptions = extractLinksFromHtml(pageHtml, cleanSearchQuery);
 
     if (downloadOptions.length === 0) {
       return res.status(200).json({
