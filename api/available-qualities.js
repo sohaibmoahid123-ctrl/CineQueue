@@ -11,6 +11,8 @@ module.exports = async (req, res) => {
   }
 
   const rawQuery = req.query.url;
+  const requestedSeason = req.query.season ? String(req.query.season).trim() : null;
+  const requestedEpisode = req.query.episode ? String(req.query.episode).trim() : null;
 
   if (!rawQuery || typeof rawQuery !== 'string' || rawQuery.trim().length < 2) {
     return res.status(400).json({
@@ -47,20 +49,33 @@ module.exports = async (req, res) => {
       .trim();
   };
 
-  // دامنه‌های معتبر (نهایی + واسط‌های شناخته‌شده MoviesMod)
+  // تشخیص اینکه متن مربوط به سیزن درخواستی هست یا نه
+  const matchesSeason = (text) => {
+    if (!requestedSeason) return true; // اگر سیزن نفرستاده، همه رو قبول کن
+
+    const lower = text.toLowerCase();
+    const seasonNum = requestedSeason.replace(/^0+/, ''); // "02" → "2"
+
+    // الگوهای رایج: Season 2, Season 02, S02, S2, Season2
+    const patterns = [
+      new RegExp(`season\\s*0*${seasonNum}\\b`, 'i'),
+      new RegExp(`\\bs0*${seasonNum}\\b`, 'i'),
+      new RegExp(`season0*${seasonNum}\\b`, 'i')
+    ];
+
+    return patterns.some(p => p.test(lower));
+  };
+
   const validDomains = [
-    // نهایی
     'nexdrive', 'gdtot', 'pixeldrain', 'fastserver', 'drive.google',
     'mega.nz', 'mediafire', 'workers.dev', 'hubcloud', 'gdflix',
     'filepress', 'dropgalaxy', 'streamtape', 'dood', 'mixdrop',
     'driveseed', 'driveleech',
-    // واسط‌های MoviesMod
     'modpro.blog', 'links.modpro', 'modlinks', 'modrefer',
     'unblockedgames.world', 'tech.unblockedgames', 'cloud.unblockedgames',
     'oddfirm', 'techmny', 'en.techmny'
   ];
 
-  // فقط چیزهایی که واقعاً نباید میان
   const invalidKeywords = [
     'facebook', 'twitter', 'instagram', 'telegram', 't.me',
     'wp-content', 'javascript', 'mailto:', 'whatsapp', 'discord',
@@ -74,16 +89,14 @@ module.exports = async (req, res) => {
     if (!href.startsWith('http')) return false;
     if (invalidKeywords.some(kw => lowerHref.includes(kw))) return false;
 
-    // خود دامنه moviesmod رو رد کن (لینک‌های داخلی صفحه)
     if (lowerHref.includes('moviesmod.zone') || lowerHref.includes('moviesmod.')) {
-      // فقط اگر لینک دانلود واقعی باشه قبول کن (نادر)
-      if (!/download|drive|server|file/i.test(lowerText + lowerHref)) return false;
+      if (!/download|drive|server|file|episode|batch|zip/i.test(lowerText + lowerHref)) return false;
     }
 
     const hasValidDomain = validDomains.some(d => lowerHref.includes(d));
     const hasDownloadKeyword =
-      /download|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|hdts|hdcam|google drive|fast server|instant/i.test(lowerText) ||
-      /download|file|drive|nexdrive|gdtot|driveseed|modpro|unblockedgames/i.test(lowerHref);
+      /download|episode links|batch|zip file|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|hdts|hdcam|google drive|fast server|instant/i.test(lowerText) ||
+      /download|file|drive|nexdrive|gdtot|driveseed|modpro|unblockedgames|episode|batch/i.test(lowerHref);
 
     return hasValidDomain || hasDownloadKeyword;
   };
@@ -97,6 +110,91 @@ module.exports = async (req, res) => {
         .replace(/[^a-zA-Z0-9\s]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
+
+  // ====================== تابع استخراج لینک با فیلتر سیزن ======================
+  const extractLinksFromHtml = (html, sourceName) => {
+    const $ = cheerio.load(html);
+    const downloadOptions = [];
+    const seenLinks = new Set();
+
+    // روش اصلی: هدینگ‌های کیفیت/سیزن رو پیدا کن
+    $('h2, h3, h4, strong, p, div').each((_, el) => {
+      const headingText = cleanText($(el).text());
+      
+      // فقط هدینگ‌هایی که کیفیت یا سیزن دارن
+      if (!/(480p|720p|1080p|2160p|4k|season\s*\d|web-dl|bluray|msubs|esubs)/i.test(headingText)) return;
+      if (headingText.length > 140) return;
+
+      // فیلتر سیزن
+      if (!matchesSeason(headingText)) return;
+
+      // لینک‌های داخل و اطراف این هدینگ
+      const candidates = $(el).find('a[href^="http"]')
+        .add($(el).nextUntil('h2, h3, h4').find('a[href^="http"]').slice(0, 10));
+
+      candidates.each((_, aEl) => {
+        const href = $(aEl).attr('href') || '';
+        const text = cleanText($(aEl).text());
+
+        if (!isValidDownloadLink(href, text)) return;
+        if (seenLinks.has(href)) return;
+
+        // لیبل بهتر بساز
+        let label = headingText;
+
+        // اگر متن دکمه مفید بود اضافه کن
+        if (text && /episode links|batch|zip|download|google drive|fast server/i.test(text)) {
+          label = `${headingText} — ${text}`;
+        }
+
+        // سایز
+        const sizeMatch = (headingText + ' ' + text).match(/\[?\d+(\.\d+)?\s*(MB|GB)\]?/i);
+        if (sizeMatch && !label.includes(sizeMatch[0])) {
+          label += ` ${sizeMatch[0]}`;
+        }
+
+        seenLinks.add(href);
+        downloadOptions.push({
+          id: downloadOptions.length + 1,
+          label: label.slice(0, 120),
+          link: href
+        });
+      });
+    });
+
+    // اگر با فیلتر سیزن چیزی پیدا نشد و سیزن درخواست شده بود، 
+    // یک بار دیگه بدون فیلتر سفت‌وسخت امتحان نکن (ترجیح می‌دیم خالی برگرده)
+    // فقط اگر سیزن نفرستاده بود همه رو جمع کن
+    if (downloadOptions.length === 0 && !requestedSeason) {
+      $('a[href^="http"]').each((_, el) => {
+        const href = $(el).attr('href') || '';
+        const text = cleanText($(el).text());
+
+        if (!isValidDownloadLink(href, text)) return;
+        if (seenLinks.has(href)) return;
+
+        let qualityLabel = cleanText(
+          $(el).parent().prev().text() ||
+          $(el).closest('p, div').prev('p, h3, h4, strong').text() ||
+          $(el).prev().text() ||
+          text
+        );
+
+        if (!qualityLabel || qualityLabel.length > 80) {
+          qualityLabel = text || `Option ${downloadOptions.length + 1}`;
+        }
+
+        seenLinks.add(href);
+        downloadOptions.push({
+          id: downloadOptions.length + 1,
+          label: qualityLabel.slice(0, 120),
+          link: href
+        });
+      });
+    }
+
+    return downloadOptions;
+  };
 
   // ====================== STAGE 1: WordPress REST API ======================
   try {
@@ -113,9 +211,6 @@ module.exports = async (req, res) => {
       const posts = await wpRes.json();
 
       if (Array.isArray(posts) && posts.length > 0) {
-        const downloadOptions = [];
-        const seenLinks = new Set();
-
         const sortedPosts = posts.sort((a, b) => {
           const titleA = (a.title?.rendered || '').toLowerCase();
           const titleB = (b.title?.rendered || '').toLowerCase();
@@ -126,90 +221,36 @@ module.exports = async (req, res) => {
           return scoreB - scoreA;
         });
 
+        let allOptions = [];
+
         for (const post of sortedPosts) {
           const content = post.content?.rendered || '';
           if (!content) continue;
 
-          const $ = cheerio.load(content);
+          const options = extractLinksFromHtml(content, 'WP');
+          allOptions = allOptions.concat(options);
 
-          // اول سعی کن لینک‌های نزدیک به هدینگ‌های کیفیت رو پیدا کنی
-          $('h3, h4, strong, p, div').each((_, el) => {
-            const headingText = cleanText($(el).text());
-            if (!/(480p|720p|1080p|2160p|4k|web-dl|bluray)/i.test(headingText)) return;
-
-            // لینک‌های داخل یا بلافاصله بعد از این هدینگ
-            const links = $(el).find('a[href^="http"]').add($(el).nextAll().find('a[href^="http"]').slice(0, 6));
-
-            links.each((_, aEl) => {
-              const href = $(aEl).attr('href') || '';
-              const text = cleanText($(aEl).text());
-
-              if (!isValidDownloadLink(href, text)) return;
-              if (seenLinks.has(href)) return;
-
-              let label = headingText.length > 5 && headingText.length < 90
-                ? headingText
-                : (text || `Option ${downloadOptions.length + 1}`);
-
-              // کیفیت رو اگر نبود اضافه کن
-              const qualityMatch = (headingText + ' ' + text).match(/(480p|720p|1080p|2160p|4K)/i);
-              if (qualityMatch && !label.toLowerCase().includes(qualityMatch[0].toLowerCase())) {
-                label += ` [${qualityMatch[0]}]`;
-              }
-
-              seenLinks.add(href);
-              downloadOptions.push({
-                id: downloadOptions.length + 1,
-                label: label.slice(0, 100),
-                link: href
-              });
-            });
-          });
-
-          // اگر هنوز لینک کم داریم، همه لینک‌های معتبر رو هم جمع کن
-          if (downloadOptions.length < 6) {
-            $('a[href^="http"]').each((_, el) => {
-              const href = $(el).attr('href') || '';
-              const text = cleanText($(el).text());
-
-              if (!isValidDownloadLink(href, text)) return;
-              if (seenLinks.has(href)) return;
-
-              let label = cleanText(
-                $(el).prev().text() ||
-                $(el).parent().prev().text() ||
-                $(el).closest('p, div, li').prev().text() ||
-                text
-              );
-
-              if (!label || label.length > 80 || label.length < 3) {
-                label = text || `Option ${downloadOptions.length + 1}`;
-              }
-
-              const qualityMatch = text.match(/(480p|720p|1080p|2160p|4K|WEB-DL|BluRay)/i);
-              if (qualityMatch && !label.toLowerCase().includes(qualityMatch[0].toLowerCase())) {
-                label += ` [${qualityMatch[0]}]`;
-              }
-
-              seenLinks.add(href);
-              downloadOptions.push({
-                id: downloadOptions.length + 1,
-                label: label.slice(0, 100),
-                link: href
-              });
-            });
-          }
-
-          if (downloadOptions.length >= 12) break;
+          if (allOptions.length >= 12) break;
         }
 
-        if (downloadOptions.length > 0) {
+        // حذف تکراری
+        const unique = [];
+        const seen = new Set();
+        for (const opt of allOptions) {
+          if (!seen.has(opt.link)) {
+            seen.add(opt.link);
+            unique.push(opt);
+          }
+        }
+
+        if (unique.length > 0) {
           return res.status(200).json({
             success: true,
             source: 'WordPress_REST_API',
             query: cleanSearchQuery,
-            totalOptions: downloadOptions.length,
-            options: downloadOptions.slice(0, 15)
+            season: requestedSeason || null,
+            totalOptions: unique.length,
+            options: unique.slice(0, 15)
           });
         }
       }
@@ -218,7 +259,7 @@ module.exports = async (req, res) => {
     console.warn('[WP Stage Failed]', err.message);
   }
 
-  // ====================== STAGE 2: moviesmod.zone (Legacy Scraper) ======================
+  // ====================== STAGE 2: Legacy Scraper ======================
   try {
     let targetPageUrl = rawQuery;
 
@@ -252,8 +293,6 @@ module.exports = async (req, res) => {
         queryWords.forEach(word => {
           if (word.length > 2 && lowerText.includes(word)) score += 1;
         });
-
-        // امتیاز بیشتر به لینک‌هایی که "download" دارن
         if (lowerText.includes('download')) score += 2;
 
         if (score > bestScore) {
@@ -273,91 +312,22 @@ module.exports = async (req, res) => {
       targetPageUrl = foundLink;
     }
 
-    // صفحه فیلم رو باز کن
     const pageRes = await fetchWithTimeout(targetPageUrl, {
       headers: customHeaders
     }, 8000);
 
     const pageHtml = await pageRes.text();
-    const $ = cheerio.load(pageHtml);
-
-    const downloadOptions = [];
-    const seenLinks = new Set();
-
-    // روش بهتر: اول هدینگ‌های کیفیت رو پیدا کن، بعد لینک‌های نزدیکشون
-    $('h2, h3, h4, strong, p').each((_, el) => {
-      const headingText = cleanText($(el).text());
-      if (!/(480p|720p|1080p|2160p|4k|season\s*\d|episode|web-dl|bluray|download)/i.test(headingText)) return;
-      if (headingText.length > 120) return;
-
-      // لینک‌های داخل خود المان + چند المان بعدی
-      const candidates = $(el).find('a[href^="http"]')
-        .add($(el).nextUntil('h2, h3, h4').find('a[href^="http"]').slice(0, 8));
-
-      candidates.each((_, aEl) => {
-        const href = $(aEl).attr('href') || '';
-        const text = cleanText($(aEl).text());
-
-        if (!isValidDownloadLink(href, text)) return;
-        if (seenLinks.has(href)) return;
-
-        let label = headingText.length >= 5 ? headingText : (text || `Option ${downloadOptions.length + 1}`);
-
-        // سایز اگر داخل متن باشه
-        const sizeMatch = (headingText + ' ' + text).match(/\[?\d+(\.\d+)?\s*(MB|GB)\]?/i);
-        if (sizeMatch && !label.includes(sizeMatch[0])) {
-          label += ` ${sizeMatch[0]}`;
-        }
-
-        seenLinks.add(href);
-        downloadOptions.push({
-          id: downloadOptions.length + 1,
-          label: label.slice(0, 100),
-          link: href
-        });
-      });
-    });
-
-    // اگر هنوز کم بود، همه لینک‌های معتبر رو جمع کن
-    if (downloadOptions.length < 4) {
-      $('a[href^="http"]').each((_, el) => {
-        const href = $(el).attr('href') || '';
-        const text = cleanText($(el).text());
-
-        if (!isValidDownloadLink(href, text)) return;
-        if (seenLinks.has(href)) return;
-
-        let qualityLabel = cleanText(
-          $(el).parent().prev().text() ||
-          $(el).closest('p, div').prev('p, h3, h4, strong').text() ||
-          $(el).prev().text() ||
-          text
-        );
-
-        if (!qualityLabel || qualityLabel.length > 70) {
-          qualityLabel = text || `Option ${downloadOptions.length + 1}`;
-        }
-
-        const sizeMatch = text.match(/\[([^\]]+)\]/);
-        if (sizeMatch && !qualityLabel.includes(sizeMatch[0])) {
-          qualityLabel += ` ${sizeMatch[0]}`;
-        }
-
-        seenLinks.add(href);
-        downloadOptions.push({
-          id: downloadOptions.length + 1,
-          label: qualityLabel.slice(0, 100),
-          link: href
-        });
-      });
-    }
+    const downloadOptions = extractLinksFromHtml(pageHtml, 'Legacy');
 
     if (downloadOptions.length === 0) {
       return res.status(200).json({
         success: false,
         stage: 'PARSING_FAILED',
         targetUrl: targetPageUrl,
-        message: 'Page was found, but no valid download links could be extracted.'
+        season: requestedSeason || null,
+        message: requestedSeason
+          ? `No download links found for Season ${requestedSeason}.`
+          : 'Page was found, but no valid download links could be extracted.'
       });
     }
 
@@ -366,6 +336,7 @@ module.exports = async (req, res) => {
       source: 'Legacy_Scraper',
       targetUrl: targetPageUrl,
       query: cleanSearchQuery,
+      season: requestedSeason || null,
       totalOptions: downloadOptions.length,
       options: downloadOptions.slice(0, 15)
     });
