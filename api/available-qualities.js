@@ -11,12 +11,11 @@ module.exports = async (req, res) => {
 
   const rawQuery = req.query.url;
   const requestedSeason = req.query.season ? String(req.query.season).trim() : null;
-  const requestedEpisode = req.query.episode ? String(req.query.episode).trim() : null;
 
   if (!rawQuery || typeof rawQuery !== 'string' || rawQuery.trim().length < 2) {
     return res.status(400).json({
       success: false,
-      error: 'The "url" parameter is required (movie/series title or full link)'
+      error: 'The "url" parameter is required'
     });
   }
 
@@ -40,58 +39,46 @@ module.exports = async (req, res) => {
     }
   };
 
-  const cleanText = (text = '') => {
-    return text.replace(/\s+/g, ' ').replace(/[\n\r\t]/g, ' ').trim();
-  };
+  const cleanText = (text = '') => text.replace(/\s+/g, ' ').replace(/[\n\r\t]/g, ' ').trim();
 
-  // ====================== تشخیص سیزن ======================
+  // ====================== فیلتر سیزن ======================
   const matchesSeason = (text) => {
     if (!requestedSeason) return true;
     const lower = text.toLowerCase();
-    const seasonNum = requestedSeason.replace(/^0+/, '');
-    const patterns = [
-      new RegExp(`season\\s*0*${seasonNum}\\b`, 'i'),
-      new RegExp(`\\bs0*${seasonNum}\\b`, 'i'),
-      new RegExp(`season0*${seasonNum}\\b`, 'i')
-    ];
-    return patterns.some(p => p.test(lower));
+    const num = requestedSeason.replace(/^0+/, '');
+    return new RegExp(`(?:season\\s*|s)0*${num}\\b`, 'i').test(lower);
   };
 
-  // ====================== تشخیص اینکه لیبل مربوط به همین عنوان هست یا نه ======================
+  // ====================== فیلتر عنوان (نسخه متعادل) ======================
   const isRelevantToQuery = (label, query) => {
     if (!label || !query) return true;
 
     const lowerLabel = label.toLowerCase();
     const lowerQuery = query.toLowerCase();
 
-    // کلمات کلیدی عنوان
-    const queryWords = lowerQuery
-      .split(/\s+/)
-      .filter(w => w.length > 2 && !['the', 'and', 'for', 'with', 'season', 'episode'].includes(w));
+    // کلمات مهم عنوان (کلمات کوتاه و بی‌معنی رو حذف کن)
+    const stopWords = ['the', 'and', 'for', 'with', 'season', 'episode', 'download', 'hindi', 'english', 'dual', 'audio'];
+    const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 2 && !stopWords.includes(w));
 
     if (queryWords.length === 0) return true;
 
-    // حداقل یکی از کلمات مهم عنوان باید داخل لیبل باشه
-    const hasQueryWord = queryWords.some(w => lowerLabel.includes(w));
+    // حداقل یکی از کلمات عنوان داخل لیبل باشه
+    const hasMatch = queryWords.some(w => lowerLabel.includes(w));
+    if (!hasMatch) return false;
 
-    // لیست سریال‌های معروف که نباید قاطی بشن (برای جلوگیری از related posts)
+    // سریال‌های معروف دیگه (خود عنوان فعلی رو از لیست خارج می‌کنیم)
     const foreignTitles = [
       'solar opposites', 'victor lessard', 'citadel', 'house of the dragon',
-      'silo', 'outer banks', 'the boys', 'reacher', 'bridgerton', 'ted lasso',
-      'the night agent', 'fallout', 'shogun', 'the last of us'
-    ];
+      'silo', 'outer banks', 'the boys', 'bridgerton', 'ted lasso',
+      'the night agent', 'fallout', 'shogun', 'the last of us',
+      'stranger things', 'wednesday', 'euphoria', 'succession'
+    ].filter(t => !queryWords.some(w => t.includes(w)));
 
-    // اگر لیبل اسم سریال دیگه‌ای رو داره و اسم سریال فعلی رو نداره → رد
     for (const foreign of foreignTitles) {
-      if (lowerLabel.includes(foreign) && !queryWords.some(w => foreign.includes(w))) {
-        // اگر خود query همون foreign باشه مشکلی نیست
-        if (!lowerQuery.includes(foreign.split(' ')[0])) {
-          return false;
-        }
-      }
+      if (lowerLabel.includes(foreign)) return false;
     }
 
-    return hasQueryWord;
+    return true;
   };
 
   const validDomains = [
@@ -101,7 +88,7 @@ module.exports = async (req, res) => {
     'driveseed', 'driveleech',
     'modpro.blog', 'links.modpro', 'modlinks', 'modrefer',
     'unblockedgames.world', 'tech.unblockedgames', 'cloud.unblockedgames',
-    'oddfirm', 'techmny', 'en.techmny'
+    'oddfirm', 'techmny'
   ];
 
   const invalidKeywords = [
@@ -117,17 +104,16 @@ module.exports = async (req, res) => {
     if (!href.startsWith('http')) return false;
     if (invalidKeywords.some(kw => lowerHref.includes(kw))) return false;
 
-    // لینک‌های داخلی moviesmod که صفحه فیلم دیگه‌ان رو رد کن
-    if ((lowerHref.includes('moviesmod.zone') || lowerHref.includes('moviesmod.')) &&
-        lowerHref.includes('/download-') &&
-        !/episode|batch|zip|server|drive/i.test(lowerText)) {
+    // لینک صفحه فیلم/سریال دیگه رو رد کن
+    if (lowerHref.includes('moviesmod') && lowerHref.includes('/download-') &&
+        !/episode links|batch|zip|server|drive|google/i.test(lowerText)) {
       return false;
     }
 
     const hasValidDomain = validDomains.some(d => lowerHref.includes(d));
     const hasDownloadKeyword =
-      /download|episode links|batch|zip file|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|google drive|fast server|instant/i.test(lowerText) ||
-      /download|file|drive|nexdrive|gdtot|driveseed|modpro|unblockedgames|episode|batch/i.test(lowerHref);
+      /episode links|batch\/zip|batch|zip file|download|google drive|fast server|480p|720p|1080p/i.test(lowerText) ||
+      /modpro|unblockedgames|driveseed|nexdrive|gdtot|drive/i.test(lowerHref);
 
     return hasValidDomain || hasDownloadKeyword;
   };
@@ -142,33 +128,33 @@ module.exports = async (req, res) => {
         .replace(/\s+/g, ' ')
         .trim();
 
-  // ====================== استخراج لینک فقط از محتوای اصلی ======================
+  // ====================== استخراج لینک ======================
   const extractLinksFromHtml = (html, query) => {
     const $ = cheerio.load(html);
     const downloadOptions = [];
     const seenLinks = new Set();
 
-    // بخش‌های Related / Popular / More Posts رو کامل حذف کن تا لینک‌هاشون نیاد
-    $('.related-posts, .popular-posts, .more-posts, .jp-relatedposts, #related, .sidebar, aside, footer').remove();
-    $('h3, h4, h2').each((_, el) => {
+    // حذف بخش‌های Related / Popular
+    $('.related-posts, .popular-posts, .more-posts, .jp-relatedposts, aside, .sidebar').remove();
+    $('h2, h3, h4').each((_, el) => {
       const t = cleanText($(el).text()).toLowerCase();
-      if (t.includes('related') || t.includes('popular') || t.includes('you may also') || t.includes('more posts')) {
-        $(el).nextUntil('h2, h3').remove();
+      if (/(related|popular|you may also|more posts|recommended)/i.test(t)) {
+        $(el).nextUntil('h2').remove();
         $(el).remove();
       }
     });
 
-    // فقط هدینگ‌های کیفیت/سیزن داخل محتوای اصلی
     $('h2, h3, h4, strong, p').each((_, el) => {
       const headingText = cleanText($(el).text());
 
-      if (!/(480p|720p|1080p|2160p|4k|season\s*\d|web-dl|bluray|msubs|esubs)/i.test(headingText)) return;
-      if (headingText.length > 140) return;
+      // فقط هدینگ‌هایی که کیفیت یا سیزن دارن
+      if (!/(480p|720p|1080p|2160p|4k|season\s*\d|s0?\d|web-dl|bluray|msubs|esubs)/i.test(headingText)) return;
+      if (headingText.length > 150) return;
 
       // فیلتر سیزن
       if (!matchesSeason(headingText)) return;
 
-      // فیلتر عنوان (مربوط به همین سریال باشه)
+      // فیلتر عنوان
       if (!isRelevantToQuery(headingText, query)) return;
 
       const candidates = $(el).find('a[href^="http"]')
@@ -181,18 +167,11 @@ module.exports = async (req, res) => {
         if (!isValidDownloadLink(href, text)) return;
         if (seenLinks.has(href)) return;
 
-        // لینک صفحه فیلم دیگه رو رد کن
-        if (href.includes('/download-') && href.includes('moviesmod') && !text.match(/episode|batch|zip|server|drive/i)) {
-          return;
-        }
-
         let label = headingText;
-
         if (text && /episode links|batch|zip|download|google drive|fast server/i.test(text)) {
           label = `${headingText} — ${text}`;
         }
 
-        // دوباره چک کن لیبل نهایی مربوط به همین عنوان باشه
         if (!isRelevantToQuery(label, query)) return;
 
         seenLinks.add(href);
@@ -207,9 +186,9 @@ module.exports = async (req, res) => {
     return downloadOptions;
   };
 
-  // ====================== STAGE 1: WordPress REST API ======================
+  // ====================== STAGE 1: WordPress API ======================
   try {
-    const wpApiUrl = `https://moviesmod.zone/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=5&_fields=id,title,content,link`;
+    const wpApiUrl = `https://moviesmod.zone/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=6&_fields=id,title,content,link`;
 
     const wpRes = await fetchWithTimeout(wpApiUrl, {
       headers: { ...customHeaders, 'Accept': 'application/json' }
@@ -219,27 +198,25 @@ module.exports = async (req, res) => {
       const posts = await wpRes.json();
 
       if (Array.isArray(posts) && posts.length > 0) {
-        // فقط بهترین پست رو انتخاب کن (نه همه)
         const scored = posts.map(post => {
           const title = (post.title?.rendered || '').toLowerCase();
           const query = cleanSearchQuery.toLowerCase();
           let score = 0;
 
-          if (title.includes(query)) score += 10;
-          query.split(' ').forEach(w => {
-            if (w.length > 2 && title.includes(w)) score += 2;
+          if (title.includes(query)) score += 12;
+          query.split(/\s+/).forEach(w => {
+            if (w.length > 2 && title.includes(w)) score += 3;
           });
-          // اگر "download" و اسم سریال با هم بودن امتیاز بیشتر
-          if (title.includes('download') && score > 0) score += 3;
+          if (title.includes('download')) score += 2;
 
-          return { post, score };
+          return { post, score, title };
         });
 
         scored.sort((a, b) => b.score - a.score);
         const best = scored[0];
 
-        // فقط اگر امتیاز قابل قبول باشه
-        if (best && best.score >= 4) {
+        // آستانه امتیاز رو کمی پایین آوردم
+        if (best && best.score >= 3) {
           const content = best.post.content?.rendered || '';
           if (content) {
             const options = extractLinksFromHtml(content, cleanSearchQuery);
@@ -279,23 +256,18 @@ module.exports = async (req, res) => {
       $search('a[href*="moviesmod.zone"]').each((_, el) => {
         const href = $search(el).attr('href') || '';
         const text = cleanText($search(el).text());
-        const titleAttr = $search(el).attr('title') || '';
-
         if (!href.includes('moviesmod.zone')) return;
-        if (href.includes('request') || href.includes('dmca') || href.includes('about')) return;
-        if (text.length < 8) return;
+        if (/request|dmca|about|contact/i.test(href + text)) return;
+        if (text.length < 6) return;
 
         const fullHref = href.startsWith('http') ? href : `https://moviesmod.zone${href}`;
-        const lowerText = (text + ' ' + titleAttr).toLowerCase();
+        const lowerText = text.toLowerCase();
         const queryWords = cleanSearchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2);
 
         let score = 0;
-        queryWords.forEach(word => {
-          if (lowerText.includes(word)) score += 2;
-        });
-        if (lowerText.includes('download')) score += 3;
-        // امتیاز بیشتر اگر تقریباً کل عنوان داخل متن باشه
-        if (lowerText.includes(cleanSearchQuery.toLowerCase())) score += 8;
+        queryWords.forEach(w => { if (lowerText.includes(w)) score += 3; });
+        if (lowerText.includes('download')) score += 4;
+        if (lowerText.includes(cleanSearchQuery.toLowerCase())) score += 10;
 
         if (score > bestScore) {
           bestScore = score;
@@ -303,7 +275,7 @@ module.exports = async (req, res) => {
         }
       });
 
-      if (!foundLink || bestScore < 4) {
+      if (!foundLink || bestScore < 3) {
         return res.status(200).json({
           success: false,
           stage: 'SEARCH_FAILED',
@@ -325,8 +297,8 @@ module.exports = async (req, res) => {
         targetUrl: targetPageUrl,
         season: requestedSeason || null,
         message: requestedSeason
-          ? `No download links found for Season ${requestedSeason}.`
-          : 'Page was found, but no valid download links could be extracted.'
+          ? `No links found for Season ${requestedSeason}.`
+          : 'No valid download links extracted.'
       });
     }
 
@@ -343,7 +315,7 @@ module.exports = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message || 'Failed to connect to the destination server'
+      error: error.message || 'Failed to connect'
     });
   }
 };
