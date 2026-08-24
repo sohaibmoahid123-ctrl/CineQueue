@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.9',
-    'Referer': 'https://moviesmods.best/'
+    'Referer': 'https://moviesmod.zone/'
   };
 
   const fetchWithTimeout = async (url, options = {}, timeoutMs = 7000) => {
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
 
   const invalidKeywords = [
     'facebook', 'twitter', 'instagram', 'telegram', 't.me',
-    'wp-content', 'modpro.blog', 'moviesmods.best', 'javascript',
+    'wp-content', 'modpro.blog', 'moviesmods.best', 'moviesmod.zone', 'javascript',
     'mailto:', 'whatsapp', 'discord'
   ];
 
@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
 
   // ====================== STAGE 1: WordPress REST API ======================
   try {
-    const wpApiUrl = `https://episodes.modpro.blog/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=8&_fields=id,title,content,link`;
+    const wpApiUrl = `https://moviesmod.zone/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearchQuery)}&per_page=8&_fields=id,title,content,link`;
 
     const wpRes = await fetchWithTimeout(wpApiUrl, {
       headers: {
@@ -172,13 +172,13 @@ module.exports = async (req, res) => {
     console.warn('[WP Stage Failed]', err.message);
   }
 
-  // ====================== STAGE 2: moviesmods.best (Legacy) ======================
+  // ====================== STAGE 2: moviesmod.zone (Legacy) ======================
   try {
     let targetPageUrl = rawQuery;
 
     // If not a direct URL → search
     if (!isDirectUrl) {
-      const searchUrl = `https://moviesmods.best/?do=search&subaction=search&story=${encodeURIComponent(cleanSearchQuery)}`;
+      const searchUrl = `https://moviesmod.zone/?s=${encodeURIComponent(cleanSearchQuery)}`;
 
       const searchRes = await fetchWithTimeout(searchUrl, {
         headers: customHeaders
@@ -190,16 +190,16 @@ module.exports = async (req, res) => {
       let foundLink = null;
       let bestScore = -1;
 
-      $search('a[href*=".html"]').each((_, el) => {
+      $search('a[href*="moviesmod.zone"]').each((_, el) => {
         const href = $search(el).attr('href') || '';
         const text = cleanText($search(el).text());
         const titleAttr = $search(el).attr('title') || '';
 
-        if (!href.includes('moviesmods.best')) return;
+        if (!href.includes('moviesmod.zone')) return;
         if (href.includes('request') || href.includes('dmca') || href.includes('about')) return;
         if (text.length < 8) return;
 
-        const fullHref = href.startsWith('http') ? href : `https://moviesmods.best${href}`;
+        const fullHref = href.startsWith('http') ? href : `https://moviesmod.zone${href}`;
         const lowerText = (text + ' ' + titleAttr).toLowerCase();
         const queryWords = cleanSearchQuery.toLowerCase().split(/\s+/);
 
