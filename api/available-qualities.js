@@ -113,59 +113,72 @@ module.exports = async (req, res) => {
     const options = [];
     const seen = new Set();
 
-    // روش مطمئن: تمام لینک‌های episodes.modpro.blog (و مشابه) رو پیدا کن
-    // و متن سیزن نزدیک‌شون رو بخون
+    // تمام لینک‌های دانلود
     $('a[href*="modpro.blog"], a[href*="driveseed"], a[href*="unblockedgames"], a[href*="modlinks"]').each((_, el) => {
       const href = $(el).attr('href') || '';
       if (!href.startsWith('http') || seen.has(href)) return;
 
       const btnText = clean($(el).text()) || clean($(el).find('.mb-text').text()) || 'Download';
 
-      // متن اطراف برای فهمیدن سیزن و کیفیت
-      let context = '';
-      const parent = $(el).parent();
-      context += clean(parent.text()) + ' ';
-      context += clean(parent.prev().text()) + ' ';
-      context += clean(parent.prev().prev().text()) + ' ';
-      context += clean($(el).closest('p, div').prev().text()) + ' ';
+      // فقط نزدیک‌ترین متن سیزن/کیفیت رو پیدا کن (نه چند تا قبلی)
+      let seasonLabel = '';
+      let node = $(el);
 
-      // چند المان قبلی رو هم چک کن
-      let prev = parent.prev();
-      for (let i = 0; i < 4 && prev.length; i++) {
-        context += clean(prev.text()) + ' ';
-        prev = prev.prev();
-      }
+      // اول داخل والد، بعد قبلی‌ها، ولی به محض پیدا کردن Season متوقف شو
+      for (let i = 0; i < 8; i++) {
+        const parent = node.parent();
+        const prev = node.prev();
 
-      const lowerContext = context.toLowerCase();
+        const candidates = [
+          clean(prev.text()),
+          clean(parent.prev().text()),
+          clean(parent.text())
+        ];
 
-      // فیلتر سیزن
-      if (requestedSeason) {
-        const seasonOk = new RegExp(`(?:season\\s*|s)\\s*0*${requestedSeason}\\b`, 'i').test(context);
-        if (!seasonOk) return;
-      }
-
-      // رد کردن related posts (اسم سریال‌های دیگه)
-      const foreign = ['solar opposites', 'victor lessard', 'citadel', 'house of the dragon', 'silo', 'outer banks', 'bridgerton', 'ted lasso'];
-      const queryFirst = cleanQuery.toLowerCase().split(/\s+/)[0];
-      for (const f of foreign) {
-        if (lowerContext.includes(f) && !f.includes(queryFirst) && !queryFirst.includes(f.split(' ')[0])) {
-          return;
+        for (const t of candidates) {
+          if (/Season\s*\d+/i.test(t) && /(480p|720p|1080p|2160p|x264|x265|10Bit|Esubs|Msubs)/i.test(t)) {
+            seasonLabel = t;
+            break;
+          }
+          // اگر فقط Season X بود هم قبول کن
+          if (/^Season\s*\d+\s*\{/i.test(t) || /Season\s*\d+\s*\{Hindi/i.test(t)) {
+            seasonLabel = t;
+            break;
+          }
         }
+        if (seasonLabel) break;
+        node = parent.length ? parent : prev;
+        if (!node.length) break;
       }
 
-      // ساخت لیبل
-      let label = '';
-      const seasonMatch = context.match(/Season\s*\d+\s*\{[^}]+\}[^\n[]*(?:480p|720p|1080p|2160p)[^\n[]*(?:\[[^\]]+\])?/i);
-      if (seasonMatch) {
-        label = seasonMatch[0].trim();
-      } else {
-        // ساده‌تر
-        const m = context.match(/(Season\s*\d+[^\n]{0,60}(?:480p|720p|1080p)[^\n]{0,40})/i);
-        label = m ? m[1].trim() : context.slice(0, 80).trim();
+      // اگر هنوز پیدا نشد، از متن والد استفاده کن
+      if (!seasonLabel) {
+        seasonLabel = clean($(el).parent().text()).slice(0, 100);
       }
 
-      if (!label || label.length < 5) label = btnText;
-      label = `${label} — ${btnText}`.replace(/\s+/g, ' ').trim().slice(0, 130);
+      // ========== فیلتر سیزن دقیق ==========
+      if (requestedSeason) {
+        const match = seasonLabel.match(/Season\s*0*(\d+)/i);
+        if (!match) return; // سیزن مشخص نیست → رد
+        const foundSeason = match[1].replace(/^0+/, '');
+        if (foundSeason !== String(requestedSeason).replace(/^0+/, '')) return;
+      }
+
+      // رد کردن related posts
+      const lower = seasonLabel.toLowerCase();
+      const foreign = ['solar opposites', 'victor lessard', 'citadel', 'house of the dragon', 'silo', 'outer banks', 'bridgerton'];
+      const q = cleanQuery.toLowerCase().split(/\s+/)[0];
+      for (const f of foreign) {
+        if (lower.includes(f) && !f.includes(q)) return;
+      }
+
+      let label = seasonLabel;
+      // تمیز کردن لیبل
+      label = label.replace(/\s+/g, ' ').trim();
+      if (btnText && !label.toLowerCase().includes(btnText.toLowerCase())) {
+        label = `${label} — ${btnText}`;
+      }
+      label = label.slice(0, 130);
 
       seen.add(href);
       options.push({
@@ -174,7 +187,7 @@ module.exports = async (req, res) => {
         link: href
       });
     });
-
+    
     if (options.length === 0) {
       return res.status(200).json({
         success: false,
