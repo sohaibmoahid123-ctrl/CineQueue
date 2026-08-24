@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
     'Referer': 'https://moviesmod.zone/'
   };
 
-  const fetchWithTimeout = async (url, options = {}, timeoutMs = 7000) => {
+  const fetchWithTimeout = async (url, options = {}, timeoutMs = 8000) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -47,17 +47,24 @@ module.exports = async (req, res) => {
       .trim();
   };
 
-  // Valid & invalid domain filters
+  // دامنه‌های معتبر (نهایی + واسط‌های شناخته‌شده MoviesMod)
   const validDomains = [
+    // نهایی
     'nexdrive', 'gdtot', 'pixeldrain', 'fastserver', 'drive.google',
     'mega.nz', 'mediafire', 'workers.dev', 'hubcloud', 'gdflix',
-    'filepress', 'dropgalaxy', 'streamtape', 'dood', 'mixdrop'
+    'filepress', 'dropgalaxy', 'streamtape', 'dood', 'mixdrop',
+    'driveseed', 'driveleech',
+    // واسط‌های MoviesMod
+    'modpro.blog', 'links.modpro', 'modlinks', 'modrefer',
+    'unblockedgames.world', 'tech.unblockedgames', 'cloud.unblockedgames',
+    'oddfirm', 'techmny', 'en.techmny'
   ];
 
+  // فقط چیزهایی که واقعاً نباید میان
   const invalidKeywords = [
     'facebook', 'twitter', 'instagram', 'telegram', 't.me',
-    'wp-content', 'modpro.blog', 'moviesmods.best', 'moviesmod.zone', 'javascript',
-    'mailto:', 'whatsapp', 'discord'
+    'wp-content', 'javascript', 'mailto:', 'whatsapp', 'discord',
+    'youtube.com', 'youtu.be', 'imdb.com', 'wikipedia'
   ];
 
   const isValidDownloadLink = (href = '', text = '') => {
@@ -67,10 +74,16 @@ module.exports = async (req, res) => {
     if (!href.startsWith('http')) return false;
     if (invalidKeywords.some(kw => lowerHref.includes(kw))) return false;
 
+    // خود دامنه moviesmod رو رد کن (لینک‌های داخلی صفحه)
+    if (lowerHref.includes('moviesmod.zone') || lowerHref.includes('moviesmod.')) {
+      // فقط اگر لینک دانلود واقعی باشه قبول کن (نادر)
+      if (!/download|drive|server|file/i.test(lowerText + lowerHref)) return false;
+    }
+
     const hasValidDomain = validDomains.some(d => lowerHref.includes(d));
     const hasDownloadKeyword =
-      /download|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|hdts|hdcam/i.test(lowerText) ||
-      /download|file|drive|nexdrive|gdtot/i.test(lowerHref);
+      /download|click here|480p|720p|1080p|2160p|4k|web-dl|bluray|hdts|hdcam|google drive|fast server|instant/i.test(lowerText) ||
+      /download|file|drive|nexdrive|gdtot|driveseed|modpro|unblockedgames/i.test(lowerHref);
 
     return hasValidDomain || hasDownloadKeyword;
   };
@@ -103,7 +116,6 @@ module.exports = async (req, res) => {
         const downloadOptions = [];
         const seenLinks = new Set();
 
-        // Prioritize posts whose title is more similar to the query
         const sortedPosts = posts.sort((a, b) => {
           const titleA = (a.title?.rendered || '').toLowerCase();
           const titleB = (b.title?.rendered || '').toLowerCase();
@@ -120,40 +132,74 @@ module.exports = async (req, res) => {
 
           const $ = cheerio.load(content);
 
-          $('a[href^="http"]').each((_, el) => {
-            const href = $(el).attr('href') || '';
-            const text = cleanText($(el).text());
+          // اول سعی کن لینک‌های نزدیک به هدینگ‌های کیفیت رو پیدا کنی
+          $('h3, h4, strong, p, div').each((_, el) => {
+            const headingText = cleanText($(el).text());
+            if (!/(480p|720p|1080p|2160p|4k|web-dl|bluray)/i.test(headingText)) return;
 
-            if (!isValidDownloadLink(href, text)) return;
-            if (seenLinks.has(href)) return;
+            // لینک‌های داخل یا بلافاصله بعد از این هدینگ
+            const links = $(el).find('a[href^="http"]').add($(el).nextAll().find('a[href^="http"]').slice(0, 6));
 
-            // Build a clean label
-            let label = cleanText(
-              $(el).prev().text() ||
-              $(el).parent().prev().text() ||
-              $(el).closest('p, div, li').prev().text() ||
-              text
-            );
+            links.each((_, aEl) => {
+              const href = $(aEl).attr('href') || '';
+              const text = cleanText($(aEl).text());
 
-            if (!label || label.length > 80 || label.length < 3) {
-              label = text || `Option ${downloadOptions.length + 1}`;
-            }
+              if (!isValidDownloadLink(href, text)) return;
+              if (seenLinks.has(href)) return;
 
-            // Append quality if found in the link text
-            const qualityMatch = text.match(/(480p|720p|1080p|2160p|4K|WEB-DL|BluRay|HDTS|HDCAM)/i);
-            if (qualityMatch && !label.toLowerCase().includes(qualityMatch[0].toLowerCase())) {
-              label += ` [${qualityMatch[0]}]`;
-            }
+              let label = headingText.length > 5 && headingText.length < 90
+                ? headingText
+                : (text || `Option ${downloadOptions.length + 1}`);
 
-            seenLinks.add(href);
-            downloadOptions.push({
-              id: downloadOptions.length + 1,
-              label: label,
-              link: href
+              // کیفیت رو اگر نبود اضافه کن
+              const qualityMatch = (headingText + ' ' + text).match(/(480p|720p|1080p|2160p|4K)/i);
+              if (qualityMatch && !label.toLowerCase().includes(qualityMatch[0].toLowerCase())) {
+                label += ` [${qualityMatch[0]}]`;
+              }
+
+              seenLinks.add(href);
+              downloadOptions.push({
+                id: downloadOptions.length + 1,
+                label: label.slice(0, 100),
+                link: href
+              });
             });
           });
 
-          // Stop early if we already have enough links
+          // اگر هنوز لینک کم داریم، همه لینک‌های معتبر رو هم جمع کن
+          if (downloadOptions.length < 6) {
+            $('a[href^="http"]').each((_, el) => {
+              const href = $(el).attr('href') || '';
+              const text = cleanText($(el).text());
+
+              if (!isValidDownloadLink(href, text)) return;
+              if (seenLinks.has(href)) return;
+
+              let label = cleanText(
+                $(el).prev().text() ||
+                $(el).parent().prev().text() ||
+                $(el).closest('p, div, li').prev().text() ||
+                text
+              );
+
+              if (!label || label.length > 80 || label.length < 3) {
+                label = text || `Option ${downloadOptions.length + 1}`;
+              }
+
+              const qualityMatch = text.match(/(480p|720p|1080p|2160p|4K|WEB-DL|BluRay)/i);
+              if (qualityMatch && !label.toLowerCase().includes(qualityMatch[0].toLowerCase())) {
+                label += ` [${qualityMatch[0]}]`;
+              }
+
+              seenLinks.add(href);
+              downloadOptions.push({
+                id: downloadOptions.length + 1,
+                label: label.slice(0, 100),
+                link: href
+              });
+            });
+          }
+
           if (downloadOptions.length >= 12) break;
         }
 
@@ -172,17 +218,16 @@ module.exports = async (req, res) => {
     console.warn('[WP Stage Failed]', err.message);
   }
 
-  // ====================== STAGE 2: moviesmod.zone (Legacy) ======================
+  // ====================== STAGE 2: moviesmod.zone (Legacy Scraper) ======================
   try {
     let targetPageUrl = rawQuery;
 
-    // If not a direct URL → search
     if (!isDirectUrl) {
       const searchUrl = `https://moviesmod.zone/?s=${encodeURIComponent(cleanSearchQuery)}`;
 
       const searchRes = await fetchWithTimeout(searchUrl, {
         headers: customHeaders
-      }, 6500);
+      }, 7000);
 
       const searchHtml = await searchRes.text();
       const $search = cheerio.load(searchHtml);
@@ -203,11 +248,13 @@ module.exports = async (req, res) => {
         const lowerText = (text + ' ' + titleAttr).toLowerCase();
         const queryWords = cleanSearchQuery.toLowerCase().split(/\s+/);
 
-        // Simple scoring to pick the best matching result
         let score = 0;
         queryWords.forEach(word => {
           if (word.length > 2 && lowerText.includes(word)) score += 1;
         });
+
+        // امتیاز بیشتر به لینک‌هایی که "download" دارن
+        if (lowerText.includes('download')) score += 2;
 
         if (score > bestScore) {
           bestScore = score;
@@ -226,10 +273,10 @@ module.exports = async (req, res) => {
       targetPageUrl = foundLink;
     }
 
-    // Open the movie/series page
+    // صفحه فیلم رو باز کن
     const pageRes = await fetchWithTimeout(targetPageUrl, {
       headers: customHeaders
-    }, 7000);
+    }, 8000);
 
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
@@ -237,37 +284,73 @@ module.exports = async (req, res) => {
     const downloadOptions = [];
     const seenLinks = new Set();
 
-    $('a[href^="http"]').each((_, el) => {
-      const href = $(el).attr('href') || '';
-      const text = cleanText($(el).text());
+    // روش بهتر: اول هدینگ‌های کیفیت رو پیدا کن، بعد لینک‌های نزدیکشون
+    $('h2, h3, h4, strong, p').each((_, el) => {
+      const headingText = cleanText($(el).text());
+      if (!/(480p|720p|1080p|2160p|4k|season\s*\d|episode|web-dl|bluray|download)/i.test(headingText)) return;
+      if (headingText.length > 120) return;
 
-      if (!isValidDownloadLink(href, text)) return;
-      if (seenLinks.has(href)) return;
+      // لینک‌های داخل خود المان + چند المان بعدی
+      const candidates = $(el).find('a[href^="http"]')
+        .add($(el).nextUntil('h2, h3, h4').find('a[href^="http"]').slice(0, 8));
 
-      let qualityLabel = cleanText(
-        $(el).parent().prev().text() ||
-        $(el).closest('p, div').prev('p, h3, h4, strong').text() ||
-        $(el).prev().text() ||
-        text
-      );
+      candidates.each((_, aEl) => {
+        const href = $(aEl).attr('href') || '';
+        const text = cleanText($(aEl).text());
 
-      if (!qualityLabel || qualityLabel.length > 60) {
-        qualityLabel = text || `Option ${downloadOptions.length + 1}`;
-      }
+        if (!isValidDownloadLink(href, text)) return;
+        if (seenLinks.has(href)) return;
 
-      // Extract size if present inside brackets
-      const sizeMatch = text.match(/\[([^\]]+)\]/);
-      if (sizeMatch && !qualityLabel.includes(sizeMatch[0])) {
-        qualityLabel += ` ${sizeMatch[0]}`;
-      }
+        let label = headingText.length >= 5 ? headingText : (text || `Option ${downloadOptions.length + 1}`);
 
-      seenLinks.add(href);
-      downloadOptions.push({
-        id: downloadOptions.length + 1,
-        label: qualityLabel,
-        link: href
+        // سایز اگر داخل متن باشه
+        const sizeMatch = (headingText + ' ' + text).match(/\[?\d+(\.\d+)?\s*(MB|GB)\]?/i);
+        if (sizeMatch && !label.includes(sizeMatch[0])) {
+          label += ` ${sizeMatch[0]}`;
+        }
+
+        seenLinks.add(href);
+        downloadOptions.push({
+          id: downloadOptions.length + 1,
+          label: label.slice(0, 100),
+          link: href
+        });
       });
     });
+
+    // اگر هنوز کم بود، همه لینک‌های معتبر رو جمع کن
+    if (downloadOptions.length < 4) {
+      $('a[href^="http"]').each((_, el) => {
+        const href = $(el).attr('href') || '';
+        const text = cleanText($(el).text());
+
+        if (!isValidDownloadLink(href, text)) return;
+        if (seenLinks.has(href)) return;
+
+        let qualityLabel = cleanText(
+          $(el).parent().prev().text() ||
+          $(el).closest('p, div').prev('p, h3, h4, strong').text() ||
+          $(el).prev().text() ||
+          text
+        );
+
+        if (!qualityLabel || qualityLabel.length > 70) {
+          qualityLabel = text || `Option ${downloadOptions.length + 1}`;
+        }
+
+        const sizeMatch = text.match(/\[([^\]]+)\]/);
+        if (sizeMatch && !qualityLabel.includes(sizeMatch[0])) {
+          qualityLabel += ` ${sizeMatch[0]}`;
+        }
+
+        seenLinks.add(href);
+        downloadOptions.push({
+          id: downloadOptions.length + 1,
+          label: qualityLabel.slice(0, 100),
+          link: href
+        });
+      });
+    }
 
     if (downloadOptions.length === 0) {
       return res.status(200).json({
