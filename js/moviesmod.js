@@ -1,5 +1,5 @@
 // ============================================================
-// moviesmod.js  —  جستجو و نمایش لینک‌های MoviesMod
+// moviesmod.js  —  جستجو و نمایش لینک‌های MoviesMod (اصلاح‌شده)
 // ============================================================
 
 function getMoviesModLink(title, isTv = false, season = null, episode = null) {
@@ -50,7 +50,10 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
 
       container.innerHTML = `
         <div style="background: #161d2f; padding: 15px; border-radius: 8px; border: 1px solid #2e3856;">
-          <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem; margin-bottom: 12px;">Select Quality / Option:</p>
+          <p style="margin-top: 0; color: #9ca3af; font-size: 0.9rem; margin-bottom: 12px;">
+            Select Quality / Option:
+            ${data.source ? `<span style="opacity:0.6;font-size:0.75rem;">(${data.source})</span>` : ''}
+          </p>
           <div style="display: flex; flex-direction: column; gap: 8px;">
             ${buttonsHtml}
           </div>
