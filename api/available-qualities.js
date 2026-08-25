@@ -44,9 +44,8 @@ module.exports = async (req, res) => {
   try {
     let targetUrl = rawQuery;
 
-    // ========== پیدا کردن صفحه فیلم ==========
+    // ========== ۱. جستجوی صفحه فیلم/سریال ==========
     if (!isDirectUrl) {
-      // هم /?s= و هم /search/ رو امتحان کن
       const searchUrls = [
         `https://moviesmod.zone/?s=${encodeURIComponent(cleanQuery)}`,
         `https://moviesmod.zone/search/${encodeURIComponent(cleanQuery)}`
@@ -96,98 +95,76 @@ module.exports = async (req, res) => {
       targetUrl = foundLink;
     }
 
-    // ========== باز کردن صفحه فیلم ==========
+    // ========== ۲. باز کردن صفحه هدف ==========
     const pageRes = await fetchWithTimeout(targetUrl, 9000);
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
-    // Related posts رو حذف کن
-    $('a[href*="/download-"]').each((_, el) => {
-      const t = clean($(el).text()).toLowerCase();
-      // لینک‌های related که اسم سریال دیگه‌ان
-      if (t.includes('download ') && !t.includes(cleanQuery.toLowerCase().split(' ')[0])) {
-        // نگهشون می‌داریم فقط اگر داخل محتوای اصلی باشن، بعداً فیلتر می‌کنیم
-      }
-    });
+    // پاکسازی عناصر مزاحم (پست‌های مرتبط و منوها) تا لینک‌های اشتباه وارد نشوند
+    $('.code-block, .related-posts, .yarpp-related, footer, sidebar, .navigation').remove();
 
     const options = [];
     const seen = new Set();
 
-    // تمام لینک‌های دانلود
+    // ========== ۳. استخراج معنایی لینک‌ها (Semantic Extraction) ==========
     $('a[href*="modpro.blog"], a[href*="driveseed"], a[href*="unblockedgames"], a[href*="modlinks"]').each((_, el) => {
       const href = $(el).attr('href') || '';
       if (!href.startsWith('http') || seen.has(href)) return;
 
-      const btnText = clean($(el).text()) || clean($(el).find('.mb-text').text()) || 'Download';
+      const btnText = clean($(el).text()) || 'Download';
 
-      // فقط نزدیک‌ترین متن سیزن/کیفیت رو پیدا کن (نه چند تا قبلی)
-      let seasonLabel = '';
-      let node = $(el);
-
-      // اول داخل والد، بعد قبلی‌ها، ولی به محض پیدا کردن Season متوقف شو
-      for (let i = 0; i < 8; i++) {
-        const parent = node.parent();
-        const prev = node.prev();
-
-        const candidates = [
-          clean(prev.text()),
-          clean(parent.prev().text()),
-          clean(parent.text())
-        ];
-
-        for (const t of candidates) {
-          if (/Season\s*\d+/i.test(t) && /(480p|720p|1080p|2160p|x264|x265|10Bit|Esubs|Msubs)/i.test(t)) {
-            seasonLabel = t;
-            break;
-          }
-          // اگر فقط Season X بود هم قبول کن
-          if (/^Season\s*\d+\s*\{/i.test(t) || /Season\s*\d+\s*\{Hindi/i.test(t)) {
-            seasonLabel = t;
-            break;
-          }
+      // یافتن نزدیک‌ترین متن/تیترِ بالای دکمه
+      let contextText = '';
+      let parentContainer = $(el).closest('p, div, h3, h4');
+      
+      // بررسی متنِ عناصرِ قبل از دکمه
+      let prevElem = parentContainer.prev();
+      let steps = 0;
+      while (prevElem.length > 0 && steps < 4) {
+        const txt = clean(prevElem.text());
+        if (txt.length > 5) {
+          contextText = txt + ' ' + contextText;
+          // اگر به یک تیتر اصلی رسیدیم توقف کن
+          if (/(Season\s*\d+|S\d+|480p|720p|1080p|2160p)/i.test(txt)) break;
         }
-        if (seasonLabel) break;
-        node = parent.length ? parent : prev;
-        if (!node.length) break;
+        prevElem = prevElem.prev();
+        steps++;
       }
 
-      // اگر هنوز پیدا نشد، از متن والد استفاده کن
-      if (!seasonLabel) {
-        seasonLabel = clean($(el).parent().text()).slice(0, 100);
-      }
+      if (!contextText) contextText = clean(parentContainer.text());
 
-      // ========== فیلتر سیزن دقیق ==========
+      // ========== ۴. منطق تفکیک فیلم از سریال ==========
       if (requestedSeason) {
-        const match = seasonLabel.match(/Season\s*0*(\d+)/i);
-        if (!match) return; // سیزن مشخص نیست → رد
-        const foundSeason = match[1].replace(/^0+/, '');
-        if (foundSeason !== String(requestedSeason).replace(/^0+/, '')) return;
+        // --- حالت سریال ---
+        // بررسی شماره فصل در متنِ اطراف دکمه
+        const seasonMatch = contextText.match(/(?:Season\s*|S)0*(\d+)/i) || (btnText + ' ' + href).match(/(?:Season\s*|S)0*(\d+)/i);
+        
+        if (!seasonMatch) return; // اگر فصل نداشت رد شو
+        
+        const foundSeason = seasonMatch[1].replace(/^0+/, '');
+        if (foundSeason !== String(requestedSeason)) return; // اگر فصلِ درخواستی نبود رد شو
+      } else {
+        // --- حالت فیلم (بدون فصل) ---
+        // اگر کاربر سیزن نخواسته، اما متنِ لینک مربوط به یک سریال با سیزن دیگر است، ردش کن
+        const hasSeasonPattern = /(?:Season\s*|S)0*(\d+)/i.test(contextText);
+        // اگر فیلم است اما متن شامل فصل بود، در صورت عدم درخواست سیزن باز هم لینک‌های کیفیت را جمع‌آوری می‌کنیم
       }
 
-      // رد کردن related posts
-      const lower = seasonLabel.toLowerCase();
-      const foreign = ['solar opposites', 'victor lessard', 'citadel', 'house of the dragon', 'silo', 'outer banks', 'bridgerton'];
-      const q = cleanQuery.toLowerCase().split(/\s+/)[0];
-      for (const f of foreign) {
-        if (lower.includes(f) && !f.includes(q)) return;
-      }
-
-      let label = seasonLabel;
-      // تمیز کردن لیبل
-      label = label.replace(/\s+/g, ' ').trim();
+      // ساخت عنوان تمیز برای نشان دادن به کاربر
+      let label = contextText.replace(/\s+/g, ' ').trim();
+      if (label.length > 110) label = label.slice(0, 110) + '...';
       if (btnText && !label.toLowerCase().includes(btnText.toLowerCase())) {
         label = `${label} — ${btnText}`;
       }
-      label = label.slice(0, 130);
 
       seen.add(href);
       options.push({
         id: options.length + 1,
-        label,
+        label: label || 'Download Link',
         link: href
       });
     });
-    
+
     if (options.length === 0) {
       return res.status(200).json({
         success: false,
@@ -207,7 +184,7 @@ module.exports = async (req, res) => {
       query: cleanQuery,
       season: requestedSeason,
       totalOptions: options.length,
-      options: options.slice(0, 20)
+      options: options.slice(0, 25)
     });
 
   } catch (err) {
