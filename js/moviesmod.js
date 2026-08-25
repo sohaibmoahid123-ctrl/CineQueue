@@ -65,21 +65,7 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
           </div>
         </div>
       `;
-    } else {
-      const fallbackUrl = getMoviesModLink(title, isTv, season, episode);
-      container.innerHTML = `
-        <div style="position: relative; padding-top: 56.25%; background: #0a0e1a;">
-          <iframe 
-            src="${fallbackUrl}" 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-            allowfullscreen>
-          </iframe>
-        </div>
-        <div style="text-align: center; padding: 10px; background: #0f1629; color: #888; font-size: 0.85rem; border-top: 1px solid #232d45;">
-          ⚠️ Direct links unavailable. <a href="${fallbackUrl}" target="_blank" style="color: #e50914; text-decoration: none;">Click here to view on MoviesMod</a>
-        </div>
-      `;
-    }
+
   } catch (err) {
     const fallbackUrl = getMoviesModLink(title, isTv, season, episode);
     container.innerHTML = `
