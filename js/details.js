@@ -162,27 +162,26 @@ ${isTv ? `
     <div id="new-server-results" style="margin-top: 12px;"></div>
   </div>
 </div>
-` : `
-        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
-          <h3 style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; font-size: 1rem; color: #fff;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download Video
-          </h3>
+    <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; padding: 16px; border-radius: 12px;">
+      <h3 style="display: flex; align-items: center; gap: 8px; margin: 0 0 16px 0; font-size: 1.1rem; color: #fff;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y3="3"/></svg>
+        Download Video
+      </h3>
 
-          <a href="https://video.moviepire.co/download/movie/${movie.tmdb_id || movie.id}" 
-             target="_blank"
-             style="display: block; width: 100%; box-sizing: border-box; text-align: center; background: #e50914; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; text-decoration: none; margin-bottom: 10px;">
-            📥 SERVER 1 (MP4) — 1080P / 720P
-          </a>
+      <!-- دکمه اول: MoviesMod -->
+      <button onclick="showDownloadPage('${movie.title.replace(/'/g, "\\'")}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold;">
+        📩 FIND LINKS (MoviesMod)
+      </button>
 
-          <button onclick="showDownloadPage('${movie.title.replace(/'/g, "\\'")}')" 
-                  style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">
-            📥 FIND LINKS (MoviesMod)
-          </button>
+      <!-- دکمه دوم: جایگزین دکمه قرمز (Server 2) -->
+      <button id="new-server-btn" onclick="handleNewServerDownload('${movie.id}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+        📩 FIND LINKS (Server 2)
+      </button>
 
-          <div id="moviesmod-container" style="margin-top: 12px;"></div>
-        </div>
-        `
+      <div id="moviesmod-container" style="margin-top: 12px;"></div>
+      <div id="new-server-results" style="margin-top: 12px;"></div>
+    </div>
+
         `}
 
         ${related.length > 0 ? `
