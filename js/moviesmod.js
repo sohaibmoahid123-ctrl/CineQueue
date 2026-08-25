@@ -66,6 +66,14 @@ export async function showDownloadPage(title, isTv = false, season = null, episo
         </div>
       `;
 
+} else {
+  container.innerHTML = `
+    <div style="background: #161d2f; padding: 20px; border-radius: 8px; text-align: center; color: #ff6b6b; border: 1px solid #ff6b6b33;">
+      <p style="margin: 0; font-weight: bold;">❌ متأسفانه لینک مستقیمی برای این موارد پیدا نشد.</p>
+    </div>
+  `;
+}
+
   } catch (err) {
     const fallbackUrl = getMoviesModLink(title, isTv, season, episode);
     container.innerHTML = `
