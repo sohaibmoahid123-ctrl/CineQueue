@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
   try {
     let targetUrl = rawQuery;
 
-    // ========== ۱. جستجوی صفحه فیلم/سریال ==========
+    // ========== ۱. پیدا کردن دقیق صفحه فیلم ==========
     if (!isDirectUrl) {
       const searchUrls = [
         `https://moviesmod.zone/?s=${encodeURIComponent(cleanQuery)}`,
@@ -85,23 +85,34 @@ module.exports = async (req, res) => {
         } catch (e) {}
       }
 
+      // اگر فیلم پیدا نشد، یک JSON شفاف برگردان تا iframe باز نشود
       if (!foundLink) {
-        return res.status(200).json({
+        return res.status(404).json({
           success: false,
-          stage: 'SEARCH_FAILED',
-          message: `No results for "${cleanQuery}"`
+          stage: 'NOT_FOUND',
+          message: `The item "${cleanQuery}" was not found on MoviesMod.`
         });
       }
       targetUrl = foundLink;
     }
 
-    // ========== ۲. باز کردن صفحه هدف ==========
+    // ========== ۲. باز کردن صفحه اصلی فیلم ==========
     const pageRes = await fetchWithTimeout(targetUrl, 9000);
+
+    // جلوگیری از ریدایرکت شدن به صفحه سرچ (حل مشکل نمایش iframe سرچ)
+    if (pageRes.url.includes('/?s=') || pageRes.url.includes('/search/')) {
+      return res.status(404).json({
+        success: false,
+        stage: 'NOT_FOUND',
+        message: `Redirected to search page. Film "${cleanQuery}" does not exist.`
+      });
+    }
+
     const pageHtml = await pageRes.text();
     const $ = cheerio.load(pageHtml);
 
-    // پاکسازی عناصر مزاحم (پست‌های مرتبط و منوها) تا لینک‌های اشتباه وارد نشوند
-    $('.code-block, .related-posts, .yarpp-related, footer, sidebar, .navigation').remove();
+    // پاکسازی کامل بخش‌های غیرمرتبط (Related Posts, Menus, Footer)
+    $('.code-block, .related-posts, .yarpp-related, footer, sidebar, .navigation, .search-results').remove();
 
     const options = [];
     const seen = new Set();
@@ -113,18 +124,17 @@ module.exports = async (req, res) => {
 
       const btnText = clean($(el).text()) || 'Download';
 
-      // یافتن نزدیک‌ترین متن/تیترِ بالای دکمه
+      // یافتن کانتینر مستقیم دکمه
       let contextText = '';
       let parentContainer = $(el).closest('p, div, h3, h4');
       
-      // بررسی متنِ عناصرِ قبل از دکمه
+      // پیمایش فقط در عناصر متنیِ قبل از دکمه جاری
       let prevElem = parentContainer.prev();
       let steps = 0;
       while (prevElem.length > 0 && steps < 4) {
         const txt = clean(prevElem.text());
         if (txt.length > 5) {
           contextText = txt + ' ' + contextText;
-          // اگر به یک تیتر اصلی رسیدیم توقف کن
           if (/(Season\s*\d+|S\d+|480p|720p|1080p|2160p)/i.test(txt)) break;
         }
         prevElem = prevElem.prev();
@@ -133,24 +143,18 @@ module.exports = async (req, res) => {
 
       if (!contextText) contextText = clean(parentContainer.text());
 
-      // ========== ۴. منطق تفکیک فیلم از سریال ==========
+      // ========== ۴. فیلتر منطقی فیلم / سریال ==========
       if (requestedSeason) {
         // --- حالت سریال ---
-        // بررسی شماره فصل در متنِ اطراف دکمه
         const seasonMatch = contextText.match(/(?:Season\s*|S)0*(\d+)/i) || (btnText + ' ' + href).match(/(?:Season\s*|S)0*(\d+)/i);
         
         if (!seasonMatch) return; // اگر فصل نداشت رد شو
         
         const foundSeason = seasonMatch[1].replace(/^0+/, '');
-        if (foundSeason !== String(requestedSeason)) return; // اگر فصلِ درخواستی نبود رد شو
-      } else {
-        // --- حالت فیلم (بدون فصل) ---
-        // اگر کاربر سیزن نخواسته، اما متنِ لینک مربوط به یک سریال با سیزن دیگر است، ردش کن
-        const hasSeasonPattern = /(?:Season\s*|S)0*(\d+)/i.test(contextText);
-        // اگر فیلم است اما متن شامل فصل بود، در صورت عدم درخواست سیزن باز هم لینک‌های کیفیت را جمع‌آوری می‌کنیم
+        if (foundSeason !== String(requestedSeason)) return; // اگر فصل انتخابی نبود رد شو
       }
 
-      // ساخت عنوان تمیز برای نشان دادن به کاربر
+      // تمیزکاری نهایی عنوان
       let label = contextText.replace(/\s+/g, ' ').trim();
       if (label.length > 110) label = label.slice(0, 110) + '...';
       if (btnText && !label.toLowerCase().includes(btnText.toLowerCase())) {
@@ -166,7 +170,7 @@ module.exports = async (req, res) => {
     });
 
     if (options.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         stage: 'PARSING_FAILED',
         targetUrl,
