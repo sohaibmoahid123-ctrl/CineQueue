@@ -398,22 +398,31 @@ ${isTv ? `
     <div id="new-server-results" style="margin-top: 12px;"></div>
   </div>
 </div>
-        ` : `
-        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 20px; margin-top: 30px;">
-          <h3 class="download-heading" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color:#fff; font-size:1rem;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download Video
-          </h3>
-          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-            <button onclick="showDownloadPage('${movie.title.replace(/'/g, "\\'")}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+` : `
+        <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="window.toggleDownloadList()">
+            <h3 style="display: flex; align-items: center; gap: 8px; margin:0; font-size:1rem; color:#fff;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Video
+            </h3>
+            <span id="download-toggle-icon" style="color:#fff; font-size:1.2rem;">▼</span>
+          </div>
+
+          <div id="download-content" style="margin-top: 16px;">
+            <!-- دکمه اول: MoviesMod -->
+            <button onclick="showDownloadPage('${movie.title.replace(/'/g, "\\'")}')" 
+                    style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold;">
               📩 FIND LINKS (MoviesMod)
             </button>
-            <button id="new-server-btn" onclick="handleNewServerDownload('${movie.id}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            <div id="moviesmod-container" style="margin-top: 8px; margin-bottom: 16px;"></div>
+
+            <!-- دکمه دوم: Server 2 -->
+            <button id="new-server-btn" onclick="handleMovieServer2Download('${movie.id}')" 
+                    style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
               📩 FIND LINKS (Server 2)
             </button>
+            <div id="new-server-results" style="margin-top: 12px;"></div>
           </div>
-          <div id="moviesmod-container" style="margin-top: 12px;"></div>
-          <div id="new-server-results" style="margin-top: 12px;"></div>
         </div>
         `}
 
