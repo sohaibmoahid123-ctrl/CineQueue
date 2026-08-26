@@ -7,7 +7,7 @@ import { wireSearch } from './search.js';
 import { getAutoDownloadLinks } from './yts.js';
 import { showDownloadPage } from './moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList } from './tv.js';
-import { handleNewServerDownload } from './decryptor.js';
+import { handleNewServerDownload, handleMovieServer2Download } from './decryptor.js';
 
 export async function renderMovieDetail(id, allMovies) {
   const app = document.getElementById('app');
