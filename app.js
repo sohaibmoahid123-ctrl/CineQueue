@@ -8,6 +8,7 @@ import { showDownloadPage } from './js/moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList, selectTvSeason, selectTvEpisode } from './js/tv.js';
 import { startHero, stopHeroTimer, paintHero } from './js/hero.js';
 import { wireSearch } from './js/search.js';
+import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
