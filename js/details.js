@@ -174,7 +174,7 @@ ${isTv ? `
       </button>
 
       <!-- دکمه دوم: جایگزین دکمه قرمز (Server 2) -->
-      <button id="new-server-btn" onclick="handleNewServerDownload('${movie.id}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+      <button id="new-server-btn" onclick="handleMovieServer2Download('${movie.id}')" style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
         📩 FIND LINKS (Server 2)
       </button>
 
