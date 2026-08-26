@@ -116,5 +116,39 @@ export async function handleNewServerDownload(showId) {
   }
 }
 
-// برای اینکه از HTML بشه صداش زد
+// تابع اختصاصی برای دانلود فیلم‌ها
+export async function handleMovieServer2Download(movieId) {
+  const resultsDiv = document.getElementById('new-server-results');
+  const btn = document.getElementById('new-server-btn');
+
+  if (!resultsDiv) return;
+
+  resultsDiv.innerHTML = '<p style="color: #aaa; text-align: center;">⏳ Requesting token & decrypting movie...</p>';
+  if (btn) btn.disabled = true;
+
+  try {
+    const path = `/download/movie/${movieId}`;
+    const data = await getDownloadSources(path);
+    const sources = data.sources || data;
+
+    if (Array.isArray(sources) && sources.length > 0) {
+      resultsDiv.innerHTML = sources.map(src => `
+        <a href="${src.url || src.file || src}" target="_blank" rel="noopener noreferrer" 
+           style="display: block; background: #161d2f; color: #2a9d8f; text-align: center; padding: 10px; border-radius: 8px; margin-top: 8px; text-decoration: none; font-weight: bold;">
+          💾 Download ${src.quality || src.label || 'HD'}
+        </a>
+      `).join('');
+    } else {
+      resultsDiv.innerHTML = '<p style="color: #ff6b6b; text-align: center;">No links returned for this movie.</p>';
+    }
+  } catch (err) {
+    console.error("Movie Decrypter Error:", err);
+    resultsDiv.innerHTML = `<p style="color: #ff6b6b; text-align: center;">Error: ${err.message}</p>`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// برای اینکه از HTML بشه صداشون زد
 window.handleNewServerDownload = handleNewServerDownload;
+window.handleMovieServer2Download = handleMovieServer2Download;
