@@ -79,7 +79,7 @@ async function init() {
         ? `https://vidsrc.to/embed/tv/${item.id}`
         : `https://vidsrc.to/embed/movie/${item.id}`;
 
-      return {
+
 return {
   id: item.id,
   title: item.title,
