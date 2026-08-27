@@ -35,7 +35,7 @@ export function paintHero() {
           <span>${m.year}</span>
           <span>${m.durationMinutes} min</span>
         </div>
-        <p class="hero-synopsis">${m.synopsis}</p>
+
         <div class="hero-actions">
           <button class="btn-primary" onclick="openMovie(${m.id})">&#9654; Watch Now</button>
           <button class="btn-secondary" onclick="openMovie(${m.id})">&#8505; More Info</button>
