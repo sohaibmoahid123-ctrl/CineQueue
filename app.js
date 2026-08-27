@@ -84,20 +84,18 @@ return {
   id: item.id,
   title: item.title,
   posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
-  backdrop_path: item.backdrop_path || null,   // ← این خط رو اضافه کن
-  // ... بقیه فیلدها همون‌طور بمونن
+  backdrop_path: item.backdrop_path || null, // <-- این خط اضافه می‌شود
+  synopsis: item.overview || 'No synopsis available.',
+  year: parseInt((item.release_date || '2025').split('-')[0]),
+  rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
+  durationMinutes: 120,
+  genre: assignedGenre,
+  director: 'TMDB Cinema',
+  cast: ['Popular Actor'],
+  mediaType: item.media_type,
+  downloadUrl1080p: embedBase,
+  downloadUrl720p: embedBase
 };
-        synopsis: item.overview || 'No synopsis available.',
-        year: parseInt((item.release_date || '2025').split('-')[0]),
-        rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
-        durationMinutes: 120,
-        genre: assignedGenre,
-        director: 'TMDB Cinema',
-        cast: ['Popular Actor'],
-        mediaType: item.media_type,
-        downloadUrl1080p: embedBase,
-        downloadUrl720p: embedBase
-      };
     };
 
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
