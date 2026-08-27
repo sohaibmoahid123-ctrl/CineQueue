@@ -23,8 +23,8 @@ export function paintHero() {
 
   const m = featuredMovies[heroIndex];
   section.innerHTML = `
-// جایگزین خط ۲۶ در hero.js:
-<div class="hero-backdrop" style="background-image:url('${m.backdropUrl || m.posterUrl}')">
+// کد جایگزین مستقیم (اگر backdropUrl تعریف نشده بود):
+<div class="hero-backdrop" style="background-image:url('${m.backdrop_path ? 'https://image.tmdb.org/t/p/w1280' + m.backdrop_path : m.posterUrl}')">
 
       <div class="hero-gradient"></div>
       <div class="hero-content">
