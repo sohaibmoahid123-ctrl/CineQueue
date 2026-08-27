@@ -23,7 +23,7 @@ export function paintHero() {
 
   const m = featuredMovies[heroIndex];
   section.innerHTML = `
-// کد جایگزین مستقیم (اگر backdropUrl تعریف نشده بود):
+
 <div class="hero-backdrop" style="background-image:url('${m.backdrop_path ? 'https://image.tmdb.org/t/p/w1280' + m.backdrop_path : m.posterUrl}')">
 
       <div class="hero-gradient"></div>
