@@ -88,7 +88,7 @@ return {
   synopsis: item.overview || 'No synopsis available.',
   year: parseInt((item.release_date || '2025').split('-')[0]),
   rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
-  durationMinutes: 120,
+durationMinutes: item.runtime || (item.episode_run_time && item.episode_run_time[0]) || 120,
   genre: assignedGenre,
   director: 'TMDB Cinema',
   cast: ['Popular Actor'],
