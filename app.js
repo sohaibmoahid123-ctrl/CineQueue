@@ -376,7 +376,7 @@ ${isTv ? `
         showDownloadPage(searchTitle, true, selectedSeason);
       " 
       style="width: 100%; background: #2a9d8f; color: #fff; border: none; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem;">
-      📥 FIND LINKS (Selected Season)
+      📩 FIND LINKS (Selected Season)
     </button>
 
     <div id="moviesmod-container" style="margin-top: 12px;"></div>
