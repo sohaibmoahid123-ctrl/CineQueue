@@ -23,7 +23,9 @@ export function paintHero() {
 
   const m = featuredMovies[heroIndex];
   section.innerHTML = `
-    <div class="hero-backdrop" style="background-image:url('${m.posterUrl}')">
+// جایگزین خط ۲۶ در hero.js:
+<div class="hero-backdrop" style="background-image:url('${m.backdropUrl || m.posterUrl}')">
+
       <div class="hero-gradient"></div>
       <div class="hero-content">
         <span class="hero-genre">${m.genre}</span>
