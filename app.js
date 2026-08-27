@@ -80,9 +80,13 @@ async function init() {
         : `https://vidsrc.to/embed/movie/${item.id}`;
 
       return {
-        id: item.id,
-        title: item.title,
-        posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
+return {
+  id: item.id,
+  title: item.title,
+  posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
+  backdrop_path: item.backdrop_path || null,   // ← این خط رو اضافه کن
+  // ... بقیه فیلدها همون‌طور بمونن
+};
         synopsis: item.overview || 'No synopsis available.',
         year: parseInt((item.release_date || '2025').split('-')[0]),
         rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
