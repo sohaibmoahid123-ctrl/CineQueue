@@ -28,7 +28,7 @@ export function paintHero() {
 
       <div class="hero-gradient"></div>
       <div class="hero-content">
-        <span class="hero-genre">${m.genre}</span>
+<span class="hero-genre">${m.mediaType === 'tv' ? 'POPULAR SERIES' : 'POPULAR MOVIES'}</span>
         <h1 class="hero-title">${m.title}</h1>
         <div class="hero-meta">
           <span class="rating-badge">${m.rating}</span>
