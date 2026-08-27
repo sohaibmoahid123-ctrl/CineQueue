@@ -2,13 +2,13 @@
 // CineQueue — app.js
 // ============================================================
 import { API_KEY, BASE_URL, IMAGE_URL, YTS_API_URL } from './js/config.js';
-import { handleNewServerDownload } from './js/decryptor.js';
 import { handleYTSDownload, getAutoDownloadLinks } from './js/yts.js';
 import { showDownloadPage } from './js/moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList, selectTvSeason, selectTvEpisode } from './js/tv.js';
 import { startHero, stopHeroTimer, paintHero } from './js/hero.js';
 import { wireSearch } from './js/search.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
+
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
