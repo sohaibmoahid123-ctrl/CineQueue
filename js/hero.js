@@ -73,6 +73,33 @@ export function startHero(movies) {
     }, 7000);
   }
 }
+let touchStartX = 0;
+let touchEndX = 0;
+
+const heroElement = document.querySelector('.hero-section');
+
+if (heroElement) {
+  heroElement.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  heroElement.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, { passive: true });
+}
+
+function handleSwipe() {
+  const swipeThreshold = 50; // حداقل فاصله کشیدن انگشت برای ثبت سوییپ
+  if (touchEndX < touchStartX - swipeThreshold) {
+    // کشیدن به سمت چپ -> اسلاید بعدی
+    nextHeroSlide(); 
+  }
+  if (touchEndX > touchStartX + swipeThreshold) {
+    // کشیدن به سمت راست -> اسلاید قبلی
+    prevHeroSlide(); 
+  }
+}
 
 window.startHero = startHero;
 window.stopHeroTimer = stopHeroTimer;
