@@ -73,29 +73,45 @@ async function init() {
 
     rawItems.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-    const buildItem = (item, assignedGenre) => {
-      const isTv = item.media_type === 'tv';
-      const embedBase = isTv
-        ? `https://vidsrc.to/embed/tv/${item.id}`
-        : `https://vidsrc.to/embed/movie/${item.id}`;
+const buildItem = async (item, assignedGenre) => {
+  const isTv = item.media_type === 'tv';
+  const embedBase = isTv
+    ? `https://vidsrc.to/embed/tv/${item.id}`
+    : `https://vidsrc.to/embed/movie/${item.id}`;
 
+  let realDuration = 120;
+  try {
+    const detailRes = await fetch(
+      `https://api.themoviedb.org/3/${isTv ? 'tv' : 'movie'}/${item.id}?api_key=${API_KEY}`
+    );
+    const detailData = await detailRes.json();
+    if (isTv) {
+      realDuration = detailData.episode_run_time?.[0] || 45;
+    } else {
+      realDuration = detailData.runtime || 120;
+    }
+  } catch (e) {
+    realDuration = isTv ? 45 : 120;
+  }
 
-return {
-  id: item.id,
-  title: item.title,
-  posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
-  backdrop_path: item.backdrop_path || null, // <-- این خط اضافه می‌شود
-  synopsis: item.overview || 'No synopsis available.',
-  year: parseInt((item.release_date || '2025').split('-')[0]),
-  rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
-durationMinutes: item.runtime || (item.episode_run_time && item.episode_run_time[0]) || 120,
-  genre: assignedGenre,
-  director: 'TMDB Cinema',
-  cast: ['Popular Actor'],
-  mediaType: item.media_type,
-  downloadUrl1080p: embedBase,
-  downloadUrl720p: embedBase
+  return {
+    id: item.id,
+    title: item.title || item.name,
+    posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
+    backdrop_path: item.backdrop_path || null,
+    synopsis: item.overview || 'No synopsis available.',
+    year: parseInt((item.release_date || item.first_air_date || '2025').split('-')[0]),
+    rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
+    durationMinutes: realDuration,
+    genre: assignedGenre,
+    director: 'TMDB Cinema',
+    cast: ['Popular Actor'],
+    mediaType: item.media_type,
+    downloadUrl1080p: embedBase,
+    downloadUrl720p: embedBase
+  };
 };
+
     };
 
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
