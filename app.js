@@ -54,24 +54,37 @@ async function init() {
 
     let rawItems = [];
 
-    moviesDataList.forEach(p => {
-      p.results?.forEach(m => {
-        if (!m.adult) rawItems.push({ ...m, media_type: 'movie' });
-      });
-    });
+moviesDataList.forEach(p => {
+  p.results?.forEach(m => {
+    if (!m.adult && m.vote_count > 50 && m.poster_path) {
+      rawItems.push({ ...m, media_type: 'movie' });
+    }
+  });
+});
 
-    tvDataList.forEach(p => {
-      p.results?.forEach(tv => {
-        rawItems.push({
-          ...tv,
-          title: tv.name || tv.original_name,
-          release_date: tv.first_air_date || '2025',
-          media_type: 'tv'
-        });
+tvDataList.forEach(p => {
+  p.results?.forEach(tv => {
+    if (tv.vote_count > 50 && tv.poster_path) {
+      rawItems.push({
+        ...tv,
+        title: tv.name || tv.original_name,
+        release_date: tv.first_air_date || new Date().getFullYear().toString(),
+        media_type: 'tv'
       });
-    });
+    }
+  });
+});
 
-    rawItems.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+const uniqueItemsMap = new Map();
+rawItems.forEach(item => {
+  if (!uniqueItemsMap.has(item.id)) {
+    uniqueItemsMap.set(item.id, item);
+  }
+});
+
+const cleanRawItems = Array.from(uniqueItemsMap.values())
+  .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
 
 const buildItem = (item, assignedGenre) => {
   const isTv = item.media_type === 'tv';
