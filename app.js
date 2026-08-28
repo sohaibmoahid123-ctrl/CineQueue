@@ -125,37 +125,51 @@ year: parseInt((item.release_date || item.first_air_date || new Date().getFullYe
       'Romance': 0
     };
 
-    allMovies = [];
+const addedIds = new Set();
+allMovies = [];
 
-    for (const item of rawItems) {
-      if (genreCounts['Popular Movies'] < 15) {
-        allMovies.push(buildItem(item, 'Popular Movies'));
-        genreCounts['Popular Movies']++;
-        continue;
-      }
+// ۱. پر کردن Popular Movies بدون تکرار
+for (const item of cleanRawItems) {
+  if (genreCounts['Popular Movies'] < 15) {
+    allMovies.push(buildItem(item, 'Popular Movies'));
+    addedIds.add(item.id);
+    genreCounts['Popular Movies']++;
+  }
+}
 
-      if (item.genre_ids?.includes(16) && genreCounts['Animation'] < 15) {
-        allMovies.push(buildItem(item, 'Animation'));
-        genreCounts['Animation']++;
-        continue;
-      }
+// ۲. تفکیک سایر ژانرها و جلوگیری از تکرار پوسترها
+for (const item of cleanRawItems) {
+  if (addedIds.has(item.id)) continue;
 
-      if (item.genre_ids) {
-        const matchedName = item.genre_ids
-          .map(id => genreMap[id])
-          .find(name => allowedGenres.includes(name));
+  const ids = item.genre_ids || [];
 
-        if (matchedName) {
-          let finalGenre = matchedName;
-          if (matchedName === 'Action & Adventure' || matchedName === 'Sci-Fi & Fantasy') finalGenre = 'Action';
+  if ((ids.includes(28) || ids.includes(10759)) && genreCounts['Action'] < 15) {
+    allMovies.push(buildItem(item, 'Action'));
+    addedIds.add(item.id);
+    genreCounts['Action']++;
+  } 
+  else if (ids.includes(16) && genreCounts['Animation'] < 15) {
+    allMovies.push(buildItem(item, 'Animation'));
+    addedIds.add(item.id);
+    genreCounts['Animation']++;
+  } 
+  else if (ids.includes(80) && genreCounts['Crime'] < 15) {
+    allMovies.push(buildItem(item, 'Crime'));
+    addedIds.add(item.id);
+    genreCounts['Crime']++;
+  } 
+  else if (ids.includes(27) && genreCounts['Horror'] < 15) {
+    allMovies.push(buildItem(item, 'Horror'));
+    addedIds.add(item.id);
+    genreCounts['Horror']++;
+  } 
+  else if (ids.includes(10749) && genreCounts['Romance'] < 15) {
+    allMovies.push(buildItem(item, 'Romance'));
+    addedIds.add(item.id);
+    genreCounts['Romance']++;
+  }
+}
 
-          if (genreCounts[finalGenre] < 15) {
-            allMovies.push(buildItem(item, finalGenre));
-            genreCounts[finalGenre]++;
-          }
-        }
-      }
-    }
 
     featuredMovies = allMovies.slice(0, 5);
     route();
