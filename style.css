@@ -131,8 +131,8 @@ input { font: inherit; }
 }
 
 .hero-backdrop {
-  height: 440px !important;
-  max-height: 55vh;
+  height: 500px !important;
+  max-height: 65vh;
   width: 100%;
   background-size: cover !important;
   background-position: center center !important;
