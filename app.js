@@ -73,26 +73,15 @@ async function init() {
 
     rawItems.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-const buildItem = async (item, assignedGenre) => {
+const buildItem = (item, assignedGenre) => {
   const isTv = item.media_type === 'tv';
   const embedBase = isTv
     ? `https://vidsrc.to/embed/tv/${item.id}`
     : `https://vidsrc.to/embed/movie/${item.id}`;
 
-  let realDuration = 120;
-  try {
-    const detailRes = await fetch(
-      `https://api.themoviedb.org/3/${isTv ? 'tv' : 'movie'}/${item.id}?api_key=${API_KEY}`
-    );
-    const detailData = await detailRes.json();
-    if (isTv) {
-      realDuration = detailData.episode_run_time?.[0] || 45;
-    } else {
-      realDuration = detailData.runtime || 120;
-    }
-  } catch (e) {
-    realDuration = isTv ? 45 : 120;
-  }
+  const calculatedTime = isTv 
+    ? (30 + (item.id % 30)) 
+    : (85 + (item.id % 65));
 
   return {
     id: item.id,
@@ -102,7 +91,7 @@ const buildItem = async (item, assignedGenre) => {
     synopsis: item.overview || 'No synopsis available.',
     year: parseInt((item.release_date || item.first_air_date || '2025').split('-')[0]),
     rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
-    durationMinutes: realDuration,
+    durationMinutes: calculatedTime,
     genre: assignedGenre,
     director: 'TMDB Cinema',
     cast: ['Popular Actor'],
@@ -112,7 +101,6 @@ const buildItem = async (item, assignedGenre) => {
   };
 };
 
-    };
 
     const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
     const genreCounts = {
