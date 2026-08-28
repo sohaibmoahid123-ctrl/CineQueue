@@ -76,30 +76,32 @@ export function startHero(movies) {
 let touchStartX = 0;
 let touchEndX = 0;
 
-const heroElement = document.querySelector('.hero-section');
+function setupHeroSwipe() {
+  const heroElement = document.querySelector('.hero-section');
+  if (!heroElement) return;
 
-if (heroElement) {
   heroElement.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
   }, { passive: true });
 
   heroElement.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
+    const swipeThreshold = 40;
+    
+    if (featuredMovies && featuredMovies.length > 0) {
+      if (touchEndX < touchStartX - swipeThreshold) {
+        heroIndex = (heroIndex + 1) % featuredMovies.length;
+        paintHero();
+      } else if (touchEndX > touchStartX + swipeThreshold) {
+        heroIndex = (heroIndex - 1 + featuredMovies.length) % featuredMovies.length;
+        paintHero();
+      }
+    }
   }, { passive: true });
 }
 
-function handleSwipe() {
-  const swipeThreshold = 50; // حداقل فاصله کشیدن انگشت برای ثبت سوییپ
-  if (touchEndX < touchStartX - swipeThreshold) {
-    // کشیدن به سمت چپ -> اسلاید بعدی
-    nextHeroSlide(); 
-  }
-  if (touchEndX > touchStartX + swipeThreshold) {
-    // کشیدن به سمت راست -> اسلاید قبلی
-    prevHeroSlide(); 
-  }
-}
+setTimeout(setupHeroSwipe, 500);
+
 
 window.startHero = startHero;
 window.stopHeroTimer = stopHeroTimer;
