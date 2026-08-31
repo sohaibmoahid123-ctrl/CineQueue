@@ -162,7 +162,6 @@ async function init() {
   }
 }
 
-
 window.addEventListener('hashchange', route);
 
 function route() {
