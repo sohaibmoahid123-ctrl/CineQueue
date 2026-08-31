@@ -150,8 +150,13 @@ async function init() {
         if (count >= 12) break;
         if (!item.poster_path || addedIds.has(item.id)) continue;
 
-        const movieItem = { ...item, media_type: 'movie' };
-        allMovies.push(buildItem(movieItem, g.key));
+        const movieItem = { 
+          ...item, 
+          media_type: 'movie',
+          assignedGenre: g.key 
+        };
+        
+        allMovies.push(buildItem(movieItem));
         addedIds.add(item.id);
         count++;
       }
@@ -166,6 +171,7 @@ async function init() {
     hideLoading();
   }
 }
+
 
 
 window.addEventListener('hashchange', route);
