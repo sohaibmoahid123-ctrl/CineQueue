@@ -92,8 +92,8 @@ const buildItem = (item, assignedGenre) => {
     ? `https://vidsrc.to/embed/tv/${item.id}`
     : `https://vidsrc.to/embed/movie/${item.id}`;
 
-  const calculatedTime = isTv 
-    ? (30 + (item.id % 30)) 
+  const calculatedTime = isTv
+    ? (30 + (item.id % 30))
     : (85 + (item.id % 65));
 
   return {
@@ -102,7 +102,7 @@ const buildItem = (item, assignedGenre) => {
     posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
     backdrop_path: item.backdrop_path || null,
     synopsis: item.overview || 'No synopsis available.',
-year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
+    year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
     rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
     durationMinutes: calculatedTime,
     genre: assignedGenre,
@@ -113,17 +113,6 @@ year: parseInt((item.release_date || item.first_air_date || '2026').toString().s
     downloadUrl720p: embedBase
   };
 };
-
-
-    const allowedGenres = ['Action', 'Animation', 'Crime', 'Horror', 'Romance', 'Action & Adventure', 'Sci-Fi & Fantasy'];
-    const genreCounts = {
-      'Popular Movies': 0,
-      'Action': 0,
-      'Animation': 0,
-      'Crime': 0,
-      'Horror': 0,
-      'Romance': 0
-    };
 
 async function init() {
   showLoading();
@@ -137,8 +126,10 @@ async function init() {
       { key: 'Romance', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc` }
     ];
 
-    const responses = await Promise.all(genreEndpoints.map(g => fetch(g.url).then(r => r.json())));
-    
+    const responses = await Promise.all(
+      genreEndpoints.map(g => fetch(g.url).then(r => r.json()).catch(() => ({ results: [] })))
+    );
+
     const addedIds = new Set();
     allMovies = [];
 
@@ -150,13 +141,12 @@ async function init() {
         if (count >= 12) break;
         if (!item.poster_path || addedIds.has(item.id)) continue;
 
-        const movieItem = { 
-          ...item, 
-          media_type: 'movie',
-          assignedGenre: g.key 
+        const movieItem = {
+          ...item,
+          media_type: 'movie'
         };
-        
-        allMovies.push(buildItem(movieItem));
+
+        allMovies.push(buildItem(movieItem, g.key));
         addedIds.add(item.id);
         count++;
       }
@@ -171,7 +161,6 @@ async function init() {
     hideLoading();
   }
 }
-
 
 
 window.addEventListener('hashchange', route);
