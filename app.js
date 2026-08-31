@@ -125,48 +125,47 @@ year: parseInt((item.release_date || item.first_air_date || new Date().getFullYe
       'Romance': 0
     };
 
-const addedIds = new Set();
-allMovies = [];
+async function init() {
+  showLoading();
+  try {
+    const genreEndpoints = [
+      { key: 'Popular Movies', url: `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1` },
+      { key: 'Action', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc` },
+      { key: 'Animation', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc` },
+      { key: 'Crime', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80&sort_by=popularity.desc` },
+      { key: 'Horror', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&sort_by=popularity.desc` },
+      { key: 'Romance', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc` }
+    ];
 
-// ۱. پر کردن Popular Movies (۱۵ مورد اول)
-for (const item of cleanRawItems) {
-  if (genreCounts['Popular Movies'] < 15) {
-    allMovies.push(buildItem(item, 'Popular Movies'));
-    addedIds.add(item.id);
-    genreCounts['Popular Movies']++;
+    const responses = await Promise.all(genreEndpoints.map(g => fetch(g.url).then(r => r.json())));
+    
+    const addedIds = new Set();
+    allMovies = [];
+
+    genreEndpoints.forEach((g, index) => {
+      const results = responses[index].results || [];
+      let count = 0;
+
+      for (const item of results) {
+        if (count >= 12) break;
+        if (!item.poster_path || addedIds.has(item.id)) continue;
+
+        const movieItem = { ...item, media_type: 'movie' };
+        allMovies.push(buildItem(movieItem, g.key));
+        addedIds.add(item.id);
+        count++;
+      }
+    });
+
+    featuredMovies = allMovies.slice(0, 5);
+    route();
+
+  } catch (err) {
+    console.error("Init Error:", err);
+  } finally {
+    hideLoading();
   }
 }
-
-// ۲. تفکیک دقیق ژانرها بر اساس نام ژانر
-for (const item of cleanRawItems) {
-  if (addedIds.has(item.id)) continue;
-
-  const itemGenreNames = (item.genre_ids || [])
-    .map(id => genreMap[id])
-    .filter(Boolean);
-
-  let targetGenre = null;
-
-  if (itemGenreNames.some(g => ['Action', 'Action & Adventure'].includes(g)) && genreCounts['Action'] < 15) {
-    targetGenre = 'Action';
-  } else if (itemGenreNames.some(g => ['Animation'].includes(g)) && genreCounts['Animation'] < 15) {
-    targetGenre = 'Animation';
-  } else if (itemGenreNames.some(g => ['Crime'].includes(g)) && genreCounts['Crime'] < 15) {
-    targetGenre = 'Crime';
-  } else if (itemGenreNames.some(g => ['Horror'].includes(g)) && genreCounts['Horror'] < 15) {
-    targetGenre = 'Horror';
-  } else if (itemGenreNames.some(g => ['Romance'].includes(g)) && genreCounts['Romance'] < 15) {
-    targetGenre = 'Romance';
-  }
-
-  if (targetGenre) {
-    allMovies.push(buildItem(item, targetGenre));
-    addedIds.add(item.id);
-    genreCounts[targetGenre]++;
-  }
-}
-
-
 
 
 
