@@ -102,7 +102,7 @@ const buildItem = (item, assignedGenre) => {
     posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
     backdrop_path: item.backdrop_path || null,
     synopsis: item.overview || 'No synopsis available.',
-year: parseInt((item.release_date || item.first_air_date || new Date().getFullYear()).toString().split('-')[0]),
+year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
     rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
     durationMinutes: calculatedTime,
     genre: assignedGenre,
