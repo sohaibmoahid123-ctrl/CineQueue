@@ -168,17 +168,6 @@ async function init() {
 }
 
 
-
-    featuredMovies = allMovies.slice(0, 5);
-    route();
-
-  } catch (err) {
-    console.error("Init Error:", err);
-  } finally {
-    hideLoading();
-  }
-}
-
 window.addEventListener('hashchange', route);
 
 function route() {
