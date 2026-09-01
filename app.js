@@ -114,57 +114,66 @@ const buildItem = (item, assignedGenre) => {
   };
 };
 
-const addedIds = new Set();
-allMovies = [];
+async function init() {
+  showLoading();
+  try {
+    // ۱. تعریف اندپوئینت‌های اختصاصی برای هر ژانر
+    const genreEndpoints = [
+      { key: 'Popular Movies', url: `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1` },
+      { key: 'Action', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc` },
+      { key: 'Animation', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc` },
+      { key: 'Crime', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80&sort_by=popularity.desc` },
+      { key: 'Horror', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&sort_by=popularity.desc` },
+      { key: 'Romance', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc` }
+    ];
 
-// متغیر شمارنده ژانرها که جا افتاده بود
-const genreCounts = {
-  'Popular Movies': 0,
-  'Action': 0,
-  'Animation': 0,
-  'Crime': 0,
-  'Horror': 0,
-  'Romance': 0
-};
+    // ۲. ارسال درخواست‌ها به صورت هم‌زمان
+    const responses = await Promise.all(
+      genreEndpoints.map(g => fetch(g.url).then(r => r.json()).catch(() => ({ results: [] })))
+    );
+    
+    const addedIds = new Set();
+    allMovies = [];
 
-// ۱. پر کردن Popular Movies (۱۵ مورد اول)
-for (const item of cleanRawItems) {
-  if (genreCounts['Popular Movies'] < 15) {
-    allMovies.push(buildItem(item, 'Popular Movies'));
-    addedIds.add(item.id);
-    genreCounts['Popular Movies']++;
-  }
-}
+    // ۳. تابع داخلی برای تبدیل داده TMDB به فرمت CineQueue
+    const buildGenreItem = (item, assignedGenre) => {
+      const isTv = item.media_type === 'tv';
+      const embedBase = isTv
+        ? `https://vidsrc.to/embed/tv/${item.id}`
+        : `https://vidsrc.to/embed/movie/${item.id}`;
 
-// ۲. تفکیک دقیق ژانرها بر اساس نام ژانر
-for (const item of cleanRawItems) {
-  if (addedIds.has(item.id)) continue;
+      return {
+        id: item.id,
+        title: item.title || item.name,
+        posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '',
+        backdrop_path: item.backdrop_path || null,
+        synopsis: item.overview || 'No synopsis available.',
+        year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
+        rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
+        durationMinutes: 90 + (item.id % 40),
+        genre: assignedGenre,
+        director: 'TMDB Cinema',
+        cast: ['Popular Actor'],
+        mediaType: 'movie',
+        downloadUrl1080p: embedBase,
+        downloadUrl720p: embedBase
+      };
+    };
 
-  const itemGenreNames = (item.genre_ids || [])
-    .map(id => genreMap[id])
-    .filter(Boolean);
+    // ۴. استخراج و پر کردن هر ژانر با ۱۲ فیلم بدون تکرار
+    genreEndpoints.forEach((g, index) => {
+      const results = responses[index]?.results || [];
+      let count = 0;
 
-  let targetGenre = null;
+      for (const item of results) {
+        if (count >= 12) break;
+        if (!item.poster_path || addedIds.has(item.id)) continue;
 
-  if (itemGenreNames.some(g => ['Action', 'Action & Adventure'].includes(g)) && genreCounts['Action'] < 15) {
-    targetGenre = 'Action';
-  } else if (itemGenreNames.some(g => ['Animation'].includes(g)) && genreCounts['Animation'] < 15) {
-    targetGenre = 'Animation';
-  } else if (itemGenreNames.some(g => ['Crime'].includes(g)) && genreCounts['Crime'] < 15) {
-    targetGenre = 'Crime';
-  } else if (itemGenreNames.some(g => ['Horror'].includes(g)) && genreCounts['Horror'] < 15) {
-    targetGenre = 'Horror';
-  } else if (itemGenreNames.some(g => ['Romance'].includes(g)) && genreCounts['Romance'] < 15) {
-    targetGenre = 'Romance';
-  }
-
-  if (targetGenre) {
-    allMovies.push(buildItem(item, targetGenre));
-    addedIds.add(item.id);
-    genreCounts[targetGenre]++;
-  }
-}
-
+        allMovies.push(buildGenreItem(item, g.key));
+        addedIds.add(item.id);
+        count++;
+      }
+    });
 
     featuredMovies = allMovies.slice(0, 5);
     route();
@@ -175,6 +184,7 @@ for (const item of cleanRawItems) {
     hideLoading();
   }
 }
+
 
 window.addEventListener('hashchange', route);
 
