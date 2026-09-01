@@ -23,27 +23,51 @@ let featuredMovies = [];
 async function init() {
   showLoading();
   try {
-    // ۱. تعریف اندپوئینت‌های اختصاصی برای هر ژانر
-    const genreEndpoints = [
-      { key: 'Popular Movies', url: `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1` },
-      { key: 'Action', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc` },
-      { key: 'Animation', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc` },
-      { key: 'Crime', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80&sort_by=popularity.desc` },
-      { key: 'Horror', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&sort_by=popularity.desc` },
-      { key: 'Romance', url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc` }
+    // --- فیلم‌ها بر اساس ژانر ---
+    const movieEndpoints = [
+      { 
+        key: 'Popular Movies', 
+        url: `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US` 
+      },
+      { 
+        key: 'Action', 
+        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=6.8` 
+      },
+      { 
+        key: 'Animation', 
+        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc&vote_count.gte=300&vote_average.gte=6.8` 
+      },
+      { 
+        key: 'Crime', 
+        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.8` 
+      },
+      { 
+        key: 'Horror', 
+        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&sort_by=popularity.desc&vote_count.gte=300&vote_average.gte=6.5` 
+      },
+      { 
+        key: 'Romance', 
+        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.8` 
+      }
     ];
 
-    // ۲. ارسال درخواست‌ها به صورت هم‌زمان
-    const responses = await Promise.all(
-      genreEndpoints.map(g => fetch(g.url).then(r => r.json()).catch(() => ({ results: [] })))
+    // --- سریال‌های محبوب ---
+    const tvEndpoint = {
+      key: 'TV Series',
+      url: `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`
+    };
+
+    // درخواست‌ها
+    const movieResponses = await Promise.all(
+      movieEndpoints.map(g => fetch(g.url).then(r => r.json()).catch(() => ({ results: [] })))
     );
-    
+    const tvResponse = await fetch(tvEndpoint.url).then(r => r.json()).catch(() => ({ results: [] }));
+
     const addedIds = new Set();
     allMovies = [];
 
-    // ۳. تابع داخلی برای تبدیل داده TMDB به فرمت CineQueue
-    const buildGenreItem = (item, assignedGenre) => {
-      const isTv = item.media_type === 'tv';
+    const buildItem = (item, assignedGenre) => {
+      const isTv = item.media_type === 'tv' || !!item.first_air_date;
       const embedBase = isTv
         ? `https://vidsrc.to/embed/tv/${item.id}`
         : `https://vidsrc.to/embed/movie/${item.id}`;
@@ -56,30 +80,43 @@ async function init() {
         synopsis: item.overview || 'No synopsis available.',
         year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
         rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
-        durationMinutes: 90 + (item.id % 40),
+        durationMinutes: isTv ? (40 + (item.id % 20)) : (90 + (item.id % 40)),
         genre: assignedGenre,
         director: 'TMDB Cinema',
         cast: ['Popular Actor'],
-        mediaType: 'movie',
+        mediaType: isTv ? 'tv' : 'movie',
         downloadUrl1080p: embedBase,
         downloadUrl720p: embedBase
       };
     };
 
-    // ۴. استخراج و پر کردن هر ژانر با ۱۲ فیلم بدون تکرار
-    genreEndpoints.forEach((g, index) => {
-      const results = responses[index]?.results || [];
+    // پر کردن فیلم‌ها
+    movieEndpoints.forEach((g, index) => {
+      const results = movieResponses[index]?.results || [];
       let count = 0;
-
       for (const item of results) {
         if (count >= 12) break;
         if (!item.poster_path || addedIds.has(item.id)) continue;
-
-        allMovies.push(buildGenreItem(item, g.key));
+        allMovies.push(buildItem({ ...item, media_type: 'movie' }, g.key));
         addedIds.add(item.id);
         count++;
       }
     });
+
+    // پر کردن سریال‌ها
+    const tvResults = tvResponse?.results || [];
+    let tvCount = 0;
+    for (const item of tvResults) {
+      if (tvCount >= 12) break;
+      if (!item.poster_path || addedIds.has(item.id)) continue;
+      allMovies.push(buildItem({ 
+        ...item, 
+        media_type: 'tv',
+        title: item.name 
+      }, 'TV Series'));
+      addedIds.add(item.id);
+      tvCount++;
+    }
 
     featuredMovies = allMovies.slice(0, 5);
     route();
