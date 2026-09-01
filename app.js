@@ -173,11 +173,13 @@ function hideLoading() {
 }
 
 function renderHome() {
-  const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
-    if (a === 'Popular Movies') return -1;
-    if (b === 'Popular Movies') return 1;
-    return a.localeCompare(b);
-  });
+const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
+  if (a === 'Popular Movies') return -1;
+  if (b === 'Popular Movies') return 1;
+  if (a === 'Popular Series') return -1;
+  if (b === 'Popular Series') return 1;
+  return a.localeCompare(b);
+});
 
   app.innerHTML = `
     ${buildHeader()}
