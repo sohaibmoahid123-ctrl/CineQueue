@@ -65,6 +65,7 @@ export function startHero(movies) {
   }
   heroIndex = 0;
   paintHero();
+  setupHeroSwipe();
   stopHeroTimer();
   if (featuredMovies.length) {
     heroTimer = setInterval(() => {
