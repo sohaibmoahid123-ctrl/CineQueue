@@ -23,51 +23,44 @@ let featuredMovies = [];
 async function init() {
   showLoading();
   try {
-    // --- فیلم‌ها بر اساس ژانر ---
-    const movieEndpoints = [
-      { 
-        key: 'Popular Movies', 
-        url: `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US` 
-      },
-      { 
-        key: 'Action', 
-        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=6.8` 
-      },
-      { 
-        key: 'Animation', 
-        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc&vote_count.gte=300&vote_average.gte=6.8` 
-      },
-      { 
-        key: 'Crime', 
-        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.8` 
-      },
-      { 
-        key: 'Horror', 
-        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&sort_by=popularity.desc&vote_count.gte=300&vote_average.gte=6.5` 
-      },
-      { 
-        key: 'Romance', 
-        url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.8` 
-      }
+    // ۱. فیلم‌های محبوب
+    const popularMoviesUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US`;
+    
+    // ۲. سریال‌های محبوب
+    const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`;
+
+    // ۳. ژانرهای میکس (فیلم + سریال)
+    const mixedGenres = [
+      { key: 'Action', movieGenre: 28, tvGenre: 10759 },      // Action & Adventure
+      { key: 'Animation', movieGenre: 16, tvGenre: 16 },
+      { key: 'Crime', movieGenre: 80, tvGenre: 80 },
+      { key: 'Horror', movieGenre: 27, tvGenre: null },       // سریال وحشت کمتره
+      { key: 'Romance', movieGenre: 10749, tvGenre: 10749 }
     ];
 
-    // --- سریال‌های محبوب ---
-    const tvEndpoint = {
-      key: 'TV Series',
-      url: `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`
-    };
-
     // درخواست‌ها
-    const movieResponses = await Promise.all(
-      movieEndpoints.map(g => fetch(g.url).then(r => r.json()).catch(() => ({ results: [] })))
-    );
-    const tvResponse = await fetch(tvEndpoint.url).then(r => r.json()).catch(() => ({ results: [] }));
+    const [popularMoviesRes, popularTvRes, ...mixedResponses] = await Promise.all([
+      fetch(popularMoviesUrl).then(r => r.json()).catch(() => ({ results: [] })),
+      fetch(popularTvUrl).then(r => r.json()).catch(() => ({ results: [] })),
+      ...mixedGenres.flatMap(g => {
+        const requests = [
+          fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${g.movieGenre}&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.7`)
+            .then(r => r.json()).catch(() => ({ results: [] }))
+        ];
+        if (g.tvGenre) {
+          requests.push(
+            fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_by=popularity.desc&vote_count.gte=200`)
+              .then(r => r.json()).catch(() => ({ results: [] }))
+          );
+        }
+        return requests;
+      })
+    ]);
 
     const addedIds = new Set();
     allMovies = [];
 
-    const buildItem = (item, assignedGenre) => {
-      const isTv = item.media_type === 'tv' || !!item.first_air_date;
+    const buildItem = (item, assignedGenre, isTv = false) => {
       const embedBase = isTv
         ? `https://vidsrc.to/embed/tv/${item.id}`
         : `https://vidsrc.to/embed/movie/${item.id}`;
@@ -90,32 +83,45 @@ async function init() {
       };
     };
 
-    // پر کردن فیلم‌ها
-    movieEndpoints.forEach((g, index) => {
-      const results = movieResponses[index]?.results || [];
-      let count = 0;
-      for (const item of results) {
+    // --- ردیف ۱: Popular Movies ---
+    let count = 0;
+    for (const item of (popularMoviesRes.results || [])) {
+      if (count >= 12) break;
+      if (!item.poster_path || addedIds.has(item.id)) continue;
+      allMovies.push(buildItem(item, 'Popular Movies', false));
+      addedIds.add(item.id);
+      count++;
+    }
+
+    // --- ردیف ۲: Popular Series ---
+    count = 0;
+    for (const item of (popularTvRes.results || [])) {
+      if (count >= 12) break;
+      if (!item.poster_path || addedIds.has(item.id)) continue;
+      allMovies.push(buildItem(item, 'Popular Series', true));
+      addedIds.add(item.id);
+      count++;
+    }
+
+    // --- ژانرهای میکس ---
+    let responseIndex = 0;
+    for (const g of mixedGenres) {
+      const movieRes = mixedResponses[responseIndex++] || { results: [] };
+      const tvRes = g.tvGenre ? (mixedResponses[responseIndex++] || { results: [] }) : { results: [] };
+
+      const combined = [
+        ...(movieRes.results || []).map(i => ({ ...i, _isTv: false })),
+        ...(tvRes.results || []).map(i => ({ ...i, _isTv: true }))
+      ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+      count = 0;
+      for (const item of combined) {
         if (count >= 12) break;
         if (!item.poster_path || addedIds.has(item.id)) continue;
-        allMovies.push(buildItem({ ...item, media_type: 'movie' }, g.key));
+        allMovies.push(buildItem(item, g.key, item._isTv));
         addedIds.add(item.id);
         count++;
       }
-    });
-
-    // پر کردن سریال‌ها
-    const tvResults = tvResponse?.results || [];
-    let tvCount = 0;
-    for (const item of tvResults) {
-      if (tvCount >= 12) break;
-      if (!item.poster_path || addedIds.has(item.id)) continue;
-      allMovies.push(buildItem({ 
-        ...item, 
-        media_type: 'tv',
-        title: item.name 
-      }, 'TV Series'));
-      addedIds.add(item.id);
-      tvCount++;
     }
 
     featuredMovies = allMovies.slice(0, 5);
@@ -127,7 +133,6 @@ async function init() {
     hideLoading();
   }
 }
-
 
 window.addEventListener('hashchange', route);
 
