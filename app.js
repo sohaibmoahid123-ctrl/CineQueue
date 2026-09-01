@@ -29,12 +29,12 @@ async function init() {
     // ۲. سریال‌های محبوب
     const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`;
 
-    // ۳. ژانرهای میکس (فیلم + سریال)
+    // ۳. ژانرهای میکس (فیلم بیشتر + سریال کمتر)
     const mixedGenres = [
-      { key: 'Action', movieGenre: 28, tvGenre: 10759 },      // Action & Adventure
-      { key: 'Animation', movieGenre: 16, tvGenre: 16 },
+      { key: 'Action', movieGenre: 28, tvGenre: 10759 },
+      { key: 'Animation', movieGenre: 16, tvGenre: null }, // فقط فیلم (کارتون)، بدون انیمه/سریال
       { key: 'Crime', movieGenre: 80, tvGenre: 80 },
-      { key: 'Horror', movieGenre: 27, tvGenre: null },       // سریال وحشت کمتره
+      { key: 'Horror', movieGenre: 27, tvGenre: null },
       { key: 'Romance', movieGenre: 10749, tvGenre: 10749 }
     ];
 
@@ -44,12 +44,12 @@ async function init() {
       fetch(popularTvUrl).then(r => r.json()).catch(() => ({ results: [] })),
       ...mixedGenres.flatMap(g => {
         const requests = [
-          fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${g.movieGenre}&sort_by=popularity.desc&vote_count.gte=400&vote_average.gte=6.7`)
+          fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${g.movieGenre}&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=6.8&with_original_language=en`)
             .then(r => r.json()).catch(() => ({ results: [] }))
         ];
         if (g.tvGenre) {
           requests.push(
-            fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_by=popularity.desc&vote_count.gte=200`)
+            fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_by=popularity.desc&vote_count.gte=300&with_original_language=en`)
               .then(r => r.json()).catch(() => ({ results: [] }))
           );
         }
@@ -103,24 +103,32 @@ async function init() {
       count++;
     }
 
-    // --- ژانرهای میکس ---
+    // --- ژانرهای میکس (۸ فیلم + ۴ سریال) ---
     let responseIndex = 0;
     for (const g of mixedGenres) {
       const movieRes = mixedResponses[responseIndex++] || { results: [] };
       const tvRes = g.tvGenre ? (mixedResponses[responseIndex++] || { results: [] }) : { results: [] };
 
-      const combined = [
-        ...(movieRes.results || []).map(i => ({ ...i, _isTv: false })),
-        ...(tvRes.results || []).map(i => ({ ...i, _isTv: true }))
-      ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-
+      // اول فیلم‌ها
       count = 0;
-      for (const item of combined) {
-        if (count >= 12) break;
+      for (const item of (movieRes.results || [])) {
+        if (count >= 8) break;
         if (!item.poster_path || addedIds.has(item.id)) continue;
-        allMovies.push(buildItem(item, g.key, item._isTv));
+        allMovies.push(buildItem(item, g.key, false));
         addedIds.add(item.id);
         count++;
+      }
+
+      // بعد سریال‌ها (اگر داشته باشه)
+      if (g.tvGenre) {
+        count = 0;
+        for (const item of (tvRes.results || [])) {
+          if (count >= 4) break;
+          if (!item.poster_path || addedIds.has(item.id)) continue;
+          allMovies.push(buildItem(item, g.key, true));
+          addedIds.add(item.id);
+          count++;
+        }
       }
     }
 
