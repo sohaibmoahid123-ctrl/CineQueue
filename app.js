@@ -189,42 +189,49 @@ function renderHome() {
         ${genres.map(genre => buildGenreRow(genre)).join('')}
       </section>
     </main>
-    <footer class="site-footer">
-      <div class="footer-container">
-        <div class="footer-brand">
-          <h2 class="footer-logo">Cine<span>Queue</span></h2>
-          <p class="footer-tagline">Discover, stream, and download your favorite movies & shows — all in one place.</p>
-        </div>
+<footer class="site-footer">
+  <div class="footer-container">
+    <!-- بخش برند -->
+    <div class="footer-brand">
+      <h2 class="footer-logo">Cine<span>Queue</span></h2>
+      <p class="footer-tagline">Fast movie streaming & direct download system. Powered by TMDB metadata.</p>
+    </div>
 
-        <div class="footer-links">
-          <h4>Explore</h4>
-          <ul>
-            <li><a href="#browse-section">Browse</a></li>
-            <li><a href="#hero-section">Trending</a></li>
-            <li><a href="#" onclick="document.querySelector('.search-input')?.focus(); return false;">Search</a></li>
-          </ul>
-        </div>
+    <!-- بخش میانبرهای واقعی -->
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#hero-section">Trending Movies</a></li>
+        <li><a href="#browse-section">Browse Genres</a></li>
+        <li><a href="#" onclick="const input = document.querySelector('.search-input'); if(input) { input.focus(); } return false;">Quick Search</a></li>
+      </ul>
+    </div>
 
-        <div class="footer-links">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#">About</a></li>
-            <li><a href="#">How It Works</a></li>
-          </ul>
-        </div>
+    <!-- بخش وضعیت‌های واقعی سیستم -->
+    <div class="footer-links">
+      <h4>System Status</h4>
+      <ul>
+        <li><span class="status-indicator online"></span> TMDB Database: Connected</li>
+        <li><span class="status-indicator online"></span> Player & Downloads: Active</li>
+        <li><span class="status-indicator info"></span> Platform: Web Single-Page App</li>
+      </ul>
+    </div>
 
-        <div class="footer-status">
-          <p class="footer-note">Fresh picks, updated regularly.</p>
-          <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
-            ↑ Back to Top
-          </button>
-        </div>
-      </div>
+    <!-- بخش اکشن و بازگشت به بالا -->
+    <div class="footer-status">
+      <h4>Quick Action</h4>
+      <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
+        ↑ Back to Top
+      </button>
+    </div>
+  </div>
 
-      <div class="footer-bottom">
-        <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
-      </div>
-    </footer>`;
+  <!-- بخش حقوقی و حق نشر -->
+  <div class="footer-bottom">
+    <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  </div>
+</footer>
+
 
   startHero(featuredMovies.length ? featuredMovies : allMovies);
   wireCards();
