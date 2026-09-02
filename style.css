@@ -835,3 +835,139 @@ input { font: inherit; }
   height: 56.25vw;
   max-height: 100dvh;       /* برای موبایل بهتره */
 }
+/* ==========================================
+   STYLING FOR CINEQUEUE FOOTER
+   ========================================== */
+
+.site-footer {
+  background: linear-gradient(180deg, rgba(15, 15, 20, 0) 0%, #0a0a0f 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 50px 5% 20px 5%;
+  margin-top: 60px;
+  color: #a0a0ab;
+  direction: ltr;
+  text-align: left;
+  font-family: inherit;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto 40px auto;
+}
+
+.footer-brand {
+  flex: 1 1 250px;
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  color: #ffffff;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.footer-logo span {
+  color: #e50914; /* Red accent */
+}
+
+.footer-tagline {
+  font-size: 0.85rem;
+  margin-top: 8px;
+  max-width: 300px;
+  line-height: 1.5;
+  color: #8a8a93;
+}
+
+.footer-links {
+  flex: 1 1 180px;
+}
+
+.footer-links h4 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: #a0a0ab;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+}
+
+.footer-status {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Status Badge with Glowing Green Dot */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d1d1d6;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00ff88;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ff88;
+}
+
+.back-to-top {
+  margin-top: 15px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.back-to-top:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 20px;
+  font-size: 0.75rem;
+  color: #63636e;
+}
