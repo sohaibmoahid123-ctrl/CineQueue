@@ -188,7 +188,40 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
       <section class="browse-section" id="browse-section">
         ${genres.map(genre => buildGenreRow(genre)).join('')}
       </section>
-    </main>`;
+    </main>
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2 class="footer-logo">Cine<span>Queue</span></h2>
+          <p class="footer-tagline">Stream your favorite movies & TV shows seamlessly with high performance.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Quick Navigation</h4>
+          <ul>
+            <li><a href="#Popular Movies">Popular Movies</a></li>
+            <li><a href="#Action">Action</a></li>
+            <li><a href="#Animation">Animation</a></li>
+            <li><a href="#Horror">Horror</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-status">
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Systems Operational / TMDB Connected</span>
+          </div>
+          <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
+            ↑ Back to Top
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 CineQueue. All rights reserved. Powered by TMDB API.</p>
+      </div>
+    </footer>`;
+
 
   startHero(featuredMovies.length ? featuredMovies : allMovies);
   wireCards();
