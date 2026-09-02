@@ -181,36 +181,32 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
   return a.localeCompare(b);
 });
 
-  app.innerHTML = `
-    ${buildHeader()}
-    <main>
-      <section class="hero-section" id="hero-section"></section>
-      <section class="browse-section" id="browse-section">
-        ${genres.map(genre => buildGenreRow(genre)).join('')}
-      </section>
-    </main>
-    <footer class="site-footer">
+<footer class="site-footer">
       <div class="footer-container">
         <div class="footer-brand">
           <h2 class="footer-logo">Cine<span>Queue</span></h2>
-          <p class="footer-tagline">Stream your favorite movies & TV shows seamlessly with high performance.</p>
+          <p class="footer-tagline">Discover, stream, and download your favorite movies & shows — all in one place.</p>
         </div>
 
         <div class="footer-links">
-          <h4>Quick Navigation</h4>
+          <h4>Explore</h4>
           <ul>
-            <li><a href="#Popular Movies">Popular Movies</a></li>
-            <li><a href="#Action">Action</a></li>
-            <li><a href="#Animation">Animation</a></li>
-            <li><a href="#Horror">Horror</a></li>
+            <li><a href="#browse-section">Browse</a></li>
+            <li><a href="#hero-section">Trending</a></li>
+            <li><a href="#" onclick="document.querySelector('.search-input')?.focus()">Search</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">How It Works</a></li>
           </ul>
         </div>
 
         <div class="footer-status">
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            <span>Systems Operational / TMDB Connected</span>
-          </div>
+          <p class="footer-note">Fresh picks, updated regularly.</p>
           <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
             ↑ Back to Top
           </button>
@@ -218,9 +214,9 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
       </div>
 
       <div class="footer-bottom">
-        <p>© 2026 CineQueue. All rights reserved. Powered by TMDB API.</p>
+        <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
       </div>
-    </footer>`;
+    </footer>
 
 
   startHero(featuredMovies.length ? featuredMovies : allMovies);
