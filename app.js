@@ -172,16 +172,7 @@ function hideLoading() {
   if (loading) loading.remove();
 }
 
-function renderHome() {
-const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
-  if (a === 'Popular Movies') return -1;
-  if (b === 'Popular Movies') return 1;
-  if (a === 'Popular Series') return -1;
-  if (b === 'Popular Series') return 1;
-  return a.localeCompare(b);
-});
-
-<footer class="site-footer">
+    <footer class="site-footer">
       <div class="footer-container">
         <div class="footer-brand">
           <h2 class="footer-logo">Cine<span>Queue</span></h2>
@@ -193,7 +184,7 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
           <ul>
             <li><a href="#browse-section">Browse</a></li>
             <li><a href="#hero-section">Trending</a></li>
-            <li><a href="#" onclick="document.querySelector('.search-input')?.focus()">Search</a></li>
+            <li><a href="#" onclick="document.querySelector(\x27.search-input\x27)?.focus(); return false;">Search</a></li>
           </ul>
         </div>
 
@@ -207,7 +198,7 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
 
         <div class="footer-status">
           <p class="footer-note">Fresh picks, updated regularly.</p>
-          <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
+          <button onclick="window.scrollTo({top: 0, behavior: \x27smooth\x27})" class="back-to-top">
             ↑ Back to Top
           </button>
         </div>
@@ -217,6 +208,7 @@ const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
         <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
       </div>
     </footer>
+
 
 
   startHero(featuredMovies.length ? featuredMovies : allMovies);
