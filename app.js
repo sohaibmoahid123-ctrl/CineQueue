@@ -192,7 +192,6 @@ function renderHome() {
 <footer class="site-footer">
   <div class="footer-container">
 
-    <!-- Brand -->
     <div class="footer-brand">
       <h2 class="footer-logo">Cine<span>Queue</span></h2>
       <p class="footer-tagline">
@@ -201,7 +200,6 @@ function renderHome() {
       </p>
     </div>
 
-    <!-- Navigation -->
     <div class="footer-column">
       <h4>Explore</h4>
       <ul>
@@ -211,7 +209,6 @@ function renderHome() {
       </ul>
     </div>
 
-    <!-- System Status -->
     <div class="footer-column">
       <h4>System Status</h4>
       <ul class="status-list">
@@ -221,7 +218,6 @@ function renderHome() {
       </ul>
     </div>
 
-    <!-- Quick Action -->
     <div class="footer-column">
       <h4>Quick Action</h4>
       <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
@@ -231,11 +227,11 @@ function renderHome() {
 
   </div>
 
-  <!-- Bottom Bar -->
   <div class="footer-bottom">
     <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
   </div>
 </footer>
+`;
 
 
   startHero(featuredMovies.length ? featuredMovies : allMovies);
