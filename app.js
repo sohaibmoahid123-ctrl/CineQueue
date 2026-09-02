@@ -191,42 +191,47 @@ function renderHome() {
     </main>
 <footer class="site-footer">
   <div class="footer-container">
-    <!-- بخش برند -->
+
+    <!-- Brand -->
     <div class="footer-brand">
       <h2 class="footer-logo">Cine<span>Queue</span></h2>
-      <p class="footer-tagline">Fast movie streaming & direct download system. Powered by TMDB metadata.</p>
+      <p class="footer-tagline">
+        Fast movie streaming & direct download system.<br>
+        Powered by TMDB metadata.
+      </p>
     </div>
 
-    <!-- بخش میانبرهای واقعی -->
-    <div class="footer-links">
-      <h4>Navigation</h4>
+    <!-- Navigation -->
+    <div class="footer-column">
+      <h4>Explore</h4>
       <ul>
         <li><a href="#hero-section">Trending Movies</a></li>
         <li><a href="#browse-section">Browse Genres</a></li>
-        <li><a href="#" onclick="const input = document.querySelector('.search-input'); if(input) { input.focus(); } return false;">Quick Search</a></li>
+        <li><a href="#" onclick="document.querySelector('.search-input')?.focus()">Search Movies</a></li>
       </ul>
     </div>
 
-    <!-- بخش وضعیت‌های واقعی سیستم -->
-    <div class="footer-links">
+    <!-- System Status -->
+    <div class="footer-column">
       <h4>System Status</h4>
-      <ul>
-        <li><span class="status-indicator online"></span> TMDB Database: Connected</li>
-        <li><span class="status-indicator online"></span> Player & Downloads: Active</li>
-        <li><span class="status-indicator info"></span> Platform: Web Single-Page App</li>
+      <ul class="status-list">
+        <li><span class="status-dot online"></span> TMDB Database: Connected</li>
+        <li><span class="status-dot online"></span> Player & Downloads: Active</li>
+        <li><span class="status-dot info"></span> Platform: Web SPA</li>
       </ul>
     </div>
 
-    <!-- بخش اکشن و بازگشت به بالا -->
-    <div class="footer-status">
+    <!-- Quick Action -->
+    <div class="footer-column">
       <h4>Quick Action</h4>
-      <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="back-to-top">
+      <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
         ↑ Back to Top
       </button>
     </div>
+
   </div>
 
-  <!-- بخش حقوقی و حق نشر -->
+  <!-- Bottom Bar -->
   <div class="footer-bottom">
     <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
   </div>
