@@ -202,6 +202,7 @@ ${isTv ? `
 
       </div>
     </main>
+      ${buildFooter()}
   `;
 
   wireCards();
