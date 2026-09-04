@@ -354,8 +354,9 @@ async function renderMovieDetail(id) {
     </div>
   </div>
 </div>
+</div>
+</div>
 
-        </div>
 
 ${isTv ? `
 <div class="download-section" style="background: #161d2f; border: 1px solid #232d45; border-radius: 12px; padding: 16px 20px; margin-top: 30px;">
