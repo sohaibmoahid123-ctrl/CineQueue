@@ -252,6 +252,35 @@ window.unlockAdultPosters = function() {
   if (banner) banner.remove();
 };
 
+
+async function getMovieCredits(movieId, isTv = false) {
+  const type = isTv ? 'tv' : 'movie';
+  const url = `${BASE_URL}/${type}/${movieId}?api_key=${API_KEY}&append_to_response=credits`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const directorPerson = data.credits?.crew?.find(c => c.job === 'Director');
+
+    return {
+      director: directorPerson ? directorPerson.name : 'TMDB Cinema',
+      cast: (data.credits?.cast || []).slice(0, 12).map(a => ({
+        name: a.name,
+        character: a.character || '',
+        profileUrl: a.profile_path ? `${IMAGE_URL}${a.profile_path}` : null
+      }))
+    };
+  } catch (error) {
+    console.error('Error fetching credits:', error);
+    return {
+      director: 'TMDB Cinema',
+      cast: []
+    };
+  }
+}
+
+
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
   // گرفتن اطلاعات کارگردان و بازیگرها
