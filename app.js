@@ -24,10 +24,10 @@ async function init() {
   showLoading();
   try {
     // ۱. فیلم‌های محبوب
-    const popularMoviesUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US`;
+const popularMoviesUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US&append_to_response=credits`;
     
     // ۲. سریال‌های محبوب
-    const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`;
+const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1&append_to_response=credits`;
 
     // ۳. ژانرهای میکس (فیلم بیشتر + سریال کمتر)
     const mixedGenres = [
@@ -44,12 +44,12 @@ async function init() {
       fetch(popularTvUrl).then(r => r.json()).catch(() => ({ results: [] })),
       ...mixedGenres.flatMap(g => {
         const requests = [
-          fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${g.movieGenre}&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=6.8&with_original_language=en`)
+fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${g.movieGenre}&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=6.8&with_original_language=en&append_to_response=credits`)
             .then(r => r.json()).catch(() => ({ results: [] }))
         ];
         if (g.tvGenre) {
           requests.push(
-            fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_by=popularity.desc&vote_count.gte=300&with_original_language=en`)
+fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_by=popularity.desc&vote_count.gte=300&with_original_language=en&append_to_response=credits`)
               .then(r => r.json()).catch(() => ({ results: [] }))
           );
         }
