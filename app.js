@@ -254,6 +254,10 @@ window.unlockAdultPosters = function() {
 
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
+  // گرفتن اطلاعات کارگردان و بازیگرها
+const credits = await getMovieCredits(movie.id, movie.mediaType === 'tv');
+movie.director = credits.director;
+movie.cast = credits.cast;
   if (!movie) {
     app.innerHTML = `
       ${buildHeader()}
