@@ -283,10 +283,7 @@ async function getMovieCredits(movieId, isTv = false) {
 
 async function renderMovieDetail(id) {
   const movie = allMovies.find(m => m.id === id);
-  // گرفتن اطلاعات کارگردان و بازیگرها
-const credits = await getMovieCredits(movie.id, movie.mediaType === 'tv');
-movie.director = credits.director;
-movie.cast = credits.cast;
+
   if (!movie) {
     app.innerHTML = `
       ${buildHeader()}
@@ -297,6 +294,11 @@ movie.cast = credits.cast;
     wireSearch(allMovies, wireCards);
     return;
   }
+  
+  // گرفتن اطلاعات کارگردان و بازیگرها
+const credits = await getMovieCredits(movie.id, movie.mediaType === 'tv');
+movie.director = credits.director;
+movie.cast = credits.cast;
 
   const isTv = movie.mediaType === 'tv' || movie.genre === 'TV Series' || !!movie.first_air_date;
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
