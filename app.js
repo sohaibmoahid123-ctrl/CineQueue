@@ -75,8 +75,12 @@ async function init() {
         rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
         durationMinutes: isTv ? (40 + (item.id % 20)) : (90 + (item.id % 40)),
         genre: assignedGenre,
-        director: 'TMDB Cinema',
-        cast: ['Popular Actor'],
+director: item.credits?.crew?.find(c => c.job === 'Director')?.name || 'TMDB Cinema',
+cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
+  name: a.name,
+  character: a.character || '',
+  profileUrl: a.profile_path ? `${IMAGE_URL}${a.profile_path}` : null
+})) : [],
         mediaType: isTv ? 'tv' : 'movie',
         downloadUrl1080p: embedBase,
         downloadUrl720p: embedBase
