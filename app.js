@@ -338,34 +338,23 @@ async function renderMovieDetail(id) {
             <p class="detail-synopsis">${movie.synopsis}</p>
 
 <!-- SECTION: CAST & DIRECTOR -->
-<div class="info-cast-section">
-  <div class="director-inline">
-    <span class="dir-label">Director:</span>
-    <span class="dir-name">${movie.director || 'N/A'}</span>
-  </div>
-
-  <div class="cast-carousel-wrapper">
-    <div class="cast-carousel">
-      ${movie.cast && Array.isArray(movie.cast) && movie.cast.length > 0 ? movie.cast.map(actor => {
-        const isObj = typeof actor === 'object' && actor !== null;
-        const name = isObj ? (actor.name || 'Unknown') : actor;
-        const role = isObj ? (actor.character || '') : '';
-        const img = isObj && actor.profileUrl 
-          ? actor.profileUrl 
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2a9d8f&color=fff`;
-
-        return `
-          <div class="cast-item">
-            <div class="cast-avatar-circle">
-              <img src="${img}" alt="${name}" loading="lazy">
-            </div>
-            <span class="cast-actor-name">${name}</span>
-            ${role ? `<span class="cast-role-name">${role}</span>` : ''}
+<div class="movie-credits">
+  <p class="director-text"><strong>Director:</strong> ${movie.director || 'TMDB Cinema'}</p>
+  <div class="cast-carousel-container">
+    ${movie.cast && movie.cast.length > 0 ? `
+      <div class="cast-carousel">
+        ${movie.cast.map(actor => `
+          <div class="cast-card">
+            <img src="${actor.profileUrl || 'https://via.placeholder.com/100x150?text=No+Image'}" alt="${actor.name}" class="cast-img" />
+            <span class="cast-name">${actor.name}</span>
+            <span class="cast-character">${actor.character || ''}</span>
           </div>
-        `;
-      }).join('') : '<p style="color:#888;">No cast available</p>'}
-    </div>
+        `).join('')}
+      </div>
+    ` : '<p class="no-cast">No cast available</p>'}
   </div>
+</div>
+
 </div>
 </div>
 
