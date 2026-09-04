@@ -96,17 +96,27 @@ export async function renderMovieDetail(id, allMovies) {
             </div>
             <p class="detail-synopsis">${movie.synopsis}</p>
 
-            <div class="detail-credits">
-              <div class="credit-row">
-                <span class="credit-label">Director</span>
-                <span class="credit-value">${movie.director}</span>
-              </div>
-              <div class="credit-row">
-                <span class="credit-label">Cast</span>
-                <span class="credit-value">${movie.cast ? movie.cast.join(', ') : ''}</span>
-              </div>
-            </div>
+<div class="info-cast-section">
+  <div class="director-inline">
+    <span class="dir-label">Director:</span>
+    <span class="dir-name">${movie.director || 'N/A'}</span>
+  </div>
+
+  <div class="cast-carousel-wrapper">
+    <div class="cast-carousel">
+      ${movie.cast && Array.isArray(movie.cast) ? movie.cast.map(actor => `
+        <div class="cast-item">
+          <div class="cast-avatar-circle">
+            <img src="${actor.profileUrl || 'https://via.placeholder.com/80?text=Actor'}" alt="${actor.name || 'Actor'}" loading="lazy">
           </div>
+          <span class="cast-actor-name">${actor.name || actor}</span>
+          <span class="cast-role-name">${actor.character || ''}</span>
+        </div>
+      `).join('') : '<p style="color:#888; font-size:0.8rem;">No cast details available</p>'}
+    </div>
+  </div>
+</div>
+
         </div>
 
 ${isTv ? `
