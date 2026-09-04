@@ -368,7 +368,6 @@ async function renderMovieDetail(id) {
   </div>
 </div>
 </div>
-</div>
 
 
 
