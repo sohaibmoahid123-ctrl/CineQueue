@@ -342,20 +342,30 @@ async function renderMovieDetail(id) {
 
   <div class="cast-carousel-wrapper">
     <div class="cast-carousel">
-      ${movie.cast ? movie.cast.map(actor => `
-        <div class="cast-item">
-          <div class="cast-avatar-circle">
-            <img src="${actor.profileUrl || 'https://via.placeholder.com/80?text=Actor'}" alt="${actor.name}" loading="lazy">
+      ${movie.cast && Array.isArray(movie.cast) && movie.cast.length > 0 ? movie.cast.map(actor => {
+        const isObj = typeof actor === 'object' && actor !== null;
+        const name = isObj ? (actor.name || 'Unknown') : actor;
+        const role = isObj ? (actor.character || '') : '';
+        const img = isObj && actor.profileUrl 
+          ? actor.profileUrl 
+          : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2a9d8f&color=fff`;
+
+        return `
+          <div class="cast-item">
+            <div class="cast-avatar-circle">
+              <img src="${img}" alt="${name}" loading="lazy">
+            </div>
+            <span class="cast-actor-name">${name}</span>
+            ${role ? `<span class="cast-role-name">${role}</span>` : ''}
           </div>
-          <span class="cast-actor-name">${actor.name}</span>
-          <span class="cast-role-name">${actor.character || ''}</span>
-        </div>
-      `).join('') : '<p style="color:#888;">No cast available</p>'}
+        `;
+      }).join('') : '<p style="color:#888;">No cast available</p>'}
     </div>
   </div>
 </div>
 </div>
 </div>
+
 
 
 ${isTv ? `
