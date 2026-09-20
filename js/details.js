@@ -1,6 +1,7 @@
 // ============================================================
 // CineQueue — details.js
 // ============================================================
+import { API_KEY, BASE_URL, IMAGE_URL } from './config.js';
 import { buildHeader } from './utils.js';
 import { buildCard, wireCards } from './cards.js';
 import { wireSearch } from './search.js';
@@ -8,6 +9,77 @@ import { getAutoDownloadLinks } from './yts.js';
 import { showDownloadPage } from './moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList } from './tv.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './decryptor.js';
+
+function buildFooter() {
+  return `
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2 class="footer-logo">Cine<span>Queue</span></h2>
+          <p class="footer-tagline">
+            Fast movie streaming & direct download system.<br>
+            Powered by TMDB metadata.
+          </p>
+        </div>
+
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#hero-section">Trending Movies</a></li>
+            <li><a href="#browse-section">Browse Genres</a></li>
+            <li><a href="#" onclick="document.querySelector('.search-input')?.focus(); return false;">Search Movies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>System Status</h4>
+          <ul class="status-list">
+            <li><span class="status-dot online"></span> TMDB Database: Connected</li>
+            <li><span class="status-dot online"></span> Player & Downloads: Active</li>
+            <li><span class="status-dot info"></span> Platform: Web SPA</li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Quick Action</h4>
+          <button class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            ↑ Back to Top
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 CineQueue. All rights reserved. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+      </div>
+    </footer>`;
+}
+
+async function getMovieCredits(movieId, isTv = false) {
+  const type = isTv ? 'tv' : 'movie';
+  const url = `${BASE_URL}/${type}/${movieId}?api_key=${API_KEY}&append_to_response=credits`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const directorPerson = data.credits?.crew?.find(c => c.job === 'Director');
+
+    return {
+      director: directorPerson ? directorPerson.name : 'TMDB Cinema',
+      cast: (data.credits?.cast || []).slice(0, 12).map(a => ({
+        name: a.name,
+        character: a.character || '',
+        profileUrl: a.profile_path ? `${IMAGE_URL}${a.profile_path}` : null
+      }))
+    };
+  } catch (error) {
+    console.error('Error fetching credits:', error);
+    return {
+      director: 'TMDB Cinema',
+      cast: []
+    };
+  }
+}
 
 export async function renderMovieDetail(id, allMovies) {
   const app = document.getElementById('app');
@@ -23,6 +95,10 @@ export async function renderMovieDetail(id, allMovies) {
     wireSearch(allMovies, wireCards);
     return;
   }
+
+  const credits = await getMovieCredits(movie.id, movie.mediaType === 'tv');
+  movie.director = credits.director;
+  movie.cast = credits.cast;
 
   const isTv = movie.mediaType === 'tv' || movie.genre === 'TV Series' || !!movie.first_air_date;
   const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
