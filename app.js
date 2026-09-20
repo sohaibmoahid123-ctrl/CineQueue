@@ -9,6 +9,7 @@ import { startHero, stopHeroTimer, paintHero } from './js/hero.js';
 import { wireSearch } from './js/search.js';
 import { renderMovieDetail } from './js/details.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
+import { buildHeader } from './js/utils.js';
 
 
 const app = document.getElementById('app');
@@ -252,6 +253,8 @@ window.unlockAdultPosters = function() {
   const banner = document.querySelector('.age-unlock-banner');
   if (banner) banner.remove();
 };
+
+init();
 
 document.addEventListener("click", function (e) {
   const playBtn = e.target.closest("#hero-play-btn");
