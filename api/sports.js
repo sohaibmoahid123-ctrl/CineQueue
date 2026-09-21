@@ -163,13 +163,32 @@ function normalizeEvent(event, feed) {
   };
 }
 
-function extractEmbedUrl(video) {
-  if (!video) return '';
-  if (typeof video.embed === 'string') {
-    const source = video.embed.match(/src=["']([^"']+)["']/i);
-    return source ? source[1] : (video.embed.startsWith('http') ? video.embed : '');
+function extractEmbedUrl(value) {
+  if (!value) return '';
+
+  if (typeof value === 'string') {
+    const iframeSource = value.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+    if (iframeSource) return iframeSource[1];
+    return /^https?:\/\//i.test(value) ? value : '';
   }
-  return typeof video.url === 'string' ? video.url : '';
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const url = extractEmbedUrl(item);
+      if (url) return url;
+    }
+    return '';
+  }
+
+  if (typeof value === 'object') {
+    for (const key of ['embedUrl', 'embed', 'url', 'iframe', 'src', 'video']) {
+      const url = extractEmbedUrl(value[key]);
+      if (url) return url;
+    }
+    return extractEmbedUrl(value.videos);
+  }
+
+  return '';
 }
 
 async function getScoreBatEmbeds() {
@@ -182,8 +201,8 @@ async function getScoreBatEmbeds() {
   const data = await response.json();
   const entries = Array.isArray(data) ? data : (data.response || data.events || []);
   return entries.map(entry => ({
-    title: String(entry.title || entry.match || '').toLowerCase(),
-    embedUrl: extractEmbedUrl(entry.videos?.find(video => video.embed || video.url) || entry.video)
+    title: String(entry.title || entry.match || entry.name || entry.event || '').toLowerCase(),
+    embedUrl: extractEmbedUrl(entry.embed || entry.embedUrl || entry.videos || entry.video)
   })).filter(entry => entry.embedUrl);
 }
 

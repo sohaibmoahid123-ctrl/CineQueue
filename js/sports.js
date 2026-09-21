@@ -92,7 +92,7 @@ function openSportsPlayer(match) {
 
   const hasLiveStream = match.status === 'LIVE' && typeof match.embedUrl === 'string' && match.embedUrl.trim();
   const playerMarkup = hasLiveStream
-    ? `<iframe src="${match.embedUrl}" title="${match.home} versus ${match.away}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`
+    ? `<iframe src="${match.embedUrl}" width="100%" height="100%" frameborder="0" title="${match.home} versus ${match.away}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`
     : `<div class="sports-player-empty"><strong>Live stream is currently offline for this match</strong><span>${match.status === 'LIVE' ? 'The live source is not available right now.' : `This match is ${String(match.status).toLowerCase()}.`}</span></div>`;
 
   document.body.insertAdjacentHTML('beforeend', `
