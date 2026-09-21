@@ -23,7 +23,9 @@ export function buildHeader() {
     <header class="site-header">
       <a href="#" class="logo">CineQueue</a>
       <nav class="nav-links">
-        <a href="#">Browse</a>
+        <a href="#">Movies</a>
+        <a href="#">TV Shows</a>
+        <a href="#sports" class="sports-nav-link">Sports</a>
       </nav>
       <div class="search-wrap">
         <input type="search" id="search-input" class="search-input" placeholder="Search movies..." />

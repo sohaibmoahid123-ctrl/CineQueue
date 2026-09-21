@@ -12,6 +12,7 @@ import { handleNewServerDownload, handleMovieServer2Download } from './js/decryp
 import { buildHeader } from './js/utils.js';
 import { wireCards } from './js/cards.js';
 import { setCatalog } from './js/catalog.js';
+import { renderSports } from './js/sports.js';
 
 
 const app = document.getElementById('app');
@@ -158,7 +159,9 @@ function route() {
   stopHeroTimer();
   window.scrollTo({ top: 0, behavior: 'instant' });
 
-  if (hash.startsWith('movie/')) {
+  if (hash === 'sports') {
+    renderSports();
+  } else if (hash.startsWith('movie/')) {
     const parts = hash.split('/');
     const mediaType = parts.length > 2 ? parts[1] : null;
     const id = parseInt(parts.length > 2 ? parts[2] : parts[1], 10);
@@ -236,8 +239,8 @@ function buildCard(movie) {
     </div>`;
 }
 
-window.openMovie = function(id) {
-  window.location.hash = 'movie/' + id;
+window.openMovie = function(id, mediaType = 'movie') {
+  window.location.hash = `movie/${mediaType}/${id}`;
 };
 
 window.toggleDownloadList = function() {
