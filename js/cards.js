@@ -4,7 +4,7 @@
 
 export function buildCard(movie) {
   return `
-    <div class="movie-card" data-id="${movie.id}" tabindex="0" role="button" aria-label="${movie.title}">
+    <div class="movie-card" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
       <img src="${movie.posterUrl}" alt="${movie.title}" loading="lazy">
       <div class="card-overlay">
         <div class="card-title">${movie.title}</div>
@@ -40,12 +40,12 @@ export function wireCards() {
 
       const id = this.getAttribute('data-id');
       if (id) {
-        window.openMovie(id);
+        window.openMovie(id, this.getAttribute('data-media-type'));
       }
     };
   });
 }
 
-window.openMovie = function(id) {
-  window.location.hash = 'movie/' + id;
+window.openMovie = function(id, mediaType = 'movie') {
+  window.location.hash = `movie/${mediaType}/${id}`;
 };

@@ -81,9 +81,9 @@ async function getMovieCredits(movieId, isTv = false) {
   }
 }
 
-export async function renderMovieDetail(id, allMovies) {
+export async function renderMovieDetail(id, allMovies, mediaType = null) {
   const app = document.getElementById('app');
-  const movie = allMovies.find(m => m.id === id);
+  const movie = allMovies.find(m => m.id === id && (!mediaType || m.mediaType === mediaType));
   
   if (!movie) {
     app.innerHTML = `

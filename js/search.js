@@ -3,11 +3,20 @@
 // ============================================================
 import { API_KEY, BASE_URL, IMAGE_URL } from './config.js';
 
+let cleanupActiveSearch = null;
+
+function getMediaKey(movie) {
+  return `${movie.mediaType || 'movie'}_${movie.id}`;
+}
+
 export function wireSearch(allMovies, wireCardsCallback) {
+  if (cleanupActiveSearch) cleanupActiveSearch();
+
   const input = document.getElementById('search-input');
   if (!input) return;
 
   let searchTimeout = null;
+  const controller = new AbortController();
   let searchDropdown = document.getElementById('search-dropdown');
 
   if (!searchDropdown) {
@@ -40,14 +49,14 @@ export function wireSearch(allMovies, wireCardsCallback) {
     if (!input.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.style.display = 'none';
     }
-  });
+  }, { signal: controller.signal });
 
   window.addEventListener('scroll', () => {
     if (searchDropdown.style.display === 'block') updateDropdownPosition();
-  });
+  }, { signal: controller.signal, passive: true });
   window.addEventListener('resize', () => {
     if (searchDropdown.style.display === 'block') updateDropdownPosition();
-  });
+  }, { signal: controller.signal, passive: true });
 
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
@@ -57,7 +66,7 @@ export function wireSearch(allMovies, wireCardsCallback) {
         executeFullSearch(q, allMovies, wireCardsCallback);
       }
     }
-  });
+  }, { signal: controller.signal });
 
   input.addEventListener('input', function () {
     const q = this.value.trim();
@@ -72,8 +81,8 @@ export function wireSearch(allMovies, wireCardsCallback) {
     searchTimeout = setTimeout(async () => {
       try {
         const [movieRes, tvRes] = await Promise.all([
-          fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json()),
-          fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`).then(r => r.json())
+          fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`, { signal: controller.signal }).then(r => r.json()),
+          fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`, { signal: controller.signal }).then(r => r.json())
         ]);
 
         const movieResults = (movieRes.results || []).map(movie => ({
@@ -111,7 +120,7 @@ export function wireSearch(allMovies, wireCardsCallback) {
           .slice(0, 10);
 
         searchResults.forEach(m => {
-          if (!allMovies.some(existing => existing.id === m.id)) {
+          if (!allMovies.some(existing => getMediaKey(existing) === getMediaKey(m))) {
             allMovies.push(m);
           }
         });
@@ -126,10 +135,11 @@ export function wireSearch(allMovies, wireCardsCallback) {
               e.preventDefault();
               e.stopPropagation();
               const id = parseInt(this.getAttribute('data-id'), 10);
+              const mediaType = this.getAttribute('data-media-type');
               if (id) {
                 searchDropdown.style.display = 'none';
                 input.value = '';
-                window.openMovie(id);
+                window.openMovie(id, mediaType);
               }
             });
           });
@@ -139,15 +149,23 @@ export function wireSearch(allMovies, wireCardsCallback) {
           searchDropdown.style.display = 'block';
         }
       } catch (err) {
+        if (err.name === 'AbortError') return;
         console.error('Dropdown search error:', err);
       }
     }, 300);
-  });
+  }, { signal: controller.signal });
+
+  cleanupActiveSearch = () => {
+    clearTimeout(searchTimeout);
+    controller.abort();
+    if (cleanupActiveSearch === cleanup) cleanupActiveSearch = null;
+  };
+  const cleanup = cleanupActiveSearch;
 }
 
 function buildSearchDropdownItem(m) {
   return `
-    <div class="search-item" data-id="${m.id}" style="display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid #1a233a; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#1c263e'" onmouseout="this.style.background='transparent'">
+    <div class="search-item" data-id="${m.id}" data-media-type="${m.mediaType}" style="display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid #1a233a; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#1c263e'" onmouseout="this.style.background='transparent'">
       <img src="${m.posterUrl}" alt="${m.title}" style="width:40px; height:56px; object-fit:cover; border-radius:6px;" />
       <div style="flex:1;">
         <div style="color:#fff; font-weight:bold; font-size:0.95rem;">${m.title}</div>
@@ -206,7 +224,7 @@ export async function executeFullSearch(q, allMovies, wireCardsCallback) {
     const searchResults = [...movieResults, ...tvResults].sort((a, b) => b.popularity - a.popularity);
 
     searchResults.forEach(m => {
-      if (!allMovies.some(existing => existing.id === m.id)) {
+      if (!allMovies.some(existing => getMediaKey(existing) === getMediaKey(m))) {
         allMovies.push(m);
       }
     });
@@ -255,7 +273,7 @@ function buildSearchCard(m, isAgeUnlocked) {
     : '';
 
   return `
-    <div class="movie-card ${adultClass}" data-id="${m.id}">
+    <div class="movie-card ${adultClass}" data-id="${m.id}" data-media-type="${m.mediaType}">
       <div class="card-poster">
         ${typeBadge}
         ${adultBadge}

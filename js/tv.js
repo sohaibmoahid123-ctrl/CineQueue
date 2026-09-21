@@ -3,6 +3,7 @@
 // ============================================================
 
 import { BASE_URL, API_KEY } from './config.js';
+import { getCatalog } from './catalog.js';
 
 export async function getTvSeasonsInfo(tvId) {
   try {
@@ -45,7 +46,7 @@ export function selectTvSeason(tvId, season) {
   const grid = document.getElementById('episodes-btn-grid');
   if (!grid) return;
 
-  const movie = window.allMovies?.find(m => m.id == tvId);
+  const movie = getCatalog().find(m => m.id == tvId && m.mediaType === 'tv');
   const seasonData = movie?.seasonsInfo?.find(s => s.season_number == season);
   const episodeCount = seasonData ? seasonData.episode_count : 10;
 

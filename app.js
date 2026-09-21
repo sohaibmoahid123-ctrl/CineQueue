@@ -11,6 +11,7 @@ import { renderMovieDetail } from './js/details.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
 import { buildHeader } from './js/utils.js';
 import { wireCards } from './js/cards.js';
+import { setCatalog } from './js/catalog.js';
 
 
 const app = document.getElementById('app');
@@ -140,6 +141,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
     }
 
     featuredMovies = allMovies.slice(0, 5);
+    setCatalog(allMovies);
     route();
 
   } catch (err) {
@@ -157,8 +159,10 @@ function route() {
   window.scrollTo({ top: 0, behavior: 'instant' });
 
   if (hash.startsWith('movie/')) {
-    const id = parseInt(hash.split('/')[1], 10);
-    renderMovieDetail(id, allMovies);
+    const parts = hash.split('/');
+    const mediaType = parts.length > 2 ? parts[1] : null;
+    const id = parseInt(parts.length > 2 ? parts[2] : parts[1], 10);
+    renderMovieDetail(id, allMovies, mediaType);
   } else {
     renderHome();
   }
@@ -219,7 +223,7 @@ function buildGenreRow(genre) {
 
 function buildCard(movie) {
   return `
-    <div class="movie-card" data-id="${movie.id}" tabindex="0" role="button" aria-label="${movie.title}">
+    <div class="movie-card" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
       <img src="${movie.posterUrl}" alt="${movie.title}" loading="lazy">
       <div class="card-overlay">
         <div class="card-title">${movie.title}</div>
