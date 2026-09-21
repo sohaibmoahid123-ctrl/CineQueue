@@ -10,6 +10,7 @@ import { wireSearch } from './js/search.js';
 import { renderMovieDetail } from './js/details.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
 import { buildHeader } from './js/utils.js';
+import { wireCards } from './js/cards.js';
 
 
 const app = document.getElementById('app');
