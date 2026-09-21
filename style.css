@@ -363,7 +363,6 @@ input { font: inherit; }
 
 /* ── Movie Detail ────────────────────────────────────────────── */
 .detail-main {
-  width: 100%;
   padding-top: var(--header-h);
   min-height: 100vh;
 }
@@ -396,9 +395,7 @@ input { font: inherit; }
 
 .detail-content {
   position: relative;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  margin-top: -120px;
   padding: 0 40px 80px;
   z-index: 2;
 }
@@ -418,7 +415,6 @@ input { font: inherit; }
 
 .detail-layout {
   display: flex;
-  width: 100%;
   gap: 48px;
   align-items: flex-start;
   margin-bottom: 56px;
@@ -434,13 +430,6 @@ input { font: inherit; }
 }
 
 .detail-info { flex: 1; min-width: 0; }
-
-.detail-content > .download-section {
-  width: 100%;
-  max-width: 680px;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
 
 .detail-genre-tag {
   display: inline-block;
@@ -615,11 +604,6 @@ input { font: inherit; }
 
   .detail-content { padding: 0 16px 60px; }
   .detail-layout { flex-direction: column; gap: 24px; }
-  .detail-layout,
-  .detail-info,
-  .detail-content > .download-section {
-    width: 100%;
-  }
   .detail-poster { width: 160px; }
   .detail-title { font-size: 1.6rem; }
 
