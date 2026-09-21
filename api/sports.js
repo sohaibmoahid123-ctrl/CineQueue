@@ -46,7 +46,14 @@ function formatKickoff(startTime) {
 }
 
 function teamMark(name) {
-  return String(name || '?').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase() || '?';
+  return String(name || '').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase();
+}
+
+function teamLogo(team) {
+  return team.team?.logos?.[0]?.href
+    || team.team?.logo
+    || team.logo
+    || '';
 }
 
 function normalizeEvent(event, feed) {
@@ -54,17 +61,23 @@ function normalizeEvent(event, feed) {
   const competitors = competition?.competitors || [];
   const home = competitors.find(team => team.homeAway === 'home') || competitors[0] || {};
   const away = competitors.find(team => team.homeAway === 'away') || competitors[1] || {};
+  const homeName = home.team?.displayName || home.team?.name || '';
+  const awayName = away.team?.displayName || away.team?.name || '';
+  if (!event.id || !homeName || !awayName) return null;
+
   const status = statusFromEvent(event);
   const startTime = event.date || new Date().toISOString();
 
   return {
     id: `espn-${event.id}`,
-    league: feed.league,
+    league: event.league?.name || competition?.league?.name || feed.league,
     sport: feed.sport,
-    home: home.team?.displayName || home.team?.name || 'Home team',
-    away: away.team?.displayName || away.team?.name || 'Away team',
+    home: homeName,
+    away: awayName,
     homeMark: teamMark(home.team?.abbreviation || home.team?.displayName),
     awayMark: teamMark(away.team?.abbreviation || away.team?.displayName),
+    homeLogo: teamLogo(home),
+    awayLogo: teamLogo(away),
     status,
     day: getDay(status, startTime),
     popular: feed.priority >= 90,
@@ -112,7 +125,7 @@ module.exports = async (req, res) => {
       const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
       if (!response.ok) return [];
       const data = await response.json();
-      return (data.events || []).map(event => normalizeEvent(event, feed));
+      return (data.events || []).map(event => normalizeEvent(event, feed)).filter(Boolean);
     })));
 
     const matches = [...new Map(responses.flat().map(match => [match.id, match])).values()];

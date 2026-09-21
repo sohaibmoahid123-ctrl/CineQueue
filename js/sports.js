@@ -65,12 +65,12 @@ function matchCard(match) {
       </div>
       <div class="sports-teams">
         <div class="sports-team">
-          <span class="sports-team-mark" style="--team-accent: ${match.accent}">${match.homeMark}</span>
+          ${match.homeLogo ? `<img class="sports-team-logo" src="${match.homeLogo}" alt="${match.home} logo" loading="lazy">` : `<span class="sports-team-mark" style="--team-accent: ${match.accent}">${match.homeMark}</span>`}
           <strong>${match.home}</strong>
         </div>
         <span class="sports-versus">VS</span>
         <div class="sports-team">
-          <span class="sports-team-mark" style="--team-accent: ${match.accent}">${match.awayMark}</span>
+          ${match.awayLogo ? `<img class="sports-team-logo" src="${match.awayLogo}" alt="${match.away} logo" loading="lazy">` : `<span class="sports-team-mark" style="--team-accent: ${match.accent}">${match.awayMark}</span>`}
           <strong>${match.away}</strong>
         </div>
       </div>

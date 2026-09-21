@@ -1178,6 +1178,11 @@ input { font: inherit; }
   font-size: 0.8rem;
 }
 
+.sports-feature-grid .sports-team-logo {
+  width: 48px;
+  height: 48px;
+}
+
 .sports-feature-grid .sports-team strong {
   font-size: 0.82rem;
 }
@@ -1384,6 +1389,16 @@ input { font: inherit; }
   background: rgba(255,255,255,0.04);
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
+}
+
+.sports-team-logo {
+  width: 62px;
+  height: 62px;
+  padding: 7px;
+  border: 2px solid var(--team-accent, var(--border));
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,0.96);
 }
 
 .sports-versus {
