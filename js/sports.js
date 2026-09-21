@@ -3,70 +3,7 @@
 // ============================================================
 import { buildHeader } from './utils.js';
 
-const fallbackMatches = [
-  {
-    id: 'premier-league-arsenal-chelsea',
-    league: 'Premier League',
-    sport: 'Football',
-    home: 'Arsenal',
-    away: 'Chelsea',
-    homeMark: 'ARS',
-    awayMark: 'CHE',
-    status: 'Live',
-    day: 'today',
-    popular: true,
-    time: '62\'',
-    accent: '#e50914',
-    embedUrl: ''
-  },
-  {
-    id: 'nba-lakers-celtics',
-    league: 'NBA',
-    sport: 'Basketball',
-    home: 'Los Angeles Lakers',
-    away: 'Boston Celtics',
-    homeMark: 'LAL',
-    awayMark: 'BOS',
-    status: 'Scheduled',
-    day: 'today',
-    popular: true,
-    time: '19:30',
-    accent: '#f59e0b',
-    embedUrl: ''
-  },
-  {
-    id: 'formula-1-singapore',
-    league: 'Formula 1',
-    sport: 'Motorsport',
-    home: 'Singapore Grand Prix',
-    away: 'Race Weekend',
-    homeMark: 'F1',
-    awayMark: 'GP',
-    status: 'Scheduled',
-    day: 'upcoming',
-    popular: true,
-    time: 'Sun 14:00',
-    accent: '#2a9d8f',
-    embedUrl: ''
-  },
-  {
-    id: 'champions-league-madrid-inter',
-    league: 'Champions League',
-    sport: 'Football',
-    home: 'Real Madrid',
-    away: 'Inter Milan',
-    homeMark: 'RMA',
-    awayMark: 'INT',
-    status: 'Live',
-    day: 'today',
-    popular: true,
-    time: '38\'',
-    accent: '#3b82f6',
-    embedUrl: ''
-  }
-];
-
-let matches = [...fallbackMatches];
+let matches = [];
 
 async function loadLiveMatches() {
   try {
@@ -78,7 +15,7 @@ async function loadLiveMatches() {
       return true;
     }
   } catch (error) {
-    console.warn('Live sports feed unavailable; using fallback fixtures.', error);
+    console.warn('Live sports feed unavailable.', error);
   }
   return false;
 }
@@ -102,7 +39,10 @@ function getMatches(sport, status, query) {
   const normalizedQuery = query.trim().toLowerCase();
   return matches.filter(match => {
     const matchesSport = sport === 'all' || match.sport === sport;
-    const matchesStatus = status === 'all' || (status === 'live' ? match.status === 'Live' : match.day === status);
+    const matchesStatus = status === 'all'
+      || (status === 'live' && match.status === 'LIVE')
+      || (status === 'today' && match.status === 'SCHEDULED' && match.day === 'today')
+      || (status === 'upcoming' && match.status === 'SCHEDULED' && ['today', 'upcoming'].includes(match.day));
     const matchesSearch = !normalizedQuery || `${match.home} ${match.away} ${match.league} ${match.sport}`.toLowerCase().includes(normalizedQuery);
     return matchesSport && matchesStatus && matchesSearch;
   });
@@ -146,10 +86,10 @@ function openSportsPlayer(match) {
   const existing = document.getElementById('sports-player-modal');
   if (existing) existing.remove();
 
-  const hasLiveStream = match.status === 'Live' && typeof match.embedUrl === 'string' && match.embedUrl.trim();
+  const hasLiveStream = match.status === 'LIVE' && typeof match.embedUrl === 'string' && match.embedUrl.trim();
   const playerMarkup = hasLiveStream
     ? `<iframe src="${match.embedUrl}" title="${match.home} versus ${match.away}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`
-    : `<div class="sports-player-empty"><strong>Live stream is currently offline for this match</strong><span>${match.status === 'Live' ? 'The live source is not available right now.' : `This match is ${String(match.status).toLowerCase()}.`}</span></div>`;
+    : `<div class="sports-player-empty"><strong>Live stream is currently offline for this match</strong><span>${match.status === 'LIVE' ? 'The live source is not available right now.' : `This match is ${String(match.status).toLowerCase()}.`}</span></div>`;
 
   document.body.insertAdjacentHTML('beforeend', `
     <div id="sports-player-modal" class="sports-player-modal" role="dialog" aria-modal="true" aria-label="${match.home} versus ${match.away}">

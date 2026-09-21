@@ -6,10 +6,7 @@ const feeds = [
   { sport: 'Motorsport', league: 'Formula 1', slug: 'racing/f1', priority: 80 }
 ];
 
-const fallback = (value, defaultValue) => value == null ? defaultValue : value;
-
 function getDay(status, startTime) {
-  if (status === 'Live') return 'today';
   const date = new Date(startTime);
   const today = new Date();
   const sameDay = date.toDateString() === today.toDateString();
@@ -18,9 +15,34 @@ function getDay(status, startTime) {
 
 function statusFromEvent(event) {
   const state = event.competitions?.[0]?.status?.type;
-  if (state?.state === 'in') return 'Live';
-  if (state?.completed) return 'Final';
-  return 'Scheduled';
+  if (state?.state === 'in') return 'LIVE';
+  if (state?.completed) return 'FINAL';
+  return 'SCHEDULED';
+}
+
+function getDateKey(date) {
+  return date.toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+function getFeedDates(days = 7) {
+  const dates = [];
+  const now = new Date();
+  for (let offset = 0; offset <= days; offset += 1) {
+    const date = new Date(now);
+    date.setUTCDate(now.getUTCDate() + offset);
+    dates.push(getDateKey(date));
+  }
+  return dates;
+}
+
+function formatKickoff(startTime) {
+  return new Date(startTime).toLocaleString([], {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 function teamMark(name) {
@@ -47,7 +69,8 @@ function normalizeEvent(event, feed) {
     day: getDay(status, startTime),
     popular: feed.priority >= 90,
     priority: feed.priority,
-    time: status === 'Live' ? (competition?.status?.displayClock || 'LIVE') : new Date(startTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' }),
+    kickoffTime: startTime,
+    time: status === 'LIVE' ? (competition?.status?.displayClock || 'LIVE') : formatKickoff(startTime),
     accent: feed.sport === 'Football' ? '#e50914' : feed.sport === 'Basketball' ? '#f59e0b' : '#2a9d8f',
     embedUrl: '',
     streamAvailable: false
@@ -84,14 +107,15 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
-    const responses = await Promise.all(feeds.map(async feed => {
-      const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard`);
+    const dates = getFeedDates();
+    const responses = await Promise.all(feeds.flatMap(feed => dates.map(async date => {
+      const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
       if (!response.ok) return [];
       const data = await response.json();
       return (data.events || []).map(event => normalizeEvent(event, feed));
-    }));
+    })));
 
-    const matches = responses.flat();
+    const matches = [...new Map(responses.flat().map(match => [match.id, match])).values()];
     let embeds = [];
     try {
       embeds = await getScoreBatEmbeds();
@@ -109,7 +133,7 @@ module.exports = async (req, res) => {
       }
     });
 
-    matches.sort((a, b) => (b.status === 'Live') - (a.status === 'Live') || b.priority - a.priority || a.time.localeCompare(b.time));
+    matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || (a.status === 'SCHEDULED') - (b.status === 'SCHEDULED') || b.priority - a.priority || new Date(a.kickoffTime) - new Date(b.kickoffTime));
     return res.status(200).json({ success: true, source: embeds.length ? 'ESPN + ScoreBat' : 'ESPN', matches: matches.slice(0, 60) });
   } catch (error) {
     return res.status(502).json({ success: false, error: error.message || 'Sports feed unavailable', matches: [] });
