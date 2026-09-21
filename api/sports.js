@@ -1,0 +1,117 @@
+const feeds = [
+  { sport: 'Football', league: 'Premier League', slug: 'soccer/eng.1', priority: 100 },
+  { sport: 'Football', league: 'Champions League', slug: 'soccer/uefa.champions', priority: 95 },
+  { sport: 'Basketball', league: 'NBA', slug: 'basketball/nba', priority: 90 },
+  { sport: 'Tennis', league: 'ATP', slug: 'tennis/atp', priority: 70 },
+  { sport: 'Motorsport', league: 'Formula 1', slug: 'racing/f1', priority: 80 }
+];
+
+const fallback = (value, defaultValue) => value == null ? defaultValue : value;
+
+function getDay(status, startTime) {
+  if (status === 'Live') return 'today';
+  const date = new Date(startTime);
+  const today = new Date();
+  const sameDay = date.toDateString() === today.toDateString();
+  return sameDay ? 'today' : 'upcoming';
+}
+
+function statusFromEvent(event) {
+  const state = event.competitions?.[0]?.status?.type;
+  if (state?.state === 'in') return 'Live';
+  if (state?.completed) return 'Final';
+  return 'Scheduled';
+}
+
+function teamMark(name) {
+  return String(name || '?').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase() || '?';
+}
+
+function normalizeEvent(event, feed) {
+  const competition = event.competitions?.[0];
+  const competitors = competition?.competitors || [];
+  const home = competitors.find(team => team.homeAway === 'home') || competitors[0] || {};
+  const away = competitors.find(team => team.homeAway === 'away') || competitors[1] || {};
+  const status = statusFromEvent(event);
+  const startTime = event.date || new Date().toISOString();
+
+  return {
+    id: `espn-${event.id}`,
+    league: feed.league,
+    sport: feed.sport,
+    home: home.team?.displayName || home.team?.name || 'Home team',
+    away: away.team?.displayName || away.team?.name || 'Away team',
+    homeMark: teamMark(home.team?.abbreviation || home.team?.displayName),
+    awayMark: teamMark(away.team?.abbreviation || away.team?.displayName),
+    status,
+    day: getDay(status, startTime),
+    popular: feed.priority >= 90,
+    priority: feed.priority,
+    time: status === 'Live' ? (competition?.status?.displayClock || 'LIVE') : new Date(startTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' }),
+    accent: feed.sport === 'Football' ? '#e50914' : feed.sport === 'Basketball' ? '#f59e0b' : '#2a9d8f',
+    embedUrl: '',
+    streamAvailable: false
+  };
+}
+
+function extractEmbedUrl(video) {
+  if (!video) return '';
+  if (typeof video.embed === 'string') {
+    const source = video.embed.match(/src=["']([^"']+)["']/i);
+    return source ? source[1] : (video.embed.startsWith('http') ? video.embed : '');
+  }
+  return typeof video.url === 'string' ? video.url : '';
+}
+
+async function getScoreBatEmbeds() {
+  const token = process.env.SCOREBAT_TOKEN;
+  if (!token) return [];
+
+  const url = process.env.SCOREBAT_API_URL || `https://www.scorebat.com/video-api/v3/feed/?token=${encodeURIComponent(token)}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`ScoreBat returned ${response.status}`);
+  const data = await response.json();
+  const entries = Array.isArray(data) ? data : (data.response || data.events || []);
+  return entries.map(entry => ({
+    title: String(entry.title || entry.match || '').toLowerCase(),
+    embedUrl: extractEmbedUrl(entry.videos?.find(video => video.embed || video.url) || entry.video)
+  })).filter(entry => entry.embedUrl);
+}
+
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+
+  try {
+    const responses = await Promise.all(feeds.map(async feed => {
+      const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard`);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return (data.events || []).map(event => normalizeEvent(event, feed));
+    }));
+
+    const matches = responses.flat();
+    let embeds = [];
+    try {
+      embeds = await getScoreBatEmbeds();
+    } catch (error) {
+      console.warn('ScoreBat enrichment unavailable:', error.message);
+    }
+
+    matches.forEach(match => {
+      const haystack = `${match.home} ${match.away} ${match.league}`.toLowerCase();
+      const stream = embeds.find(entry => entry.title.includes(match.home.toLowerCase()) && entry.title.includes(match.away.toLowerCase()))
+        || embeds.find(entry => entry.title.includes(haystack));
+      if (stream) {
+        match.embedUrl = stream.embedUrl;
+        match.streamAvailable = true;
+      }
+    });
+
+    matches.sort((a, b) => (b.status === 'Live') - (a.status === 'Live') || b.priority - a.priority || a.time.localeCompare(b.time));
+    return res.status(200).json({ success: true, source: embeds.length ? 'ESPN + ScoreBat' : 'ESPN', matches: matches.slice(0, 60) });
+  } catch (error) {
+    return res.status(502).json({ success: false, error: error.message || 'Sports feed unavailable', matches: [] });
+  }
+};

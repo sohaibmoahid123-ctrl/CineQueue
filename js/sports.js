@@ -3,7 +3,7 @@
 // ============================================================
 import { buildHeader } from './utils.js';
 
-const matches = [
+const fallbackMatches = [
   {
     id: 'premier-league-arsenal-chelsea',
     league: 'Premier League',
@@ -66,6 +66,23 @@ const matches = [
   }
 ];
 
+let matches = [...fallbackMatches];
+
+async function loadLiveMatches() {
+  try {
+    const response = await fetch('/api/sports', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error(`Sports feed returned ${response.status}`);
+    const data = await response.json();
+    if (data.success && Array.isArray(data.matches) && data.matches.length) {
+      matches = data.matches;
+      return true;
+    }
+  } catch (error) {
+    console.warn('Live sports feed unavailable; using fallback fixtures.', error);
+  }
+  return false;
+}
+
 const sportCategories = [
   { key: 'all', label: 'All Sports', icon: '◈' },
   { key: 'Football', label: 'Football', icon: '⚽' },
@@ -119,7 +136,7 @@ function matchCard(match) {
       </div>
       <div class="sports-card-footer">
         <span>${match.sport}</span>
-        <span>${match.time}</span>
+        <span>${match.streamAvailable ? 'Watch stream' : match.time}</span>
       </div>
     </article>
   `;
@@ -232,4 +249,7 @@ export function renderSports() {
   };
 
   render();
+  loadLiveMatches().then(updated => {
+    if (updated) render();
+  });
 }
