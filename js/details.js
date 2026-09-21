@@ -193,7 +193,8 @@ export async function renderMovieDetail(id, allMovies) {
   </div>
 </div>
 
-        </div>
+  </div>
+  </div>
 
 ${isTv ? `
 <!-- ========== بخش دانلود سریال ========== -->
