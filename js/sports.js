@@ -146,9 +146,10 @@ function openSportsPlayer(match) {
   const existing = document.getElementById('sports-player-modal');
   if (existing) existing.remove();
 
-  const playerMarkup = match.embedUrl
+  const hasLiveStream = match.status === 'Live' && typeof match.embedUrl === 'string' && match.embedUrl.trim();
+  const playerMarkup = hasLiveStream
     ? `<iframe src="${match.embedUrl}" title="${match.home} versus ${match.away}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`
-    : `<div class="sports-player-empty"><strong>Stream unavailable</strong><span>A live stream has not been configured for this match.</span></div>`;
+    : `<div class="sports-player-empty"><strong>Live stream is currently offline for this match</strong><span>${match.status === 'Live' ? 'The live source is not available right now.' : `This match is ${String(match.status).toLowerCase()}.`}</span></div>`;
 
   document.body.insertAdjacentHTML('beforeend', `
     <div id="sports-player-modal" class="sports-player-modal" role="dialog" aria-modal="true" aria-label="${match.home} versus ${match.away}">
@@ -171,7 +172,7 @@ function openSportsPlayer(match) {
 function wireSportsCards() {
   document.querySelectorAll('.sports-match-card').forEach(card => {
     const open = () => {
-      const match = matches.find(item => item.id === card.dataset.matchId);
+      const match = matches.find(item => String(item.id) === String(card.dataset.matchId));
       if (match) openSportsPlayer(match);
     };
     card.addEventListener('click', open);
