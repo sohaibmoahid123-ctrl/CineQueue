@@ -6,6 +6,32 @@ const feeds = [
   { sport: 'Motorsport', league: 'Formula 1', slug: 'racing/f1', priority: 80 }
 ];
 
+const sportsDbLeagues = [
+  { id: 4328, sport: 'Football', priority: 100 },
+  { id: 4480, sport: 'Football', priority: 95 },
+  { id: 4335, sport: 'Football', priority: 90 },
+  { id: 4387, sport: 'Basketball', priority: 85 }
+];
+
+async function fetchJson(url, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json', 'User-Agent': 'CineQueue/1.0' }
+    });
+    const text = await response.text();
+    let data = null;
+    try { data = JSON.parse(text); } catch {}
+    console.log('[sports] feed response', { url, status: response.status, bytes: text.length });
+    if (!response.ok) return null;
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function getDay(status, startTime) {
   const date = new Date(startTime);
   const today = new Date();
@@ -56,6 +82,50 @@ function teamLogo(team) {
     || '';
 }
 
+function normalizeSportsDbEvent(event, feed) {
+  const startTime = event.strTimestamp || `${event.dateEvent}T${event.strTime || '00:00:00'}Z`;
+  const homeName = event.strHomeTeam || '';
+  const awayName = event.strAwayTeam || '';
+  if (!event.idEvent || !homeName || !awayName || !event.strLeague) return null;
+
+  const hasScore = event.intHomeScore != null || event.intAwayScore != null;
+  const isFinal = event.strStatus === 'FT' || event.strStatus === 'AET' || event.strStatus === 'Final' || (hasScore && event.strStatus === 'Finished');
+  const isLive = ['1H', '2H', 'HT', 'LIVE', 'ET', 'P', 'IN PLAY'].includes(String(event.strStatus || '').toUpperCase());
+  const status = isLive ? 'LIVE' : isFinal ? 'FINAL' : 'SCHEDULED';
+
+  return {
+    id: `sportsdb-${event.idEvent}`,
+    title: `${homeName} vs ${awayName}`,
+    homeTeam: homeName,
+    awayTeam: awayName,
+    league: event.strLeague,
+    sport: feed.sport,
+    home: homeName,
+    away: awayName,
+    homeMark: teamMark(homeName),
+    awayMark: teamMark(awayName),
+    homeLogo: event.strHomeTeamBadge || '',
+    awayLogo: event.strAwayTeamBadge || '',
+    status,
+    day: getDay(status, startTime),
+    popular: feed.priority >= 90,
+    priority: feed.priority,
+    kickoffTime: startTime,
+    time: status === 'LIVE' ? 'LIVE' : formatKickoff(startTime),
+    accent: feed.sport === 'Football' ? '#e50914' : '#f59e0b',
+    embedUrl: '',
+    streamAvailable: false
+  };
+}
+
+async function getSportsDbMatches() {
+  const responses = await Promise.allSettled(sportsDbLeagues.map(async feed => {
+    const data = await fetchJson(`https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${feed.id}`);
+    return (data?.events || []).map(event => normalizeSportsDbEvent(event, feed)).filter(Boolean);
+  }));
+  return responses.flatMap(result => result.status === 'fulfilled' ? result.value : []);
+}
+
 function normalizeEvent(event, feed) {
   const competition = event.competitions?.[0];
   const competitors = competition?.competitors || [];
@@ -70,6 +140,9 @@ function normalizeEvent(event, feed) {
 
   return {
     id: `espn-${event.id}`,
+    title: `${homeName} vs ${awayName}`,
+    homeTeam: homeName,
+    awayTeam: awayName,
     league: event.league?.name || competition?.league?.name || feed.league,
     sport: feed.sport,
     home: homeName,
@@ -121,14 +194,18 @@ module.exports = async (req, res) => {
 
   try {
     const dates = getFeedDates();
-    const responses = await Promise.all(feeds.flatMap(feed => dates.map(async date => {
-      const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
-      if (!response.ok) return [];
-      const data = await response.json();
+    const responses = await Promise.allSettled(feeds.flatMap(feed => dates.map(async date => {
+      const data = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
+      if (!data) return [];
       return (data.events || []).map(event => normalizeEvent(event, feed)).filter(Boolean);
     })));
 
-    const matches = [...new Map(responses.flat().map(match => [match.id, match])).values()];
+    let matches = responses.flatMap(result => result.status === 'fulfilled' ? result.value : []);
+    let source = 'ESPN';
+    if (!matches.length) {
+      matches = await getSportsDbMatches();
+      source = 'TheSportsDB';
+    }
     let embeds = [];
     try {
       embeds = await getScoreBatEmbeds();
@@ -146,8 +223,10 @@ module.exports = async (req, res) => {
       }
     });
 
+    matches = [...new Map(matches.map(match => [match.id, match])).values()];
     matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || (a.status === 'SCHEDULED') - (b.status === 'SCHEDULED') || b.priority - a.priority || new Date(a.kickoffTime) - new Date(b.kickoffTime));
-    return res.status(200).json({ success: true, source: embeds.length ? 'ESPN + ScoreBat' : 'ESPN', matches: matches.slice(0, 60) });
+    console.log('[sports] normalized matches', { source, count: matches.length });
+    return res.status(200).json({ success: true, source: embeds.length ? `${source} + ScoreBat` : source, matches: matches.slice(0, 60) });
   } catch (error) {
     return res.status(502).json({ success: false, error: error.message || 'Sports feed unavailable', matches: [] });
   }

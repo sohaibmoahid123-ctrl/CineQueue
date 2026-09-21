@@ -4,6 +4,7 @@
 import { buildHeader } from './utils.js';
 
 let matches = [];
+let feedState = 'loading';
 
 async function loadLiveMatches() {
   try {
@@ -12,10 +13,13 @@ async function loadLiveMatches() {
     const data = await response.json();
     if (data.success && Array.isArray(data.matches) && data.matches.length) {
       matches = data.matches;
+      feedState = 'ready';
       return true;
     }
+    feedState = 'error';
   } catch (error) {
     console.warn('Live sports feed unavailable.', error);
+    feedState = 'error';
   }
   return false;
 }
@@ -135,6 +139,11 @@ export function renderSports() {
     const visibleMatches = getMatches(activeSport, activeStatus, searchQuery);
     const popularMatches = matches.filter(match => match.popular).slice(0, 4);
     const leagueGroups = groupByLeague(visibleMatches);
+    const emptyMessage = feedState === 'loading'
+      ? '<p class="sports-empty sports-loading">Loading real fixtures...</p>'
+      : feedState === 'error'
+        ? '<p class="sports-empty">Live fixture feed is temporarily unavailable. Please try again shortly.</p>'
+        : '<p class="sports-empty">No real matches match those filters.</p>';
     app.innerHTML = `
       ${buildHeader()}
       <main class="sports-page">
@@ -161,7 +170,7 @@ export function renderSports() {
           <div class="sports-league-groups">
             ${Object.keys(leagueGroups).length ? Object.entries(leagueGroups).map(([league, leagueMatches]) => `
               <section class="sports-league-group"><div class="sports-section-heading"><h3>${league}</h3><span class="sports-count">${leagueMatches.length} match${leagueMatches.length === 1 ? '' : 'es'}</span></div><div class="sports-match-grid">${leagueMatches.map(matchCard).join('')}</div></section>
-            `).join('') : '<p class="sports-empty">No matches match those filters.</p>'}
+            `).join('') : emptyMessage}
           </div>
         </section>
       </main>
