@@ -13,6 +13,8 @@ const matches = [
     homeMark: 'ARS',
     awayMark: 'CHE',
     status: 'Live',
+    day: 'today',
+    popular: true,
     time: '62\'',
     accent: '#e50914',
     embedUrl: ''
@@ -26,6 +28,8 @@ const matches = [
     homeMark: 'LAL',
     awayMark: 'BOS',
     status: 'Scheduled',
+    day: 'today',
+    popular: true,
     time: '19:30',
     accent: '#f59e0b',
     embedUrl: ''
@@ -39,6 +43,8 @@ const matches = [
     homeMark: 'F1',
     awayMark: 'GP',
     status: 'Scheduled',
+    day: 'upcoming',
+    popular: true,
     time: 'Sun 14:00',
     accent: '#2a9d8f',
     embedUrl: ''
@@ -52,22 +58,44 @@ const matches = [
     homeMark: 'RMA',
     awayMark: 'INT',
     status: 'Live',
+    day: 'today',
+    popular: true,
     time: '38\'',
     accent: '#3b82f6',
     embedUrl: ''
   }
 ];
 
-const filters = [
-  { key: 'all', label: 'All Sports' },
-  { key: 'live', label: 'Live Matches' },
-  { key: 'popular', label: 'Popular' }
+const sportCategories = [
+  { key: 'all', label: 'All Sports', icon: '◈' },
+  { key: 'Football', label: 'Football', icon: '⚽' },
+  { key: 'Basketball', label: 'Basketball', icon: '◉' },
+  { key: 'Tennis', label: 'Tennis', icon: '●' },
+  { key: 'Motorsport', label: 'Motorsports', icon: '◒' }
 ];
 
-function getMatches(filter) {
-  if (filter === 'live') return matches.filter(match => match.status === 'Live');
-  if (filter === 'popular') return matches.filter(match => ['Premier League', 'NBA', 'Champions League'].includes(match.league));
-  return matches;
+const statusFilters = [
+  { key: 'all', label: 'All Matches' },
+  { key: 'live', label: 'LIVE NOW' },
+  { key: 'today', label: 'Today' },
+  { key: 'upcoming', label: 'Upcoming' }
+];
+
+function getMatches(sport, status, query) {
+  const normalizedQuery = query.trim().toLowerCase();
+  return matches.filter(match => {
+    const matchesSport = sport === 'all' || match.sport === sport;
+    const matchesStatus = status === 'all' || (status === 'live' ? match.status === 'Live' : match.day === status);
+    const matchesSearch = !normalizedQuery || `${match.home} ${match.away} ${match.league} ${match.sport}`.toLowerCase().includes(normalizedQuery);
+    return matchesSport && matchesStatus && matchesSearch;
+  });
+}
+
+function groupByLeague(items) {
+  return items.reduce((groups, match) => {
+    (groups[match.league] ||= []).push(match);
+    return groups;
+  }, {});
 }
 
 function matchCard(match) {
@@ -141,10 +169,14 @@ function wireSportsCards() {
 
 export function renderSports() {
   const app = document.getElementById('app');
-  let activeFilter = 'all';
+  let activeSport = 'all';
+  let activeStatus = 'all';
+  let searchQuery = '';
 
   const render = () => {
-    const visibleMatches = getMatches(activeFilter);
+    const visibleMatches = getMatches(activeSport, activeStatus, searchQuery);
+    const popularMatches = matches.filter(match => match.popular).slice(0, 4);
+    const leagueGroups = groupByLeague(visibleMatches);
     app.innerHTML = `
       ${buildHeader()}
       <main class="sports-page">
@@ -154,24 +186,47 @@ export function renderSports() {
           <p>Follow the matches worth watching, from kickoff to the final whistle.</p>
         </section>
         <section class="sports-content" aria-label="Sports matches">
+          <section class="sports-popular" aria-label="Popular matches">
+            <div class="sports-section-heading"><div><span class="sports-kicker">Top picks</span><h2>Popular matches</h2></div><span class="sports-count">${popularMatches.length} featured</span></div>
+            <div class="sports-feature-grid">${popularMatches.map(matchCard).join('')}</div>
+          </section>
           <div class="sports-toolbar">
-            <div><span class="sports-kicker">Match centre</span><h2>Today's fixtures</h2></div>
-            <div class="sports-filters" role="tablist" aria-label="Match filters">
-              ${filters.map(filter => `<button class="sports-filter ${activeFilter === filter.key ? 'active' : ''}" data-filter="${filter.key}" role="tab" aria-selected="${activeFilter === filter.key}">${filter.label}</button>`).join('')}
-            </div>
+            <div><span class="sports-kicker">Match centre</span><h2>Find a match</h2></div>
+            <label class="sports-search"><span>Search sports</span><input id="sports-search-input" type="search" value="${searchQuery}" placeholder="Search teams or leagues" /></label>
           </div>
-          <div class="sports-match-grid">
-            ${visibleMatches.length ? visibleMatches.map(matchCard).join('') : '<p class="sports-empty">No matches in this view.</p>'}
+          <div class="sports-category-row" role="tablist" aria-label="Sports categories">
+            ${sportCategories.map(category => `<button class="sports-category ${activeSport === category.key ? 'active' : ''}" data-sport="${category.key}" role="tab" aria-selected="${activeSport === category.key}"><span>${category.icon}</span>${category.label}</button>`).join('')}
+          </div>
+          <div class="sports-filters" role="tablist" aria-label="Match status filters">
+            ${statusFilters.map(filter => `<button class="sports-filter ${activeStatus === filter.key ? 'active' : ''}" data-status="${filter.key}" role="tab" aria-selected="${activeStatus === filter.key}">${filter.label}</button>`).join('')}
+          </div>
+          <div class="sports-league-groups">
+            ${Object.keys(leagueGroups).length ? Object.entries(leagueGroups).map(([league, leagueMatches]) => `
+              <section class="sports-league-group"><div class="sports-section-heading"><h3>${league}</h3><span class="sports-count">${leagueMatches.length} match${leagueMatches.length === 1 ? '' : 'es'}</span></div><div class="sports-match-grid">${leagueMatches.map(matchCard).join('')}</div></section>
+            `).join('') : '<p class="sports-empty">No matches match those filters.</p>'}
           </div>
         </section>
       </main>
     `;
 
-    document.querySelectorAll('.sports-filter').forEach(button => {
+    document.querySelectorAll('.sports-category').forEach(button => {
       button.addEventListener('click', () => {
-        activeFilter = button.dataset.filter;
+        activeSport = button.dataset.sport;
         render();
       });
+    });
+    document.querySelectorAll('.sports-filter').forEach(button => {
+      button.addEventListener('click', () => {
+        activeStatus = button.dataset.status;
+        render();
+      });
+    });
+    document.getElementById('sports-search-input')?.addEventListener('input', event => {
+      searchQuery = event.target.value;
+      render();
+      const input = document.getElementById('sports-search-input');
+      input?.focus();
+      input?.setSelectionRange(searchQuery.length, searchQuery.length);
     });
     wireSportsCards();
   };
