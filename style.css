@@ -1494,6 +1494,102 @@ input { font: inherit; }
 
 .sports-player-empty strong { color: var(--text); }
 
+/* ==========================================================================
+  TV SHOWS DASHBOARD
+   ========================================================================== */
+.tv-dashboard {
+  min-height: 100vh;
+  padding-top: var(--header-h);
+  background: var(--bg);
+}
+
+.tv-dashboard-loading {
+  display: grid;
+  min-height: 60vh;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.tv-dashboard-hero-wrap {
+  width: min(100% - 48px, 1200px);
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.tv-dashboard-hero {
+  min-height: 500px;
+  border-radius: var(--radius-lg);
+}
+
+.tv-hero-synopsis {
+  max-width: 520px;
+  margin: 12px 0 18px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.tv-dashboard-content {
+  width: min(100% - 48px, 1200px);
+  margin: 0 auto;
+  padding: 44px 0 80px;
+}
+
+.tv-dashboard-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.tv-dashboard-toolbar h2,
+.tv-show-rail h2 {
+  margin-top: 6px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.tv-genre-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 28px;
+  scrollbar-width: none;
+}
+
+.tv-genre-filters::-webkit-scrollbar { display: none; }
+
+.tv-genre-filter {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  font-size: 0.8rem;
+}
+
+.tv-genre-filter.active,
+.tv-genre-filter:hover {
+  border-color: var(--accent);
+  color: #000;
+  background: var(--accent);
+}
+
+.tv-show-rail {
+  margin-top: 28px;
+}
+
+.tv-show-card .card-meta {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .tv-dashboard-hero-wrap,
+  .tv-dashboard-content { width: calc(100% - 32px); }
+  .tv-dashboard-hero { min-height: 420px; }
+  .tv-dashboard-toolbar { align-items: stretch; flex-direction: column; }
+}
+
 @media (max-width: 700px) {
   .sports-hero,
   .sports-content { width: min(100% - 32px, 1200px); }

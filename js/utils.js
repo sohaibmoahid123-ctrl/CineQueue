@@ -24,7 +24,7 @@ export function buildHeader() {
       <a href="#" class="logo">CineQueue</a>
       <nav class="nav-links">
         <a href="#">Movies</a>
-        <a href="#">TV Shows</a>
+        <a href="#tv">TV Shows</a>
         <a href="#sports" class="sports-nav-link">Sports</a>
       </nav>
       <div class="search-wrap">

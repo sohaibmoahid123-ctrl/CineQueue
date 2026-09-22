@@ -13,6 +13,7 @@ import { buildHeader } from './js/utils.js';
 import { wireCards } from './js/cards.js';
 import { setCatalog } from './js/catalog.js';
 import { renderSports } from './js/sports.js';
+import { renderTvShows } from './js/tv-shows.js';
 
 
 const app = document.getElementById('app');
@@ -96,9 +97,9 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
     let count = 0;
     for (const item of (popularMoviesRes.results || [])) {
       if (count >= 12) break;
-      if (!item.poster_path || addedIds.has(item.id)) continue;
+      if (!item.poster_path || addedIds.has(`movie_${item.id}`)) continue;
       allMovies.push(buildItem(item, 'Popular Movies', false));
-      addedIds.add(item.id);
+      addedIds.add(`movie_${item.id}`);
       count++;
     }
 
@@ -106,9 +107,9 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
     count = 0;
     for (const item of (popularTvRes.results || [])) {
       if (count >= 12) break;
-      if (!item.poster_path || addedIds.has(item.id)) continue;
+      if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
       allMovies.push(buildItem(item, 'Popular Series', true));
-      addedIds.add(item.id);
+      addedIds.add(`tv_${item.id}`);
       count++;
     }
 
@@ -122,9 +123,9 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
       count = 0;
       for (const item of (movieRes.results || [])) {
         if (count >= 8) break;
-        if (!item.poster_path || addedIds.has(item.id)) continue;
+        if (!item.poster_path || addedIds.has(`movie_${item.id}`)) continue;
         allMovies.push(buildItem(item, g.key, false));
-        addedIds.add(item.id);
+        addedIds.add(`movie_${item.id}`);
         count++;
       }
 
@@ -133,9 +134,9 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
         count = 0;
         for (const item of (tvRes.results || [])) {
           if (count >= 4) break;
-          if (!item.poster_path || addedIds.has(item.id)) continue;
+          if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
           allMovies.push(buildItem(item, g.key, true));
-          addedIds.add(item.id);
+          addedIds.add(`tv_${item.id}`);
           count++;
         }
       }
@@ -161,6 +162,8 @@ function route() {
 
   if (hash === 'sports') {
     renderSports();
+  } else if (hash === 'tv' || hash === 'tv-shows') {
+    renderTvShows();
   } else if (hash.startsWith('movie/')) {
     const parts = hash.split('/');
     const mediaType = parts.length > 2 ? parts[1] : null;
@@ -187,7 +190,8 @@ function hideLoading() {
 }
 
 function renderHome() {
-  const genres = [...new Set(allMovies.map(m => m.genre))].sort((a, b) => {
+  const movies = allMovies.filter(movie => movie.mediaType === 'movie');
+  const genres = [...new Set(movies.map(m => m.genre))].sort((a, b) => {
     if (a === 'Popular Movies') return -1;
     if (b === 'Popular Movies') return 1;
     if (a === 'Popular Series') return -1;
@@ -200,26 +204,27 @@ function renderHome() {
     <main>
       <section class="hero-section" id="hero-section"></section>
       <section class="browse-section" id="browse-section">
-        ${genres.map(genre => buildGenreRow(genre)).join('')}
+        ${genres.map(genre => buildGenreRow(genre, movies)).join('')}
       </section>
     </main>
 
     ${buildFooter()}`;
 
 
-  startHero(featuredMovies.length ? featuredMovies : allMovies);
+  const featured = featuredMovies.filter(movie => movie.mediaType === 'movie');
+  startHero(featured.length ? featured : movies);
   wireCards();
-  wireSearch(allMovies, wireCards);
+  wireSearch(movies, wireCards);
 }
 
 
-function buildGenreRow(genre) {
-  const movies = allMovies.filter(m => m.genre === genre);
+function buildGenreRow(genre, movies) {
+  const genreMovies = movies.filter(m => m.genre === genre);
   return `
     <div class="genre-row">
       <h2 class="genre-title">${genre}</h2>
       <div class="cards-scroll">
-        ${movies.map(buildCard).join('')}
+        ${genreMovies.map(buildCard).join('')}
       </div>
     </div>`;
 }

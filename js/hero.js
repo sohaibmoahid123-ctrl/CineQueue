@@ -37,8 +37,8 @@ export function paintHero() {
         </div>
 
         <div class="hero-actions">
-          <button class="btn-primary" onclick="openMovie(${m.id})">&#9654; Watch Now</button>
-          <button class="btn-secondary" onclick="openMovie(${m.id})">&#8505; More Info</button>
+          <button class="btn-primary" onclick="openMovie(${m.id}, '${m.mediaType || 'movie'}')">&#9654; Watch Now</button>
+          <button class="btn-secondary" onclick="openMovie(${m.id}, '${m.mediaType || 'movie'}')">&#8505; More Info</button>
         </div>
       </div>
       <div class="hero-dots">
