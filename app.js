@@ -9,7 +9,7 @@ import { startHero, stopHeroTimer, paintHero } from './js/hero.js';
 import { wireSearch } from './js/search.js';
 import { renderMovieDetail } from './js/details.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './js/decryptor.js';
-import { buildHeader } from './js/utils.js';
+import { buildFooter as buildSharedFooter, buildHeader } from './js/utils.js';
 import { wireCards } from './js/cards.js';
 import { setCatalog } from './js/catalog.js';
 import { renderSports } from './js/sports.js';
@@ -24,13 +24,16 @@ document.head.appendChild(adScript);
 
 let allMovies      = [];
 let featuredMovies = [];
+let movieCoreRows  = { trending: [], popular: [], topRated: [] };
 
 
 async function init() {
   showLoading();
   try {
     // ۱. فیلم‌های محبوب
+const trendingMoviesUrl = `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=en-US`;
 const popularMoviesUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1&region=US&append_to_response=credits`;
+const topRatedMoviesUrl = `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1&append_to_response=credits`;
     
     // ۲. سریال‌های محبوب
 const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1&append_to_response=credits`;
@@ -38,15 +41,21 @@ const popularTvUrl = `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&p
     // ۳. ژانرهای میکس (فیلم بیشتر + سریال کمتر)
     const mixedGenres = [
       { key: 'Action', movieGenre: 28, tvGenre: 10759 },
-      { key: 'Animation', movieGenre: 16, tvGenre: null }, // فقط فیلم (کارتون)، بدون انیمه/سریال
+      { key: 'Animation', movieGenre: 16, tvGenre: 16 },
       { key: 'Crime', movieGenre: 80, tvGenre: 80 },
       { key: 'Horror', movieGenre: 27, tvGenre: null },
-      { key: 'Romance', movieGenre: 10749, tvGenre: 10749 }
+      { key: 'Romance', movieGenre: 10749, tvGenre: 10749 },
+      { key: 'Drama', movieGenre: 18, tvGenre: 18 },
+      { key: 'Comedy', movieGenre: 35, tvGenre: 35 },
+      { key: 'Mystery', movieGenre: 9648, tvGenre: 9648 },
+      { key: 'Sci-Fi & Fantasy', movieGenre: 878, tvGenre: 10765 }
     ];
 
     // درخواست‌ها
-    const [popularMoviesRes, popularTvRes, ...mixedResponses] = await Promise.all([
+    const [trendingMoviesRes, popularMoviesRes, topRatedMoviesRes, popularTvRes, ...mixedResponses] = await Promise.all([
+      fetch(trendingMoviesUrl).then(r => r.json()).catch(() => ({ results: [] })),
       fetch(popularMoviesUrl).then(r => r.json()).catch(() => ({ results: [] })),
+      fetch(topRatedMoviesUrl).then(r => r.json()).catch(() => ({ results: [] })),
       fetch(popularTvUrl).then(r => r.json()).catch(() => ({ results: [] })),
       ...mixedGenres.flatMap(g => {
         const requests = [
@@ -93,27 +102,36 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
       };
     };
 
-    // --- ردیف ۱: Popular Movies ---
-    let count = 0;
-    for (const item of (popularMoviesRes.results || [])) {
-      if (count >= 12) break;
-      if (!item.poster_path || addedIds.has(`movie_${item.id}`)) continue;
-      allMovies.push(buildItem(item, 'Popular Movies', false));
-      addedIds.add(`movie_${item.id}`);
-      count++;
-    }
+    const buildMovieRow = (results, label) => (results || [])
+      .filter(item => item.poster_path)
+      .slice(0, 12)
+      .map(item => buildItem(item, label, false));
 
-    // --- ردیف ۲: Popular Series ---
-    count = 0;
+    movieCoreRows = {
+      trending: buildMovieRow(trendingMoviesRes.results, 'Trending Movies'),
+      popular: buildMovieRow(popularMoviesRes.results, 'Popular Movies'),
+      topRated: buildMovieRow(topRatedMoviesRes.results, 'Top Rated Movies')
+    };
+
+    const addCatalogItems = items => items.forEach(item => {
+      const key = `${item.mediaType}_${item.id}`;
+      if (addedIds.has(key)) return;
+      allMovies.push(item);
+      addedIds.add(key);
+    });
+
+    addCatalogItems([...movieCoreRows.trending, ...movieCoreRows.popular, ...movieCoreRows.topRated]);
+
+    // --- TV catalog entries ---
+    let count = 0;
     for (const item of (popularTvRes.results || [])) {
       if (count >= 12) break;
       if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
-      allMovies.push(buildItem(item, 'Popular Series', true));
-      addedIds.add(`tv_${item.id}`);
+      addCatalogItems([buildItem(item, 'Popular Series', true)]);
       count++;
     }
 
-    // --- ژانرهای میکس (۸ فیلم + ۴ سریال) ---
+    // --- Synchronized movie and TV genre rails ---
     let responseIndex = 0;
     for (const g of mixedGenres) {
       const movieRes = mixedResponses[responseIndex++] || { results: [] };
@@ -124,8 +142,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
       for (const item of (movieRes.results || [])) {
         if (count >= 8) break;
         if (!item.poster_path || addedIds.has(`movie_${item.id}`)) continue;
-        allMovies.push(buildItem(item, g.key, false));
-        addedIds.add(`movie_${item.id}`);
+        addCatalogItems([buildItem(item, g.key, false)]);
         count++;
       }
 
@@ -135,8 +152,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
         for (const item of (tvRes.results || [])) {
           if (count >= 4) break;
           if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
-          allMovies.push(buildItem(item, g.key, true));
-          addedIds.add(`tv_${item.id}`);
+          addCatalogItems([buildItem(item, g.key, true)]);
           count++;
         }
       }
@@ -191,7 +207,8 @@ function hideLoading() {
 
 function renderHome() {
   const movies = allMovies.filter(movie => movie.mediaType === 'movie');
-  const genres = [...new Set(movies.map(m => m.genre))].sort((a, b) => {
+  const coreLabels = new Set(['Trending Movies', 'Popular Movies', 'Top Rated Movies']);
+  const genres = [...new Set(movies.map(m => m.genre))].filter(genre => !coreLabels.has(genre)).sort((a, b) => {
     if (a === 'Popular Movies') return -1;
     if (b === 'Popular Movies') return 1;
     if (a === 'Popular Series') return -1;
@@ -204,17 +221,30 @@ function renderHome() {
     <main>
       <section class="hero-section" id="hero-section"></section>
       <section class="browse-section" id="browse-section">
+        ${buildCoreRow('Trending Movies', movieCoreRows.trending)}
+        ${buildCoreRow('Popular Movies', movieCoreRows.popular)}
+        ${buildCoreRow('Top Rated Movies', movieCoreRows.topRated)}
         ${genres.map(genre => buildGenreRow(genre, movies)).join('')}
       </section>
     </main>
 
-    ${buildFooter()}`;
+    ${buildSharedFooter()}`;
 
 
   const featured = featuredMovies.filter(movie => movie.mediaType === 'movie');
   startHero(featured.length ? featured : movies);
   wireCards();
   wireSearch(movies, wireCards);
+}
+
+function buildCoreRow(title, items) {
+  const visibleItems = items.filter(movie => movie.mediaType === 'movie');
+  if (!visibleItems.length) return '';
+  return `
+    <div class="genre-row core-row">
+      <h2 class="genre-title">${title}</h2>
+      <div class="cards-scroll">${visibleItems.map(buildCard).join('')}</div>
+    </div>`;
 }
 
 

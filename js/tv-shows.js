@@ -5,6 +5,14 @@ import { API_KEY, BASE_URL, IMAGE_URL } from './config.js';
 import { buildFooter, buildHeader } from './utils.js';
 import { wireCards } from './cards.js';
 
+const tvGenreRails = [
+  { id: 10759, label: 'Action & Adventure' },
+  { id: 18, label: 'Drama' },
+  { id: 35, label: 'Comedy' },
+  { id: 9648, label: 'Mystery' },
+  { id: 10765, label: 'Sci-Fi & Fantasy' }
+];
+
 async function fetchJson(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`TMDB request failed: ${response.status}`);
@@ -105,6 +113,10 @@ export async function renderTvShows() {
           <div class="tv-show-rail"><h2>Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
           <div class="tv-show-rail"><h2>Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
           <div class="tv-show-rail"><h2>Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, 18).map(buildTvCard).join('')}</div></div>
+          ${tvGenreRails.map(genre => {
+            const genreShows = shows.filter(show => show.genreIds?.includes(genre.id));
+            return genreShows.length ? `<div class="tv-show-rail"><h2>${genre.label}</h2><div class="cards-scroll">${genreShows.slice(0, 12).map(buildTvCard).join('')}</div></div>` : '';
+          }).join('')}
         </section>
         ${buildFooter()}`;
 
