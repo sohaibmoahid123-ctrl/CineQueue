@@ -2,18 +2,8 @@
 // CineQueue - dedicated TV Shows dashboard
 // ============================================================
 import { API_KEY, BASE_URL, IMAGE_URL } from './config.js';
-import { buildHeader } from './utils.js';
+import { buildFooter, buildHeader } from './utils.js';
 import { wireCards } from './cards.js';
-import { wireSearch } from './search.js';
-
-const tvGenres = [
-  { id: 'all', label: 'All Shows' },
-  { id: 10759, label: 'Action & Adventure' },
-  { id: 18, label: 'Drama' },
-  { id: 35, label: 'Comedy' },
-  { id: 9648, label: 'Mystery' },
-  { id: 10765, label: 'Sci-Fi & Fantasy' }
-];
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -84,15 +74,18 @@ export async function renderTvShows() {
       fetchJson(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`)
     ]);
 
-    const unique = new Map();
-    const addShows = (items, source) => items.forEach(item => {
-      if (item.poster_path && !unique.has(item.id)) unique.set(item.id, mapShow(item, source));
-    });
-    addShows(trending.results || [], 'Trending TV');
-    addShows(popular.results || [], 'Popular TV');
-    addShows(topRated.results || [], 'Top Rated TV');
-
-    const shows = Array.from(unique.values());
+    const mapUnique = (items, source, excludedIds = new Set()) => {
+      const unique = new Map();
+      items.forEach(item => {
+        if (item.poster_path && !excludedIds.has(item.id) && !unique.has(item.id)) unique.set(item.id, mapShow(item, source));
+      });
+      return Array.from(unique.values());
+    };
+    const trendingShows = mapUnique(trending.results || [], 'Trending TV');
+    const trendingIds = new Set(trendingShows.map(show => show.id));
+    const popularShows = mapUnique(popular.results || [], 'Popular TV', trendingIds);
+    const topRatedShows = mapUnique(topRated.results || [], 'Top Rated TV', new Set([...trendingIds, ...popularShows.map(show => show.id)]));
+    const shows = [...trendingShows, ...popularShows, ...topRatedShows];
     const detailShows = await Promise.all(shows.slice(0, 36).map(async show => {
       try {
         const details = await fetchJson(`${BASE_URL}/tv/${show.id}?api_key=${API_KEY}&language=en-US`);
@@ -104,33 +97,22 @@ export async function renderTvShows() {
     const byId = new Map(detailShows.map(show => [show.id, show]));
     shows.forEach(show => Object.assign(show, byId.get(show.id) || {}));
 
-    let activeGenre = 'all';
-    let query = '';
-    const popularShows = shows.slice(0, 5);
+    const heroShows = trendingShows.length ? trendingShows : shows;
     const render = () => {
-      const normalized = query.toLowerCase().trim();
-      const filtered = shows.filter(show => {
-        const genreMatch = activeGenre === 'all' || show.genreIds?.includes(Number(activeGenre));
-        const queryMatch = !normalized || `${show.title} ${show.synopsis}`.toLowerCase().includes(normalized);
-        return genreMatch && queryMatch;
-      });
       app.querySelector('.tv-dashboard').innerHTML = `
-        <section class="tv-dashboard-hero-wrap">${buildHero(popularShows[0])}</section>
+        <section class="tv-dashboard-hero-wrap">${heroShows.length ? buildHero(heroShows[0]) : ''}</section>
         <section class="tv-dashboard-content">
-          <div class="tv-dashboard-toolbar"><div><span class="sports-kicker">TV library</span><h2>Find your next series</h2></div><label class="sports-search"><span>Quick search</span><input id="tv-show-search" type="search" value="${query}" placeholder="Search TV shows" /></label></div>
-          <div class="tv-genre-filters">${tvGenres.map(genre => `<button class="tv-genre-filter ${activeGenre === String(genre.id) ? 'active' : ''}" data-genre="${genre.id}">${genre.label}</button>`).join('')}</div>
-          <div class="tv-show-rail"><h2>Trending this week</h2><div class="cards-scroll">${shows.slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2>Popular TV</h2><div class="cards-scroll">${shows.filter(show => show.genre === 'Popular TV').slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2>${normalized ? `Results for "${query}"` : 'Top Rated TV'}</h2><div class="cards-scroll">${filtered.slice(0, 18).map(buildTvCard).join('') || '<p class="sports-empty">No TV shows match your search.</p>'}</div></div>
-        </section>`;
+          <div class="tv-show-rail"><h2>Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2>Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2>Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, 18).map(buildTvCard).join('')}</div></div>
+        </section>
+        ${buildFooter()}`;
 
-      app.querySelectorAll('.tv-genre-filter').forEach(button => button.addEventListener('click', () => { activeGenre = button.dataset.genre; render(); }));
-      app.querySelector('#tv-show-search')?.addEventListener('input', event => { query = event.target.value; render(); app.querySelector('#tv-show-search')?.focus(); });
       wireCards();
     };
     render();
   } catch (error) {
     console.error('TV dashboard error:', error);
-    app.innerHTML = `${buildHeader()}<main class="tv-dashboard"><div class="tv-dashboard-loading">TV shows are temporarily unavailable.</div></main>`;
+    app.innerHTML = `${buildHeader()}<main class="tv-dashboard"><div class="tv-dashboard-loading">TV shows are temporarily unavailable.</div></main>${buildFooter()}`;
   }
 }
