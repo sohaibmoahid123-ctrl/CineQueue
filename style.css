@@ -1733,14 +1733,13 @@ input { font: inherit; }
   .hero-backdrop {
     width: 100%;
     max-width: none;
-    height: min(450px, 42.857vw) !important;
-    min-height: 0;
-    max-height: 450px;
-    aspect-ratio: 21 / 9;
+    height: clamp(500px, 38vw, 600px) !important;
+    min-height: 500px;
+    max-height: 600px;
     background-size: cover !important;
-    background-position: center 20% !important;
+    background-position: center top !important;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center top;
   }
 
   .tv-dashboard-hero-wrap {
@@ -1752,7 +1751,7 @@ input { font: inherit; }
   .tv-dashboard-hero {
     width: 100%;
     max-width: none;
-    min-height: 0;
-    max-height: 450px;
+    min-height: 500px;
+    max-height: 600px;
   }
 }
