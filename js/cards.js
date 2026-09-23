@@ -44,6 +44,17 @@ export function wireCards() {
       }
     };
   });
+
+  restartCardAnimations();
+}
+
+function restartCardAnimations() {
+  const cards = [...document.querySelectorAll('.movie-card.fade-in-up')];
+  if (!cards.length) return;
+
+  cards.forEach(card => card.classList.remove('fade-in-up'));
+  void document.body.offsetHeight;
+  cards.forEach(card => card.classList.add('fade-in-up'));
 }
 
 window.openMovie = function(id, mediaType = 'movie') {

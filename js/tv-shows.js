@@ -44,7 +44,7 @@ function mapShow(show, source) {
 
 function buildTvCard(show) {
   return `
-    <div class="movie-card tv-show-card" data-id="${show.id}" data-media-type="tv" tabindex="0" role="button" aria-label="${show.title}">
+    <div class="movie-card tv-show-card fade-in-up" data-id="${show.id}" data-media-type="tv" tabindex="0" role="button" aria-label="${show.title}">
       <img src="${show.posterUrl}" alt="${show.title}" loading="lazy">
       <div class="card-overlay">
         <div class="card-title">${show.title}</div>
@@ -60,7 +60,8 @@ function buildTvCard(show) {
 function buildHero(show) {
   const backdrop = show.backdrop_path ? `https://image.tmdb.org/t/p/w1280${show.backdrop_path}` : show.posterUrl;
   return `
-    <div class="hero-backdrop tv-dashboard-hero" style="background-image:url('${backdrop}')">
+    <div class="hero-backdrop tv-dashboard-hero fade-in-up" style="background-image:url('${backdrop}')">
+      <div class="hero-gradient"></div>
       <div class="hero-content">
         <span class="hero-genre">TV SHOWS</span>
         <h1 class="hero-title">${show.title}</h1>
