@@ -1733,9 +1733,9 @@ input { font: inherit; }
   .hero-backdrop {
     width: 100%;
     max-width: none;
-    height: clamp(500px, 38vw, 600px) !important;
-    min-height: 500px;
-    max-height: 600px;
+    height: clamp(600px, 48vw, 760px) !important;
+    min-height: 600px;
+    max-height: 760px;
     background-size: cover !important;
     background-position: center top !important;
     object-fit: cover;
@@ -1751,7 +1751,7 @@ input { font: inherit; }
   .tv-dashboard-hero {
     width: 100%;
     max-width: none;
-    min-height: 500px;
-    max-height: 600px;
+    min-height: 600px;
+    max-height: 760px;
   }
 }
