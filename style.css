@@ -1731,8 +1731,16 @@ input { font: inherit; }
    ========================================================================== */
 @media (min-width: 1024px) {
   .hero-backdrop {
-    max-height: 500px;
-    background-position: center top !important;
+    width: 100%;
+    max-width: none;
+    height: min(450px, 42.857vw) !important;
+    min-height: 0;
+    max-height: 450px;
+    aspect-ratio: 21 / 9;
+    background-size: cover !important;
+    background-position: center 20% !important;
+    object-fit: cover;
+    object-position: center 20%;
   }
 
   .tv-dashboard-hero-wrap {
@@ -1744,6 +1752,7 @@ input { font: inherit; }
   .tv-dashboard-hero {
     width: 100%;
     max-width: none;
-    max-height: 500px;
+    min-height: 0;
+    max-height: 450px;
   }
 }
