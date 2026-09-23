@@ -4,7 +4,7 @@
 
 export function buildCard(movie) {
   return `
-    <div class="movie-card" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
+    <div class="movie-card fade-in-up" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
       <img src="${movie.posterUrl}" alt="${movie.title}" loading="lazy">
       <div class="card-overlay">
         <div class="card-title">${movie.title}</div>

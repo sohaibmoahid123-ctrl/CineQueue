@@ -3,6 +3,15 @@
 // ============================================================
 const app = document.getElementById('app');
 
+function syncHeaderState() {
+  const header = document.querySelector('.site-header');
+  if (header) {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  }
+}
+
+window.addEventListener('scroll', syncHeaderState, { passive: true });
+
 export function showLoading() {
   if (app) {
     app.innerHTML = `
@@ -27,7 +36,7 @@ export function buildHeader() {
       : 'movies';
 
   return `
-    <header class="site-header">
+    <header class="site-header${window.scrollY > 20 ? ' scrolled' : ''}">
       <a href="#" class="logo">CineQueue</a>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#" class="nav-segment ${activeSection === 'movies' ? 'active' : ''}" aria-current="${activeSection === 'movies' ? 'page' : 'false'}">

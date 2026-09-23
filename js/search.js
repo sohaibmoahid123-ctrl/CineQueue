@@ -22,21 +22,9 @@ export function wireSearch(allMovies, wireCardsCallback) {
   if (!searchDropdown) {
     searchDropdown = document.createElement('div');
     searchDropdown.id = 'search-dropdown';
-    searchDropdown.style.cssText = `
-      position: fixed;
-      background: #111625;
-      border: 1px solid #232d45;
-      border-radius: 12px;
-      max-height: 350px;
-      overflow-y: auto;
-      z-index: 999999;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-      display: none;
-      padding: 8px;
-      box-sizing: border-box;
-    `;
     document.body.appendChild(searchDropdown);
   }
+  searchDropdown.className = 'search-dropdown';
 
   function updateDropdownPosition() {
     const rect = input.getBoundingClientRect();
@@ -144,7 +132,7 @@ export function wireSearch(allMovies, wireCardsCallback) {
             });
           });
         } else {
-          searchDropdown.innerHTML = `<div style="padding:12px; color:#aaa; text-align:center;">No results</div>`;
+          searchDropdown.innerHTML = '<div class="search-empty">No results</div>';
           updateDropdownPosition();
           searchDropdown.style.display = 'block';
         }
@@ -165,11 +153,11 @@ export function wireSearch(allMovies, wireCardsCallback) {
 
 function buildSearchDropdownItem(m) {
   return `
-    <div class="search-item" data-id="${m.id}" data-media-type="${m.mediaType}" style="display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid #1a233a; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#1c263e'" onmouseout="this.style.background='transparent'">
-      <img src="${m.posterUrl}" alt="${m.title}" style="width:40px; height:56px; object-fit:cover; border-radius:6px;" />
-      <div style="flex:1;">
-        <div style="color:#fff; font-weight:bold; font-size:0.95rem;">${m.title}</div>
-        <div style="color:#888; font-size:0.8rem; margin-top:3px;">★ ${m.rating} | ${m.year}</div>
+    <div class="search-item" data-id="${m.id}" data-media-type="${m.mediaType}">
+      <img class="search-item-poster" src="${m.posterUrl}" alt="${m.title}" />
+      <div class="search-item-info">
+        <div class="search-item-title">${m.title}</div>
+        <div class="search-item-meta">★ ${m.rating} | ${m.year}</div>
       </div>
     </div>
   `;
