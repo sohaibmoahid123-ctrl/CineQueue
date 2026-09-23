@@ -19,13 +19,29 @@ export function hideLoading() {
 }
 
 export function buildHeader() {
+  const currentHash = window.location.hash.slice(1);
+  const activeSection = currentHash === 'sports'
+    ? 'sports'
+    : currentHash === 'tv' || currentHash === 'tv-shows'
+      ? 'tv'
+      : 'movies';
+
   return `
     <header class="site-header">
       <a href="#" class="logo">CineQueue</a>
-      <nav class="nav-links">
-        <a href="#">Movies</a>
-        <a href="#tv">TV Shows</a>
-        <a href="#sports" class="sports-nav-link">Sports</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#" class="nav-segment ${activeSection === 'movies' ? 'active' : ''}" aria-current="${activeSection === 'movies' ? 'page' : 'false'}">
+          <svg class="nav-segment-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 3 14 4-3 10-14-4L7 3Z"/><path d="m4 7 3 14 10-3"/><path d="m8 8 2 1M13 9l2 1"/></svg>
+          <span>Movies</span>
+        </a>
+        <a href="#tv" class="nav-segment ${activeSection === 'tv' ? 'active' : ''}" aria-current="${activeSection === 'tv' ? 'page' : 'false'}">
+          <svg class="nav-segment-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m8 3 4 4 4-4M8 12h.01M12 12h.01M16 12h.01"/></svg>
+          <span>TV Shows</span>
+        </a>
+        <a href="#sports" class="nav-segment ${activeSection === 'sports' ? 'active' : ''}" aria-current="${activeSection === 'sports' ? 'page' : 'false'}">
+          <svg class="nav-segment-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M6 4h12l-1 7a5 5 0 0 1-10 0L6 4Z"/><path d="M6 7H3a4 4 0 0 0 4 4M18 7h3a4 4 0 0 1-4 4"/></svg>
+          <span>Sports</span>
+        </a>
       </nav>
       <div class="search-wrap">
         <input type="search" id="search-input" class="search-input" placeholder="Search movies..." />
