@@ -5,6 +5,8 @@ import { API_KEY, BASE_URL, IMAGE_URL } from './config.js';
 import { buildFooter, buildHeader } from './utils.js';
 import { wireCards } from './cards.js';
 
+const ROW_ITEM_LIMIT = 15;
+
 const tvGenreRails = [
   { id: 10759, label: 'Action & Adventure' },
   { id: 18, label: 'Drama' },
@@ -83,19 +85,23 @@ export async function renderTvShows() {
       fetchJson(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`)
     ]);
 
-    const mapUnique = (items, source, excludedIds = new Set()) => {
+    const mapUnique = (items, source) => {
       const unique = new Map();
       items.forEach(item => {
-        if (item.poster_path && !excludedIds.has(item.id) && !unique.has(item.id)) unique.set(item.id, mapShow(item, source));
+        if (item.poster_path && !unique.has(item.id)) unique.set(item.id, mapShow(item, source));
       });
       return Array.from(unique.values());
     };
     const trendingShows = mapUnique(trending.results || [], 'Trending TV');
-    const trendingIds = new Set(trendingShows.map(show => show.id));
-    const popularShows = mapUnique(popular.results || [], 'Popular TV', trendingIds);
-    const topRatedShows = mapUnique(topRated.results || [], 'Top Rated TV', new Set([...trendingIds, ...popularShows.map(show => show.id)]));
+    const popularShows = mapUnique(popular.results || [], 'Popular TV');
+    const topRatedShows = mapUnique(topRated.results || [], 'Top Rated TV');
     const shows = [...trendingShows, ...popularShows, ...topRatedShows];
-    const detailShows = await Promise.all(shows.slice(0, 36).map(async show => {
+    const visibleCoreShows = [
+      ...trendingShows.slice(0, ROW_ITEM_LIMIT),
+      ...popularShows.slice(0, ROW_ITEM_LIMIT),
+      ...topRatedShows.slice(0, ROW_ITEM_LIMIT)
+    ];
+    const detailShows = await Promise.all(visibleCoreShows.map(async show => {
       try {
         const details = await fetchJson(`${BASE_URL}/tv/${show.id}?api_key=${API_KEY}&language=en-US`);
         return { ...show, seasons: details.number_of_seasons || show.seasons, episodes: details.number_of_episodes || show.episodes };
@@ -111,12 +117,12 @@ export async function renderTvShows() {
       app.querySelector('.tv-dashboard').innerHTML = `
         <section class="tv-dashboard-hero-wrap">${heroShows.length ? buildHero(heroShows[0]) : ''}</section>
         <section class="tv-dashboard-content">
-          <div class="tv-show-rail"><h2 class="genre-title">Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2 class="genre-title">Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2 class="genre-title">Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, 18).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, ROW_ITEM_LIMIT).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, ROW_ITEM_LIMIT).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, ROW_ITEM_LIMIT).map(buildTvCard).join('')}</div></div>
           ${tvGenreRails.map(genre => {
             const genreShows = shows.filter(show => show.genreIds?.includes(genre.id));
-            return genreShows.length ? `<div class="tv-show-rail"><h2 class="genre-title">${genre.label}</h2><div class="cards-scroll">${genreShows.slice(0, 12).map(buildTvCard).join('')}</div></div>` : '';
+            return genreShows.length ? `<div class="tv-show-rail"><h2 class="genre-title">${genre.label}</h2><div class="cards-scroll">${genreShows.slice(0, ROW_ITEM_LIMIT).map(buildTvCard).join('')}</div></div>` : '';
           }).join('')}
         </section>
         ${buildFooter()}`;

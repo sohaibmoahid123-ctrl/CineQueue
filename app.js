@@ -15,6 +15,7 @@ import { setCatalog } from './js/catalog.js';
 import { renderSports } from './js/sports.js';
 import { renderTvShows } from './js/tv-shows.js';
 
+const ROW_ITEM_LIMIT = 15;
 
 const app = document.getElementById('app');
 const adScript = document.createElement('script');
@@ -104,7 +105,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
 
     const buildMovieRow = (results, label) => (results || [])
       .filter(item => item.poster_path)
-      .slice(0, 12)
+      .slice(0, ROW_ITEM_LIMIT)
       .map(item => buildItem(item, label, false));
 
     movieCoreRows = {
@@ -125,7 +126,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
     // --- TV catalog entries ---
     let count = 0;
     for (const item of (popularTvRes.results || [])) {
-      if (count >= 12) break;
+      if (count >= ROW_ITEM_LIMIT) break;
       if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
       addCatalogItems([buildItem(item, 'Popular Series', true)]);
       count++;
@@ -140,7 +141,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
       // اول فیلم‌ها
       count = 0;
       for (const item of (movieRes.results || [])) {
-        if (count >= 8) break;
+        if (count >= ROW_ITEM_LIMIT) break;
         if (!item.poster_path || addedIds.has(`movie_${item.id}`)) continue;
         addCatalogItems([buildItem(item, g.key, false)]);
         count++;
@@ -150,7 +151,7 @@ cast: item.credits?.cast ? item.credits.cast.slice(0, 10).map(a => ({
       if (g.tvGenre) {
         count = 0;
         for (const item of (tvRes.results || [])) {
-          if (count >= 4) break;
+          if (count >= ROW_ITEM_LIMIT) break;
           if (!item.poster_path || addedIds.has(`tv_${item.id}`)) continue;
           addCatalogItems([buildItem(item, g.key, true)]);
           count++;
