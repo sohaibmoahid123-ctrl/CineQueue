@@ -111,12 +111,12 @@ export async function renderTvShows() {
       app.querySelector('.tv-dashboard').innerHTML = `
         <section class="tv-dashboard-hero-wrap">${heroShows.length ? buildHero(heroShows[0]) : ''}</section>
         <section class="tv-dashboard-content">
-          <div class="tv-show-rail"><h2>Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2>Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
-          <div class="tv-show-rail"><h2>Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, 18).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Trending this week</h2><div class="cards-scroll">${trendingShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Popular TV</h2><div class="cards-scroll">${popularShows.slice(0, 12).map(buildTvCard).join('')}</div></div>
+          <div class="tv-show-rail"><h2 class="genre-title">Top Rated TV</h2><div class="cards-scroll">${topRatedShows.slice(0, 18).map(buildTvCard).join('')}</div></div>
           ${tvGenreRails.map(genre => {
             const genreShows = shows.filter(show => show.genreIds?.includes(genre.id));
-            return genreShows.length ? `<div class="tv-show-rail"><h2>${genre.label}</h2><div class="cards-scroll">${genreShows.slice(0, 12).map(buildTvCard).join('')}</div></div>` : '';
+            return genreShows.length ? `<div class="tv-show-rail"><h2 class="genre-title">${genre.label}</h2><div class="cards-scroll">${genreShows.slice(0, 12).map(buildTvCard).join('')}</div></div>` : '';
           }).join('')}
         </section>
         ${buildFooter()}`;
