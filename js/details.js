@@ -83,14 +83,65 @@ async function getMovieCredits(movieId, isTv = false) {
   }
 }
 
+async function fetchMovieFromTmdb(id, mediaType = null) {
+  const isTv = mediaType === 'tv';
+  const type = isTv ? 'tv' : 'movie';
+  const response = await fetch(
+    `${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=en-US`
+  );
+
+  if (!response.ok) {
+    throw new Error(`TMDB detail request failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data?.id) {
+    throw new Error('TMDB returned no matching item');
+  }
+
+  const releaseDate = data.release_date || data.first_air_date || null;
+  const embedBase = `https://vidsrc.to/embed/${type}/${data.id}`;
+
+  return {
+    id: data.id,
+    title: data.title || data.name,
+    posterUrl: data.poster_path ? `${IMAGE_URL}${data.poster_path}` : '',
+    backdrop_path: data.backdrop_path || null,
+    synopsis: data.overview || 'No synopsis available.',
+    year: parseInt((releaseDate || '2026').split('-')[0], 10),
+    releaseDate,
+    rating: data.vote_average ? Number(data.vote_average.toFixed(1)) : 7.0,
+    durationMinutes: isTv
+      ? (data.episode_run_time?.[0] || 45)
+      : (data.runtime || 120),
+    genre: data.genres?.[0]?.name || (isTv ? 'TV Series' : 'Movie'),
+    director: 'TMDB Cinema',
+    cast: [],
+    mediaType: type,
+    downloadUrl1080p: embedBase,
+    downloadUrl720p: embedBase
+  };
+}
+
 export async function renderMovieDetail(id, allMovies, mediaType = null) {
   const app = document.getElementById('app');
   if (countdownInterval) {
     clearInterval(countdownInterval);
     countdownInterval = null;
   }
-  const movie = allMovies.find(m => m.id === id && (!mediaType || m.mediaType === mediaType));
-  
+
+  const catalog = Array.isArray(allMovies) ? allMovies : [];
+  let movie = catalog.find(m => m.id === id && (!mediaType || m.mediaType === mediaType));
+
+  if (!movie) {
+    try {
+      movie = await fetchMovieFromTmdb(id, mediaType);
+      catalog.push(movie);
+    } catch (error) {
+      console.error('Error fetching movie details:', error);
+    }
+  }
+
   if (!movie) {
     app.innerHTML = `
       ${buildHeader()}
@@ -98,7 +149,7 @@ export async function renderMovieDetail(id, allMovies, mediaType = null) {
         <h2>Movie not found</h2>
         <button class="btn-primary" onclick="history.back()">&#8592; Go Back</button>
       </div>`;
-    wireSearch(allMovies, wireCards);
+    wireSearch(catalog, wireCards);
     return;
   }
 
@@ -107,7 +158,7 @@ export async function renderMovieDetail(id, allMovies, mediaType = null) {
   movie.cast = credits.cast;
 
   const isTv = movie.mediaType === 'tv' || movie.genre === 'TV Series' || !!movie.first_air_date;
-  const related = allMovies.filter(m => m.genre === movie.genre && m.id !== movie.id);
+  const related = catalog.filter(m => m.genre === movie.genre && m.id !== movie.id);
 
   if (!isTv) {
     getAutoDownloadLinks(movie);
@@ -366,5 +417,5 @@ ${isTv ? `
   }
 
   wireCards();
-  wireSearch(allMovies, wireCards);
+  wireSearch(catalog, wireCards);
 }
