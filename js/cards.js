@@ -3,9 +3,12 @@
 // ============================================================
 
 export function buildCard(movie) {
+  const isUpcoming = movie.releaseDate && new Date(movie.releaseDate) > new Date();
+
   return `
-    <div class="movie-card fade-in-up" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
+    <div class="movie-card fade-in-up ${isUpcoming ? 'upcoming' : ''}" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
       <img src="${movie.posterUrl}" alt="${movie.title}" loading="lazy">
+      ${isUpcoming ? `<div class="coming-soon-badge">Coming Soon</div>` : ''}
       <div class="card-overlay">
         <div class="card-title">${movie.title}</div>
         <div class="card-meta">

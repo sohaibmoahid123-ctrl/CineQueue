@@ -10,6 +10,8 @@ import { showDownloadPage } from './moviesmod.js';
 import { getTvSeasonsInfo, buildSeasonDownloadList } from './tv.js';
 import { handleNewServerDownload, handleMovieServer2Download } from './decryptor.js';
 
+let countdownInterval = null;
+
 function buildFooter() {
   return `
     <footer class="site-footer">
@@ -83,6 +85,10 @@ async function getMovieCredits(movieId, isTv = false) {
 
 export async function renderMovieDetail(id, allMovies, mediaType = null) {
   const app = document.getElementById('app');
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
   const movie = allMovies.find(m => m.id === id && (!mediaType || m.mediaType === mediaType));
   
   if (!movie) {
@@ -171,6 +177,32 @@ export async function renderMovieDetail(id, allMovies, mediaType = null) {
               <span>${movie.durationMinutes} min</span>
             </div>
             <p class="detail-synopsis">${movie.synopsis}</p>
+             ${(() => {
+               const isUpcoming = movie.releaseDate && new Date(movie.releaseDate) > new Date();
+               if (!isUpcoming) return '';
+
+               return `
+                 <div class="countdown-container" id="countdown-box">
+                   <div class="countdown-label">COMING SOON</div>
+                   <div class="circular-timer">
+                     <svg viewBox="0 0 160 160">
+                       <circle class="bg" cx="80" cy="80" r="70"></circle>
+                       <circle class="progress" id="countdown-progress" cx="80" cy="80" r="70"
+                         stroke-dasharray="440" stroke-dashoffset="440"></circle>
+                     </svg>
+                     <div class="timer-text">
+                       <div class="timer-days" id="cd-days">--</div>
+                       <div class="timer-label">DAYS LEFT</div>
+                     </div>
+                   </div>
+                   <div class="timer-hms">
+                     <span id="cd-hours">00</span>h
+                     <span id="cd-mins">00</span>m
+                     <span id="cd-secs">00</span>s
+                   </div>
+                 </div>
+               `;
+             })()}
 
 <div class="info-cast-section">
   <div class="director-inline">
@@ -291,6 +323,47 @@ ${isTv ? `
     </main>
       ${buildFooter()}
   `;
+
+  if (movie.releaseDate && new Date(movie.releaseDate) > new Date()) {
+    const targetDate = new Date(movie.releaseDate).getTime();
+    const progressCircle = document.getElementById('countdown-progress');
+    const totalDaysEstimate = 365;
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        const box = document.getElementById('countdown-box');
+        if (box) box.innerHTML = `<div class="countdown-label" style="color:#22c55e">NOW AVAILABLE</div>`;
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+      const daysEl = document.getElementById('cd-days');
+      const hoursEl = document.getElementById('cd-hours');
+      const minsEl = document.getElementById('cd-mins');
+      const secsEl = document.getElementById('cd-secs');
+
+      if (daysEl) daysEl.textContent = days;
+      if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+      if (minsEl) minsEl.textContent = String(mins).padStart(2, '0');
+      if (secsEl) secsEl.textContent = String(secs).padStart(2, '0');
+
+      const progress = Math.min(days / totalDaysEstimate, 1);
+      const offset = 440 - (progress * 440);
+      if (progressCircle) progressCircle.style.strokeDashoffset = offset;
+    };
+
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+  }
 
   wireCards();
   wireSearch(allMovies, wireCards);

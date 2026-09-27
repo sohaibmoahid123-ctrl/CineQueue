@@ -1752,3 +1752,96 @@ input { font: inherit; }
     max-height: 760px;
   }
 }
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #e50914;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  z-index: 5;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+.movie-card.upcoming img {
+  filter: brightness(0.75);
+}
+
+/* Circular Countdown Timer */
+.countdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24px 0;
+  gap: 12px;
+}
+
+.countdown-label {
+  font-size: 0.95rem;
+  color: #f59e0b;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.circular-timer {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.circular-timer svg {
+  transform: rotate(-90deg);
+  width: 160px;
+  height: 160px;
+}
+
+.circular-timer circle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.circular-timer .bg {
+  stroke: #232d45;
+}
+
+.circular-timer .progress {
+  stroke: #f59e0b;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+}
+
+.timer-days {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 0.75rem;
+  color: #8b90a8;
+  margin-top: 4px;
+}
+
+.timer-hms {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #c0c4d8;
+}

@@ -88,6 +88,7 @@ fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${g.tvGenre}&sort_
         backdrop_path: item.backdrop_path || null,
         synopsis: item.overview || 'No synopsis available.',
         year: parseInt((item.release_date || item.first_air_date || '2026').toString().split('-')[0]),
+        releaseDate: item.release_date || item.first_air_date || null,
         rating: item.vote_average ? parseFloat(item.vote_average.toFixed(1)) : 7.0,
         durationMinutes: isTv ? (40 + (item.id % 20)) : (90 + (item.id % 40)),
         genre: assignedGenre,
@@ -261,9 +262,12 @@ function buildGenreRow(genre, movies) {
 }
 
 function buildCard(movie) {
+  const isUpcoming = movie.releaseDate && new Date(movie.releaseDate) > new Date();
+
   return `
-    <div class="movie-card fade-in-up" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
+    <div class="movie-card fade-in-up ${isUpcoming ? 'upcoming' : ''}" data-id="${movie.id}" data-media-type="${movie.mediaType || 'movie'}" tabindex="0" role="button" aria-label="${movie.title}">
       <img src="${movie.posterUrl}" alt="${movie.title}" loading="lazy">
+      ${isUpcoming ? `<div class="coming-soon-badge">Coming Soon</div>` : ''}
       <div class="card-overlay">
         <div class="card-title">${movie.title}</div>
         <div class="card-meta">
