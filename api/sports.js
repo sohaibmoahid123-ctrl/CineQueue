@@ -13,6 +13,15 @@ const sportsDbLeagues = [
   { id: 4387, sport: 'Basketball', priority: 85 }
 ];
 
+// 📺 جدول نگاشت لیگ‌ها به کانال‌های تلویزیونی دائمی (m3u8)
+const leagueChannelMap = {
+  'Premier League': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', // لینک کانال اسکای اسپورت یا TNT مربوطه
+  'Champions League': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  'La Liga': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  'NBA': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  'Formula 1': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+};
+
 async function fetchJson(url, timeoutMs = 10000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -232,18 +241,37 @@ module.exports = async (req, res) => {
       console.warn('ScoreBat enrichment unavailable:', error.message);
     }
 
+    // تطبیق هوشمند مسابقات با کانال‌های تلویزیونی و بررسی زمان شروع
+    const now = new Date();
     matches.forEach(match => {
+      // ۱. تلاش برای یافتن لینک از ScoreBat
       const haystack = `${match.home} ${match.away} ${match.league}`.toLowerCase();
       const stream = embeds.find(entry => entry.title.includes(match.home.toLowerCase()) && entry.title.includes(match.away.toLowerCase()))
         || embeds.find(entry => entry.title.includes(haystack));
+      
       if (stream) {
         match.embedUrl = stream.embedUrl;
         match.streamAvailable = true;
+      }
+
+      // ۲. اگر لینک اختصاصی نبود، از کانال تلویزیونیِ ثابتِ همان لیگ استفاده کن
+      if (!match.embedUrl && leagueChannelMap[match.league]) {
+        match.embedUrl = leagueChannelMap[match.league];
+        match.streamAvailable = true;
+      }
+
+      // ۳. بررسی خودکار زمان: اگر زمان شروع مسابقه فرا رسیده باشد، وضعیت به LIVE تبدیل شود
+      const kickoff = new Date(match.kickoffTime);
+      const endTime = new Date(kickoff.getTime() + (120 * 60 * 1000)); // تا ۲ ساعت بعد از شروع
+      
+      if (match.status !== 'FINAL' && now >= kickoff && now <= endTime) {
+        match.status = 'LIVE';
       }
     });
 
     matches = [...new Map(matches.map(match => [match.id, match])).values()];
     matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || (a.status === 'SCHEDULED') - (b.status === 'SCHEDULED') || b.priority - a.priority || new Date(a.kickoffTime) - new Date(b.kickoffTime));
+    
     console.log('[sports] normalized matches', { source, count: matches.length });
     return res.status(200).json({ success: true, source: embeds.length ? `${source} + ScoreBat` : source, matches: matches.slice(0, 60) });
   } catch (error) {
