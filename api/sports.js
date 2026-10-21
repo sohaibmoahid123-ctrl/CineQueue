@@ -15,13 +15,14 @@ const sportsDbLeagues = [
 
 
 
-// 📺 جدول نگاشت لیگ‌ها به استریم‌های زنده از طریق پراکسی خودی
+const workingLink = 'https://lb32.strmd.st/secure/hREwDCkDTTSZVipKyfgkJdwZmEXBUeb/rtmp/stream/3z-FESl8NwpNOzYCwpinNrysz2mJGheHv7atrtVX6kWTQRtCtzDT2n0l6XK-bzd-LdDJ6jUn/1/low/mono.m3u8';
+
 const leagueChannelMap = {
-  'Premier League': '/api/proxy?url=' + encodeURIComponent('https://lb32.strmd.st/secure/hREwDCkDTTSZVipKyfgkJdwZmEXBUeb/rtmp/stream/3z-FESl8NwpNOzYCwpinNrysz2mJGheHv7atrtVX6kWTQRtCtzDT2n0l6XK-bzd-LdDJ6jUn/1/low/mono.m3u8'),
-  'Champions League': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی'),
-  'La Liga': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی'),
-  'NBA': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی')
+  'Premier League': '/api/proxy?url=' + encodeURIComponent(workingLink),
+  'Champions League': '/api/proxy?url=' + encodeURIComponent(workingLink),
+  'La Liga': '/api/proxy?url=' + encodeURIComponent(workingLink)
 };
+
 
 
 async function fetchJson(url, timeoutMs = 10000) {
