@@ -13,14 +13,16 @@ const sportsDbLeagues = [
   { id: 4387, sport: 'Basketball', priority: 85 }
 ];
 
-// 📺 جدول نگاشت لیگ‌ها به کانال‌های تلویزیونی دائمی (m3u8)
+
+
+// 📺 جدول نگاشت لیگ‌ها به استریم‌های زنده از طریق پراکسی خودی
 const leagueChannelMap = {
-  'Premier League': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', // لینک کانال اسکای اسپورت یا TNT مربوطه
-  'Champions League': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-  'La Liga': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-  'NBA': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-  'Formula 1': 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+  'Premier League': '/api/proxy?url=' + encodeURIComponent('https://lb32.strmd.st/secure/hREwDCkDTTSZVipKyfgkJdwZmEXBUeb/rtmp/stream/3z-FESl8NwpNOzYCwpinNrysz2mJGheHv7atrtVX6kWTQRtCtzDT2n0l6XK-bzd-LdDJ6jUn/1/low/mono.m3u8'),
+  'Champions League': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی'),
+  'La Liga': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی'),
+  'NBA': '/api/proxy?url=' + encodeURIComponent('لینک_استریم_چنل_بعدی')
 };
+
 
 async function fetchJson(url, timeoutMs = 10000) {
   const controller = new AbortController();
