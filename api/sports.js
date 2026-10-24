@@ -34,6 +34,13 @@ function getDay(status, startTime) {
   }
 }
 
+function statusFromEvent(event) {
+  const state = event.competitions?.[0]?.status?.type;
+  if (state?.state === 'in') return 'LIVE';
+  if (state?.completed) return 'FINAL';
+  return 'SCHEDULED';
+}
+
 function teamMark(name) {
   return String(name || '').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase();
 }
@@ -42,7 +49,21 @@ function teamLogo(team) {
   return team?.team?.logos?.[0]?.href || team?.team?.logo || team?.logo || '';
 }
 
-// گرفتن جدول مسابقات از ESPN
+function formatKickoff(startTime) {
+  try {
+    return new Date(startTime).toLocaleString([], {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return 'LIVE';
+  }
+}
+
+// ۱. دریافت جدول دقیق مسابقات از ESPN (برای حفظ لوگوهای سالم، تاریخ‌ها و وضعیت واقعی)
 async function getEspnMatches() {
   const now = new Date();
   const dateKey = now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -60,6 +81,7 @@ async function getEspnMatches() {
       const awayName = away.team?.displayName || away.team?.name || '';
       if (!event.id || !homeName || !awayName) return null;
 
+      const status = statusFromEvent(event);
       const startTime = event.date || new Date().toISOString();
 
       return {
@@ -75,12 +97,12 @@ async function getEspnMatches() {
         awayMark: teamMark(awayName),
         homeLogo: teamLogo(home),
         awayLogo: teamLogo(away),
-        status: 'SCHEDULED',
-        day: 'today',
+        status,
+        day: getDay(status, startTime),
         popular: feed.priority >= 90,
         priority: feed.priority,
         kickoffTime: startTime,
-        time: 'SCHEDULED',
+        time: status === 'LIVE' ? 'LIVE' : formatKickoff(startTime),
         accent: feed.sport === 'Football' ? '#e50914' : '#f59e0b',
         embedUrl: '',
         streamAvailable: false
@@ -91,9 +113,9 @@ async function getEspnMatches() {
   return responses.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 }
 
-// گرفتن استریوم‌های زنده مستقیماً از streamed.pk (منبع اصلی)
-async function getStreamedPkLiveMatches() {
-  const liveList = [];
+// ۲. استخراج سرورها و استریم‌های واقعیِ در حال پخش از streamed.pk
+async function getStreamedPkLivePool() {
+  const liveMap = new Map();
   const categories = ['football', 'basketball', 'motorsport', 'tennis'];
 
   for (const cat of categories) {
@@ -103,7 +125,8 @@ async function getStreamedPkLiveMatches() {
 
       for (const match of matchesData) {
         if (match.sources && match.sources.length > 0) {
-          const sourceObj = match.sources[0];
+          // بررسی سرور اول (یا انتخاب بهترین منبع)
+          const sourceObj = match.sources[0]; 
           const streamData = await fetchJson(`https://streamed.pk/api/stream/${sourceObj.source}/${sourceObj.id}`);
           
           if (streamData) {
@@ -112,41 +135,25 @@ async function getStreamedPkLiveMatches() {
             
             if (rawUrl) {
               const proxyUrl = `/api/proxy?url=` + encodeURIComponent(rawUrl);
-              const homeName = match.teams?.home?.name || match.homeTeam || 'Home';
-              const awayName = match.teams?.away?.name || match.awayTeam || 'Away';
-
-              liveList.push({
-                id: `streamed-${match.id || Math.random()}`,
-                title: match.title || `${homeName} vs ${awayName}`,
-                homeTeam: homeName,
-                awayTeam: awayName,
-                league: match.league?.name || 'Live Stream',
-                sport: cat.charAt(0).toUpperCase() + cat.slice(1),
-                home: homeName,
-                away: awayName,
-                homeMark: teamMark(homeName),
-                awayMark: teamMark(awayName),
-                homeLogo: match.teams?.home?.badge || '',
-                awayLogo: match.teams?.away?.badge || '',
-                status: 'LIVE', // به صورت پیش‌فرض لایو در نظر گرفته می‌شود چون سایت اصلی در حال پخش آن است
-                day: 'today',
-                popular: true,
-                priority: 150, // اولویت بالا برای اینکه بیاید بالای لیست
-                kickoffTime: match.date || new Date().toISOString(),
-                time: 'LIVE',
-                accent: '#e50914',
-                embedUrl: proxyUrl,
-                streamAvailable: true
-              });
+              const homeN = (match.teams?.home?.name || match.homeTeam || '').toLowerCase();
+              const awayN = (match.teams?.away?.name || match.awayTeam || '').toLowerCase();
+              
+              if (homeN && awayN) {
+                liveMap.set(`${homeN}_${awayN}`, proxyUrl);
+                liveMap.set(`${awayN}_${homeN}`, proxyUrl);
+              }
+              if (match.title) {
+                liveMap.set(match.title.toLowerCase(), proxyUrl);
+              }
             }
           }
         }
       }
     } catch (err) {
-      console.error(`Error in streamed.pk fetch for ${cat}:`, err.message);
+      console.error(`Streamed.pk pool error for ${cat}:`, err.message);
     }
   }
-  return liveList;
+  return liveMap;
 }
 
 module.exports = async (req, res) => {
@@ -155,45 +162,43 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
-    // ۱. دریافت لیست مسابقات زنده مستقیماً از سایت مرجع (streamed.pk)
-    let streamedMatches = await getStreamedPkLiveMatches();
-    
-    // ۲. دریافت جدول تکمیلی از ESPN
-    let espnMatches = await getEspnMatches();
+    // ۱. دریافت جدول اصلی و استاندارد مسابقات
+    let matches = await getEspnMatches();
 
-    // ۳. ادغام هوشمند: تطبیق بازی‌های ESPN با استریم‌های واقعی سایت مرجع
-    espnMatches.forEach(espnMatch => {
-      const h = espnMatch.home.toLowerCase();
-      const a = espnMatch.away.toLowerCase();
+    // ۲. دریافت استریم‌های زنده‌ای که الان روی سایت مرجع فعال هستند
+    let streamedLiveMap = new Map();
+    try {
+      streamedLiveMap = await getStreamedPkLivePool();
+    } catch (e) {
+      console.warn('Streamed.pk live pool fetch failed:', e.message);
+    }
 
-      // پیدا کردن تطابق در بازی‌های زنده سایت مرجع
-      const matchedLive = streamedMatches.find(sm => {
-        const sh = sm.home.toLowerCase();
-        const sa = sm.away.toLowerCase();
-        return (sh.includes(h) || h.includes(sh)) && (sa.includes(a) || a.includes(sa));
-      });
+    // ۳. تطبیق هوشمند: فقط به بازی‌هایی که الان در سایت مرجع استریمِ فعال دارند لینک لایو بدهیم
+    matches.forEach(match => {
+      const h = match.home.toLowerCase();
+      const a = match.away.toLowerCase();
+      
+      const dynamicStream = streamedLiveMap.get(`${h}_${a}`) || streamedLiveMap.get(`${a}_${h}`);
 
-      if (matchedLive) {
-        // بازنویسی وضعیت به صورت قطعی روی حالت LIVE (بی‌توجه به اشتباهات ساعت ESPN)
-        espnMatch.embedUrl = matchedLive.embedUrl;
-        espnMatch.streamAvailable = true;
-        espnMatch.status = 'LIVE';
-        espnMatch.time = 'LIVE';
-        espnMatch.priority = 200; // آوردن به بالای لیست
+      if (dynamicStream) {
+        // اگر بازی واقعاً در حال پخش بود، لینک امن و وضعیت لایو را تزریق کن
+        match.embedUrl = dynamicStream;
+        match.streamAvailable = true;
+        match.status = 'LIVE';
+        match.time = 'LIVE';
+        match.priority += 100; // بیاید بالاترین جایگاه
       }
     });
 
-    // ترکیب همه موارد و حذف تکراری‌ها (اولویت با مسابقاتی که استریم فعال دارند)
-    let allMatches = [...streamedMatches, ...espnMatches];
-    allMatches = [...new Map(allMatches.map(m => [m.id, m])).values()];
+    matches = [...new Map(matches.map(m => [m.id, m])).values()];
     
-    // مرتب‌سازی: اول بازی‌های لایو و دارای استریم، بعد بقیه
-    allMatches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || b.priority - a.priority);
+    // مرتب‌سازی منظم: مسابقات زنده و دارای استریم بالا، بقیه سر جای خودشان
+    matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || b.priority - a.priority || new Date(a.kickoffTime) - new Date(b.kickoffTime));
 
     return res.status(200).json({ 
       success: true, 
-      source: 'CineQueue Smart Sync', 
-      matches: allMatches.slice(0, 60) 
+      source: 'CineQueue Hybrid Resolver', 
+      matches: matches.slice(0, 60) 
     });
 
   } catch (error) {
