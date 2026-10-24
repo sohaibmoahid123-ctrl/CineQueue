@@ -13,19 +13,7 @@ const sportsDbLeagues = [
   { id: 4387, sport: 'Basketball', priority: 85 }
 ];
 
-
-
-const workingLink = 'https://lb32.strmd.st/secure/hREwDCkDTTSZVipKyfgkJdwZmEXBUeb/rtmp/stream/3z-FESl8NwpNOzYCwpinNrysz2mJGheHv7atrtVX6kWTQRtCtzDT2n0l6XK-bzd-LdDJ6jUn/1/low/mono.m3u8';
-
-const leagueChannelMap = {
-  'Premier League': '/api/proxy?url=' + encodeURIComponent(workingLink),
-  'Champions League': '/api/proxy?url=' + encodeURIComponent(workingLink),
-  'La Liga': '/api/proxy?url=' + encodeURIComponent(workingLink)
-};
-
-
-
-async function fetchJson(url, timeoutMs = 10000) {
+async function fetchJson(url, timeoutMs = 8000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -36,7 +24,6 @@ async function fetchJson(url, timeoutMs = 10000) {
     const text = await response.text();
     let data = null;
     try { data = JSON.parse(text); } catch {}
-    console.log('[sports] feed response', { url, status: response.status, bytes: text.length });
     if (!response.ok) return null;
     return data;
   } finally {
@@ -47,8 +34,7 @@ async function fetchJson(url, timeoutMs = 10000) {
 function getDay(status, startTime) {
   const date = new Date(startTime);
   const today = new Date();
-  const sameDay = date.toDateString() === today.toDateString();
-  return sameDay ? 'today' : 'upcoming';
+  return date.toDateString() === today.toDateString() ? 'today' : 'upcoming';
 }
 
 function statusFromEvent(event) {
@@ -62,7 +48,7 @@ function getDateKey(date) {
   return date.toISOString().slice(0, 10).replace(/-/g, '');
 }
 
-function getFeedDates(days = 7) {
+function getFeedDates(days = 3) {
   const dates = [];
   const now = new Date();
   for (let offset = 0; offset <= days; offset += 1) {
@@ -74,13 +60,17 @@ function getFeedDates(days = 7) {
 }
 
 function formatKickoff(startTime) {
-  return new Date(startTime).toLocaleString([], {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  try {
+    return new Date(startTime).toLocaleString([], {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return 'LIVE';
+  }
 }
 
 function teamMark(name) {
@@ -88,61 +78,25 @@ function teamMark(name) {
 }
 
 function teamLogo(team) {
-  return team.team?.logos?.[0]?.href
-    || team.team?.logo
-    || team.logo
-    || '';
+  return team.team?.logos?.[0]?.href || team.team?.logo || team.logo || '';
 }
 
-function normalizeSportsDbEvent(event, feed) {
-  const startTime = event.strTimestamp || `${event.dateEvent}T${event.strTime || '00:00:00'}Z`;
-  const homeName = event.strHomeTeam || '';
-  const awayName = event.strAwayTeam || '';
-  if (!event.idEvent || !homeName || !awayName || !event.strLeague) return null;
-
-  const hasScore = event.intHomeScore != null || event.intAwayScore != null;
-  const isFinal = event.strStatus === 'FT' || event.strStatus === 'AET' || event.strStatus === 'Final' || (hasScore && event.strStatus === 'Finished');
-  const isLive = ['1H', '2H', 'HT', 'LIVE', 'ET', 'P', 'IN PLAY'].includes(String(event.strStatus || '').toUpperCase());
-  const status = isLive ? 'LIVE' : isFinal ? 'FINAL' : 'SCHEDULED';
-
-  return {
-    id: `sportsdb-${event.idEvent}`,
-    title: `${homeName} vs ${awayName}`,
-    homeTeam: homeName,
-    awayTeam: awayName,
-    league: event.strLeague,
-    sport: feed.sport,
-    home: homeName,
-    away: awayName,
-    homeMark: teamMark(homeName),
-    awayMark: teamMark(awayName),
-    homeLogo: event.strHomeTeamBadge || '',
-    awayLogo: event.strAwayTeamBadge || '',
-    status,
-    day: getDay(status, startTime),
-    popular: feed.priority >= 90,
-    priority: feed.priority,
-    kickoffTime: startTime,
-    time: status === 'LIVE' ? 'LIVE' : formatKickoff(startTime),
-    accent: feed.sport === 'Football' ? '#e50914' : '#f59e0b',
-    embedUrl: '',
-    streamAvailable: false
-  };
-}
-
-async function getSportsDbMatches() {
-  const responses = await Promise.allSettled(sportsDbLeagues.map(async feed => {
-    const data = await fetchJson(`https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${feed.id}`);
-    return (data?.events || []).map(event => normalizeSportsDbEvent(event, feed)).filter(Boolean);
-  }));
+// ۱. دریافت لیست مسابقات از ESPN
+async function getEspnMatches() {
+  const dates = getFeedDates();
+  const responses = await Promise.allSettled(feeds.flatMap(feed => dates.map(async date => {
+    const data = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
+    if (!data) return [];
+    return (data.events || []).map(event => normalizeEspnEvent(event, feed)).filter(Boolean);
+  })));
   return responses.flatMap(result => result.status === 'fulfilled' ? result.value : []);
 }
 
-function normalizeEvent(event, feed) {
+function normalizeEspnEvent(event, feed) {
   const competition = event.competitions?.[0];
   const competitors = competition?.competitors || [];
-  const home = competitors.find(team => team.homeAway === 'home') || competitors[0] || {};
-  const away = competitors.find(team => team.homeAway === 'away') || competitors[1] || {};
+  const home = competitors.find(t => t.homeAway === 'home') || competitors[0] || {};
+  const away = competitors.find(t => t.homeAway === 'away') || competitors[1] || {};
   const homeName = home.team?.displayName || home.team?.name || '';
   const awayName = away.team?.displayName || away.team?.name || '';
   if (!event.id || !homeName || !awayName) return null;
@@ -159,8 +113,8 @@ function normalizeEvent(event, feed) {
     sport: feed.sport,
     home: homeName,
     away: awayName,
-    homeMark: teamMark(home.team?.abbreviation || home.team?.displayName),
-    awayMark: teamMark(away.team?.abbreviation || away.team?.displayName),
+    homeMark: teamMark(home.team?.abbreviation || homeName),
+    awayMark: teamMark(away.team?.abbreviation || awayName),
     homeLogo: teamLogo(home),
     awayLogo: teamLogo(away),
     status,
@@ -168,54 +122,53 @@ function normalizeEvent(event, feed) {
     popular: feed.priority >= 90,
     priority: feed.priority,
     kickoffTime: startTime,
-    time: status === 'LIVE' ? (competition?.status?.displayClock || 'LIVE') : formatKickoff(startTime),
-    accent: feed.sport === 'Football' ? '#e50914' : feed.sport === 'Basketball' ? '#f59e0b' : '#2a9d8f',
+    time: status === 'LIVE' ? 'LIVE' : formatKickoff(startTime),
+    accent: feed.sport === 'Football' ? '#e50914' : '#f59e0b',
     embedUrl: '',
     streamAvailable: false
   };
 }
 
-function extractEmbedUrl(value) {
-  if (!value) return '';
+// ۲. دریافت استریم‌های زنده و پویای جاری از streamed.pk برای تطبیق با مسابقات
+async function getStreamedPkLivePool() {
+  const liveMap = new Map();
+  const categories = ['football', 'basketball', 'motorsport', 'tennis'];
 
-  if (typeof value === 'string') {
-    const iframeSource = value.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-    if (iframeSource) return iframeSource[1];
-    return /^https?:\/\//i.test(value) ? value : '';
-  }
+  for (const cat of categories) {
+    try {
+      const matchesData = await fetchJson(`https://streamed.pk/api/matches/${cat}`);
+      if (!matchesData || !Array.isArray(matchesData)) continue;
 
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const url = extractEmbedUrl(item);
-      if (url) return url;
+      for (const match of matchesData) {
+        if (match.sources && match.sources.length > 0) {
+          const sourceObj = match.sources[0];
+          const streamData = await fetchJson(`https://streamed.pk/api/stream/${sourceObj.source}/${sourceObj.id}`);
+          
+          if (streamData) {
+            const streamItem = Array.isArray(streamData) ? streamData[0] : streamData;
+            const rawUrl = streamItem?.url || streamItem?.embedUrl || streamItem?.file;
+            
+            if (rawUrl) {
+              const proxyUrl = `/api/proxy?url=` + encodeURIComponent(rawUrl);
+              const homeN = (match.teams?.home?.name || '').toLowerCase();
+              const awayN = (match.teams?.away?.name || '').toLowerCase();
+              
+              if (homeN && awayN) {
+                liveMap.set(`${homeN}_${awayN}`, proxyUrl);
+                liveMap.set(`${awayN}_${homeN}`, proxyUrl); // برای احتیاط در ترتیب نام‌ها
+              }
+              if (match.title) {
+                liveMap.set(match.title.toLowerCase(), proxyUrl);
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error(`Streamed.pk pool error for ${cat}:`, err.message);
     }
-    return '';
   }
-
-  if (typeof value === 'object') {
-    for (const key of ['embedUrl', 'embed', 'url', 'iframe', 'src', 'video']) {
-      const url = extractEmbedUrl(value[key]);
-      if (url) return url;
-    }
-    return extractEmbedUrl(value.videos);
-  }
-
-  return '';
-}
-
-async function getScoreBatEmbeds() {
-  const token = process.env.SCOREBAT_TOKEN;
-  if (!token) return [];
-
-  const url = process.env.SCOREBAT_API_URL || `https://www.scorebat.com/video-api/v3/feed/?token=${encodeURIComponent(token)}`;
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`ScoreBat returned ${response.status}`);
-  const data = await response.json();
-  const entries = Array.isArray(data) ? data : (data.response || data.events || []);
-  return entries.map(entry => ({
-    title: String(entry.title || entry.match || entry.name || entry.event || '').toLowerCase(),
-    embedUrl: extractEmbedUrl(entry.embed || entry.embedUrl || entry.videos || entry.video)
-  })).filter(entry => entry.embedUrl);
+  return liveMap;
 }
 
 module.exports = async (req, res) => {
@@ -224,60 +177,56 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
-    const dates = getFeedDates();
-    const responses = await Promise.allSettled(feeds.flatMap(feed => dates.map(async date => {
-      const data = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/${feed.slug}/scoreboard?dates=${date}`);
-      if (!data) return [];
-      return (data.events || []).map(event => normalizeEvent(event, feed)).filter(Boolean);
-    })));
+    // ۱. گرفتن جدول مسابقات از ESPN
+    let matches = await getEspnMatches();
 
-    let matches = responses.flatMap(result => result.status === 'fulfilled' ? result.value : []);
-    let source = 'ESPN';
-    if (!matches.length) {
-      matches = await getSportsDbMatches();
-      source = 'TheSportsDB';
-    }
-    let embeds = [];
+    // ۲. گرفتن استریم‌های زنده از streamed.pk به صورت پشت صحنه
+    let streamedLiveMap = new Map();
     try {
-      embeds = await getScoreBatEmbeds();
-    } catch (error) {
-      console.warn('ScoreBat enrichment unavailable:', error.message);
+      streamedLiveMap = await getStreamedPkLivePool();
+    } catch (e) {
+      console.warn('Streamed.pk live pool fetch failed:', e.message);
     }
 
-    // تطبیق هوشمند مسابقات با کانال‌های تلویزیونی و بررسی زمان شروع
+    // ۳. تطبیق هوشمند مسابقات ESPN با استریم‌های زنده streamed.pk
     const now = new Date();
     matches.forEach(match => {
-      // ۱. تلاش برای یافتن لینک از ScoreBat
-      const haystack = `${match.home} ${match.away} ${match.league}`.toLowerCase();
-      const stream = embeds.find(entry => entry.title.includes(match.home.toLowerCase()) && entry.title.includes(match.away.toLowerCase()))
-        || embeds.find(entry => entry.title.includes(haystack));
+      const h = match.home.toLowerCase();
+      const a = match.away.toLowerCase();
       
-      if (stream) {
-        match.embedUrl = stream.embedUrl;
+      // جستجوی تطبیقی نام تیم‌ها در استریم‌های زنده سایت مرجع
+      const dynamicStream = streamedLiveMap.get(`${h}_${a}`) || streamedLiveMap.get(`${a}_${h}`);
+
+      if (dynamicStream) {
+        match.embedUrl = dynamicStream;
         match.streamAvailable = true;
       }
 
-      // ۲. اگر لینک اختصاصی نبود، از کانال تلویزیونیِ ثابتِ همان لیگ استفاده کن
-      if (!match.embedUrl && leagueChannelMap[match.league]) {
-        match.embedUrl = leagueChannelMap[match.league];
-        match.streamAvailable = true;
-      }
-
-      // ۳. بررسی خودکار زمان: اگر زمان شروع مسابقه فرا رسیده باشد، وضعیت به LIVE تبدیل شود
+      // بررسی خودکار زمان شروع برای وضعیت LIVE
       const kickoff = new Date(match.kickoffTime);
-      const endTime = new Date(kickoff.getTime() + (120 * 60 * 1000)); // تا ۲ ساعت بعد از شروع
+      const endTime = new Date(kickoff.getTime() + (120 * 60 * 1000));
       
       if (match.status !== 'FINAL' && now >= kickoff && now <= endTime) {
         match.status = 'LIVE';
+        match.time = 'LIVE';
       }
     });
 
     matches = [...new Map(matches.map(match => [match.id, match])).values()];
-    matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || (a.status === 'SCHEDULED') - (b.status === 'SCHEDULED') || b.priority - a.priority || new Date(a.kickoffTime) - new Date(b.kickoffTime));
-    
-    console.log('[sports] normalized matches', { source, count: matches.length });
-    return res.status(200).json({ success: true, source: embeds.length ? `${source} + ScoreBat` : source, matches: matches.slice(0, 60) });
+    matches.sort((a, b) => (b.status === 'LIVE') - (a.status === 'LIVE') || b.priority - a.priority);
+
+    return res.status(200).json({ 
+      success: true, 
+      source: 'ESPN Schedule + Streamed.pk Live Resolver', 
+      matches: matches.slice(0, 60) 
+    });
+
   } catch (error) {
-    return res.status(502).json({ success: false, error: error.message || 'Sports feed unavailable', matches: [] });
+    console.error('Sports feed error:', error);
+    return res.status(502).json({ 
+      success: false, 
+      error: error.message || 'Sports feed unavailable', 
+      matches: [] 
+    });
   }
 };
