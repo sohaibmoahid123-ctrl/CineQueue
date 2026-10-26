@@ -63,7 +63,6 @@ function formatKickoff(startTime) {
   }
 }
 
-// ۱. گرفتن جدول منظم مسابقات از ESPN
 async function getEspnMatches() {
   const now = new Date();
   const dateKey = now.toISOString().slice(0, 10).replace(/-/g, '');
@@ -104,6 +103,8 @@ async function getEspnMatches() {
         kickoffTime: startTime,
         time: status === 'LIVE' ? 'LIVE' : formatKickoff(startTime),
         accent: feed.sport === 'Football' ? '#e50914' : '#f59e0b',
+        
+        // جای استریم خالی نگه داشته شده (طبق درخواست)
         embedUrl: '',
         streamAvailable: false
       };
@@ -113,98 +114,18 @@ async function getEspnMatches() {
   return responses.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 }
 
-// ۲. استخراج دقیق اولین استریمِ زنده از streamed.pk برای مسابقات در حال پخش
-async function getStreamedPkLivePool() {
-  const liveMap = new Map();
-  const categories = ['football', 'basketball', 'motorsport', 'tennis'];
-
-  for (const cat of categories) {
-    try {
-      const matchesData = await fetchJson(`https://streamed.pk/api/matches/${cat}`);
-      if (!matchesData || !Array.isArray(matchesData)) continue;
-
-      for (const match of matchesData) {
-        if (match.sources && match.sources.length > 0) {
-          // گرفتن اولین منبع و اولین سرور (طبق درخواست شما: استریم اول)
-          const sourceObj = match.sources[0]; 
-          const streamData = await fetchJson(`https://streamed.pk/api/stream/${sourceObj.source}/${sourceObj.id}`);
-          
-          if (streamData) {
-            // استخراج اولین لینک ویدیوی موجود در لیست سرورها
-            const streamItem = Array.isArray(streamData) ? streamData[0] : streamData;
-            const rawUrl = streamItem?.url || streamItem?.embedUrl || streamItem?.file;
-            
-            if (rawUrl) {
-              const proxyUrl = `/api/proxy?url=` + encodeURIComponent(rawUrl);
-              const homeN = (match.teams?.home?.name || match.homeTeam || '').toLowerCase().trim();
-              const awayN = (match.teams?.away?.name || match.awayTeam || '').toLowerCase().trim();
-              
-              if (homeN && awayN) {
-                liveMap.set(`${homeN}_${awayN}`, proxyUrl);
-                liveMap.set(`${awayN}_${homeN}`, proxyUrl);
-              }
-              if (match.title) {
-                liveMap.set(match.title.toLowerCase().trim(), proxyUrl);
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error(`Streamed.pk pool error for ${cat}:`, err.message);
-    }
-  }
-  return liveMap;
-}
-
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
-    // ۱. دریافت لیست استاندارد و منظم از ESPN
     let matches = await getEspnMatches();
 
-    // ۲. دریافت استریم‌های زنده از streamed.pk پشت صحنه
-    let streamedLiveMap = new Map();
-    try {
-      streamedLiveMap = await getStreamedPkLivePool();
-    } catch (e) {
-      console.warn('Streamed.pk live pool fetch failed:', e.message);
-    }
-
-    // ۳. تطبیق هوشمند و انعطاف‌پذیر نام تیم‌ها
-    matches.forEach(match => {
-      const h = match.home.toLowerCase().trim();
-      const a = match.away.toLowerCase().trim();
-      
-      // جستجوی دقیق یا جزئی (برای جلوگیری از خطای اختلاف املای نام تیم‌ها)
-      let dynamicStream = streamedLiveMap.get(`${h}_${a}`) || streamedLiveMap.get(`${a}_${h}`);
-
-      if (!dynamicStream) {
-        // جستجوی تک به تک در کلیدها اگر تطابق دقیق پیدا نشد
-        for (const [key, url] of streamedLiveMap.entries()) {
-          if ((key.includes(h) || h.includes(key)) && (key.includes(a) || a.includes(key))) {
-            dynamicStream = url;
-            break;
-          }
-        }
-      }
-
-      if (dynamicStream) {
-        match.embedUrl = dynamicStream;
-        match.streamAvailable = true;
-        match.status = 'LIVE';
-        match.time = 'LIVE';
-        match.priority += 200; // مسابقات زنده بیایند بالاترین جایگاه جدول
-      }
-    });
-
-    // حذف موارد تکراری
+    // حذف تکراری‌ها
     matches = [...new Map(matches.map(m => [m.id, m])).values()];
 
-    // مرتب‌سازی نهایی: بازی‌های زنده و دارای استریم در بالاترین نقطه
+    // مرتب‌سازی: اول زنده → اولویت → زمان شروع
     matches.sort((a, b) => 
       (b.status === 'LIVE') - (a.status === 'LIVE') || 
       b.priority - a.priority || 
@@ -213,7 +134,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      source: 'CineQueue Hybrid + First Stream Resolver',
+      source: 'CineQueue Official ESPN Feed',
       matches: matches.slice(0, 60)
     });
 
