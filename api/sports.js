@@ -21,7 +21,7 @@ const CATEGORIES = [
   'american-football'
 ];
 
-async function fetchJson(url, timeoutMs = 7000) {
+async function fetchJson(url, timeoutMs = 4000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -121,61 +121,67 @@ module.exports = async (req, res) => {
       }
     }
 
-    // حداکثر ۳۰ تا با سورس (برای سرعت)
-    const candidates = raw.filter((m) => m.sources && m.sources.length).slice(0, 30);
+    // ساخت سریع لیست پایه مسابقات بدون تاخیر
+    const baseMatches = raw.map((m) => {
+      const home = (m.teams && m.teams.home && m.teams.home.name) || '';
+      const away = (m.teams && m.teams.away && m.teams.away.name) || '';
+      const homeBadge = (m.teams && m.teams.home && m.teams.home.badge) || '';
+      const awayBadge = (m.teams && m.teams.away && m.teams.away.badge) || '';
 
-    const matches = (
-      await Promise.all(
-        candidates.map(async (m) => {
-          const src = m.sources[0];
-          const streams = await fetchJson(
-            `https://streamed.pk/api/stream/${src.source}/${src.id}`,
-            4000
-          );
-          const item = Array.isArray(streams) ? streams[0] : streams;
-          const embedUrl = (item && item.embedUrl) || '';
+      const isLive = liveIds.has(m.id);
+      const sport = mapSport(m.category);
+      const day = isLive ? 'today' : getDay(m.date);
 
-          const home = (m.teams && m.teams.home && m.teams.home.name) || '';
-          const away = (m.teams && m.teams.away && m.teams.away.name) || '';
-          const homeBadge = (m.teams && m.teams.home && m.teams.home.badge) || '';
-          const awayBadge = (m.teams && m.teams.away && m.teams.away.badge) || '';
+      return {
+        id: m.id,
+        title: m.title || `${home} vs ${away}`,
+        home,
+        away,
+        homeTeam: home,
+        awayTeam: away,
+        homeMark: teamMark(home),
+        awayMark: teamMark(away),
+        homeLogo: badgeUrl(homeBadge),
+        awayLogo: badgeUrl(awayBadge),
+        sport,
+        league: sport,
+        category: String(m.category || 'football').toLowerCase(),
+        status: isLive ? 'LIVE' : 'SCHEDULED',
+        day,
+        time: isLive ? 'LIVE' : formatTime(m.date),
+        kickoffTime: m.date ? new Date(m.date).toISOString() : null,
+        popular: !!(m.popular || isLive),
+        priority: isLive ? 300 : m.popular ? 120 : 50,
+        accent: sport === 'Football' ? '#e50914' : '#f59e0b',
+        embedUrl: '',
+        streamAvailable: false,
+        _rawSources: m.sources
+      };
+    });
 
-          const isLive = liveIds.has(m.id);
-          const sport = mapSport(m.category); // "Football" | "Basketball" | ...
-          const day = isLive ? 'today' : getDay(m.date);
+    // گرفتن لینک‌های امبد فقط برای ۱۰ بازی لایو اول به صورت ایمن
+    const candidatesForStream = baseMatches
+      .filter((m) => m.status === 'LIVE' && m._rawSources && m._rawSources.length > 0)
+      .slice(0, 10);
 
-          return {
-            id: m.id,
-            title: m.title || `${home} vs ${away}`,
-            home,
-            away,
-            homeTeam: home,
-            awayTeam: away,
-            homeMark: teamMark(home),
-            awayMark: teamMark(away),
-            homeLogo: badgeUrl(homeBadge),
-            awayLogo: badgeUrl(awayBadge),
+    await Promise.allSettled(
+      candidatesForStream.map(async (match) => {
+        const src = match._rawSources[0];
+        const streams = await fetchJson(
+          `https://streamed.pk/api/stream/${src.source}/${src.id}`,
+          3000
+        );
+        const item = Array.isArray(streams) ? streams[0] : streams;
+        const embedUrl = (item && item.embedUrl) || '';
+        if (embedUrl) {
+          match.embedUrl = embedUrl;
+          match.streamAvailable = true;
+        }
+      })
+    );
 
-            // مهم: باید دقیقاً با کلید تب فرانت یکی باشد
-            sport, // Football / Basketball / Tennis / Motorsport
-            league: sport,
-            category: String(m.category || 'football').toLowerCase(),
-
-            status: isLive ? 'LIVE' : 'SCHEDULED',
-            day, // today | upcoming
-            time: isLive ? 'LIVE' : formatTime(m.date),
-            kickoffTime: m.date ? new Date(m.date).toISOString() : null,
-
-            popular: !!(m.popular || isLive),
-            priority: isLive ? 300 : m.popular ? 120 : 50,
-            accent: sport === 'Football' ? '#e50914' : '#f59e0b',
-
-            embedUrl,
-            streamAvailable: !!embedUrl
-          };
-        })
-      )
-    ).filter((m) => m.streamAvailable);
+    // پاکسازی فیلد موقت و مرتب‌سازی نهایی
+    const matches = baseMatches.map(({ _rawSources, ...rest }) => rest);
 
     matches.sort(
       (a, b) =>
@@ -186,8 +192,8 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      source: 'streamed.pk multi-sport',
-      matches
+      source: 'streamed.pk multi-sport optimized',
+      matches: matches.slice(0, 60)
     });
   } catch (err) {
     console.error(err);
