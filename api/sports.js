@@ -21,20 +21,27 @@ const CATEGORIES = [
   'american-football'
 ];
 
-async function fetchJson(url, timeoutMs = 4000) {
+async function fetchJson(url, timeoutMs = 8000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        Accept: 'application/json',
-        'User-Agent': 'Mozilla/5.0 (compatible; CineQueue/1.0)'
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Referer': 'https://streamed.pk/',
+        'Origin': 'https://streamed.pk/',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} for ${url}`);
+      return null;
+    }
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error(`Fetch exception for ${url}:`, err.message);
     return null;
   } finally {
     clearTimeout(timer);
@@ -95,6 +102,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
+    // درخواست به APIهای اصلی سایت
     const [liveList, ...catLists] = await Promise.all([
       fetchJson('https://streamed.pk/api/matches/live'),
       ...CATEGORIES.map((c) => fetchJson(`https://streamed.pk/api/matches/${c}`))
@@ -121,7 +129,15 @@ module.exports = async (req, res) => {
       }
     }
 
-    // ساخت سریع لیست پایه مسابقات بدون تاخیر
+    // اگر باز هم به هر دلیلی هیچ دیتایی نیامد، ارور دقیق را برمی‌گردانیم تا در کنسول ببینیم
+    if (raw.length === 0) {
+      return res.status(502).json({
+        success: false,
+        error: 'Target API blocked or returned empty response',
+        matches: []
+      });
+    }
+
     const baseMatches = raw.map((m) => {
       const home = (m.teams && m.teams.home && m.teams.home.name) || '';
       const away = (m.teams && m.teams.away && m.teams.away.name) || '';
@@ -142,7 +158,7 @@ module.exports = async (req, res) => {
         homeMark: teamMark(home),
         awayMark: teamMark(away),
         homeLogo: badgeUrl(homeBadge),
-        awayLogo: badgeUrl(awayBadge),
+        awayLogo: badgeUrl(badgeUrl(awayBadge)),
         sport,
         league: sport,
         category: String(m.category || 'football').toLowerCase(),
@@ -159,10 +175,9 @@ module.exports = async (req, res) => {
       };
     });
 
-    // گرفتن لینک‌های امبد فقط برای ۱۰ بازی لایو اول به صورت ایمن
     const candidatesForStream = baseMatches
       .filter((m) => m.status === 'LIVE' && m._rawSources && m._rawSources.length > 0)
-      .slice(0, 10);
+      .slice(0, 8);
 
     await Promise.allSettled(
       candidatesForStream.map(async (match) => {
@@ -180,7 +195,6 @@ module.exports = async (req, res) => {
       })
     );
 
-    // پاکسازی فیلد موقت و مرتب‌سازی نهایی
     const matches = baseMatches.map(({ _rawSources, ...rest }) => rest);
 
     matches.sort(
@@ -192,9 +206,10 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      source: 'streamed.pk multi-sport optimized',
+      source: 'streamed.pk live direct',
       matches: matches.slice(0, 60)
     });
+
   } catch (err) {
     console.error(err);
     return res.status(502).json({
